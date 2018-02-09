@@ -295,10 +295,16 @@
                 
                     <span>Diary</span>
             </a>
-            <div class="abstract-content">
-                2018年2月8日 周四今天写下第一篇，和技术有一点点关系的博客。虽然大部分内容是通过粘贴和借鉴的。不过在排版和md的语法上，还是得到了学习。想对自己说，再接再厉吧。以后想通过Diary这个页面，记录自己生活和学习的点滴，希望在未来的某一天，能看到自己逐步地成长。
+            <a class="abstract-title" href = "/2018/02/08/Diary/" >
+                <div class="abstract-content">
+                    2018年2月9日 周五
+发现博客首页的_content内容摘要部分部分，无法点击进入文章详情。今天就在archer主题的文件里做了个小改动，实现内容的点击事件。
+实现方法也非常简单。首先需要找到首页的布局文件,其文件目录大概是：1/blogRootDir/themes/archer/layout/index.ejs
 
-            </div>
+使用文档编辑器打开index.ejs文件，找到以下内容：123&lt;div class="abstract-content"&gt;    &lt;%- _content %&gt;&lt;/div&gt;
+改成如下代码，就搞定了：12345&lt;a class="a...
+                </div>
+            </a>
             <div class="abstract-post-meta">
                 <!-- date  -->
                 <div class="abstract-date">
@@ -326,8 +332,9 @@
                 
                     <span>第一篇文章</span>
             </a>
-            <div class="abstract-content">
-                捯饬了两天，终于把博客弄起来了，随便写点儿什么吧..通过看Hexo官网的文档，初步了解了Hexo建站的方式和一些常用的命令行另外参考了两名博主的文章，对本次建站都非常地有帮助，分别是：嘟嘟独立博客、与佳期的个人博客使用的theme来自Yilia (hexo-theme-yilia)可直接点击括号里的链接，前往主题所存的Github页面  
+            <a class="abstract-title" href = "/2018/02/07/第一篇文章/" >
+                <div class="abstract-content">
+                    捯饬了两天，终于把博客弄起来了，随便写点儿什么吧..通过看Hexo官网的文档，初步了解了Hexo建站的方式和一些常用的命令行另外参考了两名博主的文章，对本次建站都非常地有帮助，分别是：嘟嘟独立博客、与佳期的个人博客使用的theme来自Yilia (hexo-theme-yilia)可直接点击括号里的链接，前往主题所存的Github页面  
 2018年2月8日更换主题：来自Wee(hexo-theme-archer)  
 创建博客的初衷：  
 
@@ -336,7 +343,8 @@
 自主建站，非常酷。这也是当初选择编程这项实业的原因。
 
 
-            </div>
+                </div>
+            </a>
             <div class="abstract-post-meta">
                 <!-- date  -->
                 <div class="abstract-date">
@@ -356,6 +364,7 @@
     <!-- paginator  -->
     
 </main>
+
             <!-- profile -->
             
         </div>
@@ -479,13 +488,13 @@
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
+        <span class="sidebar-tag-name" data-tags="Hexo"><span class="iconfont-archer">&#xe606;</span>Hexo</span>
+    
         <span class="sidebar-tag-name" data-tags="Life"><span class="iconfont-archer">&#xe606;</span>Life</span>
     
         <span class="sidebar-tag-name" data-tags="Diary"><span class="iconfont-archer">&#xe606;</span>Diary</span>
     
         <span class="sidebar-tag-name" data-tags="成长"><span class="iconfont-archer">&#xe606;</span>成长</span>
-    
-        <span class="sidebar-tag-name" data-tags="Hexo"><span class="iconfont-archer">&#xe606;</span>Hexo</span>
     
         <span class="sidebar-tag-name" data-tags="智能家居"><span class="iconfont-archer">&#xe606;</span>智能家居</span>
     
@@ -522,9 +531,9 @@ jsonContent:
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
-    
         <span class="sidebar-category-name" data-categories="Tech"><span class="iconfont-archer">&#xe60a;</span>Tech</span>
+    
+        <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
     
         <span class="sidebar-category-name" data-categories="随笔"><span class="iconfont-archer">&#xe60a;</span>随笔</span>
     

@@ -335,7 +335,19 @@
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <p>2018年2月8日 周四<br>今天写下第一篇，和技术有一点点关系的博客。虽然大部分内容是通过粘贴和借鉴的。不过在排版和md的语法上，还是得到了学习。<br>想对自己说，再接再厉吧。<br>以后想通过Diary这个页面，记录自己生活和学习的点滴，希望在未来的某一天，能看到自己逐步地成长。</p>
+        <h3 id="2018年2月9日-周五"><a href="#2018年2月9日-周五" class="headerlink" title="2018年2月9日 周五"></a>2018年2月9日 周五</h3><hr>
+<p></p><p>发现博客首页的_content内容摘要部分部分，无法点击进入文章详情。今天就在archer主题的文件里做了个小改动，实现内容的点击事件。</p><p></p>
+<p></p><p>实现方法也非常简单。首先需要找到首页的布局文件,其文件目录大概是：<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/blogRootDir/</span>themes<span class="regexp">/archer/</span>layout<span class="regexp">/index.ejs</span></span><br></pre></td></tr></table></figure></p>
+<p></p><p></p>
+<p></p><p>使用文档编辑器打开<code>index.ejs</code>文件，找到以下内容：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"abstract-content"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">%-</span> <span class="attr">_content</span> %&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>改成如下代码，就搞定了：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"abstract-title"</span> <span class="attr">href</span> = <span class="string">"&lt;%- url_for(_post.path) %&gt;"</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"abstract-content"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">%-</span> <span class="attr">_content</span> %&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>
+
+</p><p><br></p>
+<h3 id="2018年2月8日-周四"><a href="#2018年2月8日-周四" class="headerlink" title="2018年2月8日 周四"></a>2018年2月8日 周四</h3><hr>
+<p></p><p>今天写下第一篇，和技术有一点点关系的博客。虽然大部分内容是通过粘贴和借鉴的。不过在排版和Markdown的语法上，还是得到了学习。</p><p></p>
+<p></p><p>想对自己说，再接再厉吧。</p><p></p>
+<p></p><p>以后想通过Diary这个页面，记录自己生活和学习的点滴，希望在未来的某一天，能看到自己逐步地成长。</p><p></p>
 
     </article>
     <!-- 前后页  -->
@@ -419,7 +431,7 @@
         <div class="toc-catalog">
             <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
         </div>
-        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#2018年2月9日-周五"><span class="toc-number">1.</span> <span class="toc-text">2018年2月9日 周五</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2018年2月8日-周四"><span class="toc-number">2.</span> <span class="toc-text">2018年2月8日 周四</span></a></li></ol>
     </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
@@ -501,13 +513,13 @@
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
+        <span class="sidebar-tag-name" data-tags="Hexo"><span class="iconfont-archer">&#xe606;</span>Hexo</span>
+    
         <span class="sidebar-tag-name" data-tags="Life"><span class="iconfont-archer">&#xe606;</span>Life</span>
     
         <span class="sidebar-tag-name" data-tags="Diary"><span class="iconfont-archer">&#xe606;</span>Diary</span>
     
         <span class="sidebar-tag-name" data-tags="成长"><span class="iconfont-archer">&#xe606;</span>成长</span>
-    
-        <span class="sidebar-tag-name" data-tags="Hexo"><span class="iconfont-archer">&#xe606;</span>Hexo</span>
     
         <span class="sidebar-tag-name" data-tags="智能家居"><span class="iconfont-archer">&#xe606;</span>智能家居</span>
     
@@ -544,9 +556,9 @@ jsonContent:
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
-    
         <span class="sidebar-category-name" data-categories="Tech"><span class="iconfont-archer">&#xe60a;</span>Tech</span>
+    
+        <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
     
         <span class="sidebar-category-name" data-categories="随笔"><span class="iconfont-archer">&#xe60a;</span>随笔</span>
     
