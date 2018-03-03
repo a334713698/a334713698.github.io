@@ -9,7 +9,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
-    <title>Runloop理论 · DJ Hong&#39;s BLOG</title>
+    <title>RunLoop理论 · DJ Hong&#39;s BLOG</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -266,7 +266,7 @@
                 <a href="/" >DJ Hong&#39;s BLOG</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">Runloop理论</a>
+                <a href="#" class="post-name">RunLoop理论</a>
             </div>
     </div>
     
@@ -287,7 +287,7 @@
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            Runloop理论
+            RunLoop理论
             <!-- 404 -->
             
         </h1>
@@ -305,7 +305,7 @@
             
                 <div class= post-intro-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = Runloop>Runloop</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = RunLoop>RunLoop</a>
     
 </div>
             
@@ -341,12 +341,12 @@
 <li>保持程序持续运行</li>
 <li>处理app的各种事件（比如触摸事件、定时器事件、Selector事件）</li>
 </ul>
-<h5 id="1-Runloop与线程"><a href="#1-Runloop与线程" class="headerlink" title="1.Runloop与线程"></a>1.Runloop与线程</h5><ul>
+<h5 id="1-RunLoop与线程"><a href="#1-RunLoop与线程" class="headerlink" title="1.RunLoop与线程"></a>1.RunLoop与线程</h5><ul>
 <li>每条线程都有唯一的与之对应的RunLoop对象</li>
-<li>主线程的runloop是自动创建好的，子线程的runloop需要手动创建</li>
+<li>主线程的RunLoop是自动创建好的，子线程的RunLoop需要手动创建</li>
 <li>RunLoop在第一次获取时创建，在线程结束时销毁。而如果该RunLoop不包含任何Timer、Source、Observer，它就会自我销亡</li>
 </ul>
-<h4 id="（二）Runloop相关类"><a href="#（二）Runloop相关类" class="headerlink" title="（二）Runloop相关类"></a>（二）Runloop相关类</h4><ul>
+<h4 id="（二）RunLoop相关类"><a href="#（二）RunLoop相关类" class="headerlink" title="（二）RunLoop相关类"></a>（二）RunLoop相关类</h4><ul>
 <li>在 CoreFoundation 里面关于 RunLoop 有5个类:</li>
 <li>CFRunLoopRef</li>
 <li>CFRunLoopModeRef</li>
@@ -388,7 +388,7 @@
 <li>CFRunLoopTimerRef基本上就是NSTimer，它受RunLoop的Mode影响。</li>
 <li>GCD的定时器不受RunLoop的Mode影响。</li>
 <li><p>① NSTimer默认加入RunLoop，且是NSDefaultRunLoopMode。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//调用了scheduledTimer返回的定时器，已经自动被添加到当前runLoop中，默认是NSDefaultRunLoopMode</span></span><br><span class="line">NSTimer *timer = [NSTimer <span class="string">scheduledTimerWithTimeInterval:</span><span class="number">2.0</span> <span class="string">target:</span>self <span class="string">selector:</span><span class="meta">@selector</span>(run) <span class="string">userInfo:</span>nil <span class="string">repeats:</span>YES];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改模式</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//调用了scheduledTimer返回的定时器，已经自动被添加到当前RunLoop中，默认是NSDefaultRunLoopMode</span></span><br><span class="line">NSTimer *timer = [NSTimer <span class="string">scheduledTimerWithTimeInterval:</span><span class="number">2.0</span> <span class="string">target:</span>self <span class="string">selector:</span><span class="meta">@selector</span>(run) <span class="string">userInfo:</span>nil <span class="string">repeats:</span>YES];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改模式</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>②三种模式分析</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">NSTimer *timer = [NSTimer <span class="string">timerWithTimeInterval:</span><span class="number">2.0</span> <span class="string">target:</span>self <span class="string">selector:</span><span class="meta">@selector</span>(run) <span class="string">userInfo:</span>nil <span class="string">repeats:</span>YES];</span><br><span class="line"><span class="comment">// 定时器只运行在NSDefaultRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>NSDefaultRunLoopMode];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定时器只运行在UITrackingRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>UITrackingRunLoopMode];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定时器会跑在标记为common modes的模式下</span></span><br><span class="line"><span class="comment">// 标记为common modes的模式：UITrackingRunLoopMode和NSDefaultRunLoopMode</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
@@ -510,7 +510,7 @@
         <div class="toc-catalog">
             <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
         </div>
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#（一）概念"><span class="toc-number">1.</span> <span class="toc-text">（一）概念</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-Runloop与线程"><span class="toc-number">1.1.</span> <span class="toc-text">1.Runloop与线程</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（二）Runloop相关类"><span class="toc-number">2.</span> <span class="toc-text">（二）Runloop相关类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-获取RunLoop对象"><span class="toc-number">2.1.</span> <span class="toc-text">1.获取RunLoop对象</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（三）CFRunLoopModeRef"><span class="toc-number">3.</span> <span class="toc-text">（三）CFRunLoopModeRef</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-常用Mode"><span class="toc-number">3.1.</span> <span class="toc-text">1.常用Mode</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-使用"><span class="toc-number">3.2.</span> <span class="toc-text">2.使用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（四）CFRunLoopSourceRef"><span class="toc-number">4.</span> <span class="toc-text">（四）CFRunLoopSourceRef</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-按官方文档分类"><span class="toc-number">4.1.</span> <span class="toc-text">1.按官方文档分类</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-根据函数调用栈分类："><span class="toc-number">4.2.</span> <span class="toc-text">2.根据函数调用栈分类：</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（五）CFRunLoopTimerRef"><span class="toc-number">5.</span> <span class="toc-text">（五）CFRunLoopTimerRef</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（六）Oberserver（观察者）"><span class="toc-number">6.</span> <span class="toc-text">（六）Oberserver（观察者）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-CFRunLoopObserverRef的使用"><span class="toc-number">6.1.</span> <span class="toc-text">1.CFRunLoopObserverRef的使用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（七）RunLoop整体处理逻辑"><span class="toc-number">7.</span> <span class="toc-text">（七）RunLoop整体处理逻辑</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#（一）概念"><span class="toc-number">1.</span> <span class="toc-text">（一）概念</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-RunLoop与线程"><span class="toc-number">1.1.</span> <span class="toc-text">1.RunLoop与线程</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（二）RunLoop相关类"><span class="toc-number">2.</span> <span class="toc-text">（二）RunLoop相关类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-获取RunLoop对象"><span class="toc-number">2.1.</span> <span class="toc-text">1.获取RunLoop对象</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（三）CFRunLoopModeRef"><span class="toc-number">3.</span> <span class="toc-text">（三）CFRunLoopModeRef</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-常用Mode"><span class="toc-number">3.1.</span> <span class="toc-text">1.常用Mode</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-使用"><span class="toc-number">3.2.</span> <span class="toc-text">2.使用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（四）CFRunLoopSourceRef"><span class="toc-number">4.</span> <span class="toc-text">（四）CFRunLoopSourceRef</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-按官方文档分类"><span class="toc-number">4.1.</span> <span class="toc-text">1.按官方文档分类</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-根据函数调用栈分类："><span class="toc-number">4.2.</span> <span class="toc-text">2.根据函数调用栈分类：</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（五）CFRunLoopTimerRef"><span class="toc-number">5.</span> <span class="toc-text">（五）CFRunLoopTimerRef</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（六）Oberserver（观察者）"><span class="toc-number">6.</span> <span class="toc-text">（六）Oberserver（观察者）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-CFRunLoopObserverRef的使用"><span class="toc-number">6.1.</span> <span class="toc-text">1.CFRunLoopObserverRef的使用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#（七）RunLoop整体处理逻辑"><span class="toc-number">7.</span> <span class="toc-text">（七）RunLoop整体处理逻辑</span></a></li></ol>
     </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
@@ -592,7 +592,20 @@
     
     
     
-    <div class="total-archive"> Total : 7 </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-archive"> Total : 8 </div>
     
     <div class="post-archive">
     
@@ -604,12 +617,17 @@
     
     
         <li class="archive-post-item">
+            <span class="archive-post-date">03/03</span><a class="archive-post-title" href= "/2018/03/03/多线程的理解——队列与执行方式/" >多线程的理解——队列与执行方式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
             <span class="archive-post-date">03/01</span><a class="archive-post-title" href= "/2018/03/01/RunLoop实践/" >RunLoop实践</a>
         </li>
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">03/01</span><a class="archive-post-title" href= "/2018/03/01/Runloop理论/" >Runloop理论</a>
+            <span class="archive-post-date">03/01</span><a class="archive-post-title" href= "/2018/03/01/RunLoop理论/" >RunLoop理论</a>
         </li>
     
     
@@ -642,6 +660,8 @@
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
+        <span class="sidebar-tag-name" data-tags="RunLoop"><span class="iconfont-archer">&#xe606;</span>RunLoop</span>
+    
         <span class="sidebar-tag-name" data-tags="Life"><span class="iconfont-archer">&#xe606;</span>Life</span>
     
         <span class="sidebar-tag-name" data-tags="Diary"><span class="iconfont-archer">&#xe606;</span>Diary</span>
@@ -650,9 +670,9 @@
     
         <span class="sidebar-tag-name" data-tags="Tech"><span class="iconfont-archer">&#xe606;</span>Tech</span>
     
-        <span class="sidebar-tag-name" data-tags="Runloop"><span class="iconfont-archer">&#xe606;</span>Runloop</span>
-    
         <span class="sidebar-tag-name" data-tags="智能家居"><span class="iconfont-archer">&#xe606;</span>智能家居</span>
+    
+        <span class="sidebar-tag-name" data-tags="多线程"><span class="iconfont-archer">&#xe606;</span>多线程</span>
     
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
@@ -687,11 +707,11 @@ jsonContent:
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
+        <span class="sidebar-category-name" data-categories="iOS"><span class="iconfont-archer">&#xe60a;</span>iOS</span>
+    
         <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
     
         <span class="sidebar-category-name" data-categories="Hexo"><span class="iconfont-archer">&#xe60a;</span>Hexo</span>
-    
-        <span class="sidebar-category-name" data-categories="iOS"><span class="iconfont-archer">&#xe60a;</span>iOS</span>
     
         <span class="sidebar-category-name" data-categories="Tech"><span class="iconfont-archer">&#xe60a;</span>Tech</span>
     

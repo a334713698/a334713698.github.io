@@ -291,6 +291,48 @@
     
     
         <article class="index-post">
+            <a class="abstract-title" href = "/2018/03/03/多线程的理解——队列与执行方式/" >
+                
+                    <span>多线程的理解——队列与执行方式</span>
+            </a>
+            <a class="abstract-title" href = "/2018/03/03/多线程的理解——队列与执行方式/" >
+                <div class="abstract-content">
+                    多线程的理解——队列与执行方式
+1.队列类型
+串行队列：顺序执行，一次执行一个任务。或者说依次从队列中取出一个任务执行，必须一个任务执行完了，才能从队列里面取出下一个任务。
+并行队列：任务是按照加入到队列中的顺序开始执行，但任务完成时的顺序是不确定的。
+主队列：主线程中的串行队列（系统默认创建）。
+全局队列：是全局的并行队列（系统默认创建。几乎等效于并行队列）。
+
+2.执行方式
+同步执行sync：不开新线程
+异步执行async：开辟新线程
+
+3.队列与执行方式
+串行队列同步执行：不开线程，在原来线程里面一个一个顺序执行
+串行队列异步执行：开一条线程，在这个新线程里面一个一个顺序执行
+并行...
+                </div>
+            </a>
+            <div class="abstract-post-meta">
+                <!-- date  -->
+                <div class="abstract-date">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/03/03</span>
+                </div>
+                <!-- tags  -->
+                
+                <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = 多线程>多线程</a>
+    
+</div>
+                
+            </div>
+        </article>
+    
+    
+    
+        <article class="index-post">
             <a class="abstract-title" href = "/2018/03/01/RunLoop实践/" >
                 
                     <span>RunLoop实践</span>
@@ -322,7 +364,7 @@ RunLoop中有东西
                 
                 <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = Runloop>Runloop</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = RunLoop>RunLoop</a>
     
 </div>
                 
@@ -332,23 +374,23 @@ RunLoop中有东西
     
     
         <article class="index-post">
-            <a class="abstract-title" href = "/2018/03/01/Runloop理论/" >
+            <a class="abstract-title" href = "/2018/03/01/RunLoop理论/" >
                 
-                    <span>Runloop理论</span>
+                    <span>RunLoop理论</span>
             </a>
-            <a class="abstract-title" href = "/2018/03/01/Runloop理论/" >
+            <a class="abstract-title" href = "/2018/03/01/RunLoop理论/" >
                 <div class="abstract-content">
                     （一）概念
 运行循环
 保持程序持续运行
 处理app的各种事件（比如触摸事件、定时器事件、Selector事件）
 
-1.Runloop与线程
+1.RunLoop与线程
 每条线程都有唯一的与之对应的RunLoop对象
-主线程的runloop是自动创建好的，子线程的runloop需要手动创建
+主线程的RunLoop是自动创建好的，子线程的RunLoop需要手动创建
 RunLoop在第一次获取时创建，在线程结束时销毁。而如果该RunLoop不包含任何Timer、Source、Observer，它就会自我销亡
 
-（二）Runloop相关类
+（二）RunLoop相关类
 在 CoreFoundation 里面关于 RunLoop 有5个类:
 CFRunLoopRef
 CFRunLoopModeRef
@@ -364,7 +406,7 @@ CFRunLoopSour...
                 
                 <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = Runloop>Runloop</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = RunLoop>RunLoop</a>
     
 </div>
                 
@@ -510,7 +552,20 @@ CFRunLoopSour...
     
     
     
-    <div class="total-archive"> Total : 7 </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-archive"> Total : 8 </div>
     
     <div class="post-archive">
     
@@ -522,12 +577,17 @@ CFRunLoopSour...
     
     
         <li class="archive-post-item">
+            <span class="archive-post-date">03/03</span><a class="archive-post-title" href= "/2018/03/03/多线程的理解——队列与执行方式/" >多线程的理解——队列与执行方式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
             <span class="archive-post-date">03/01</span><a class="archive-post-title" href= "/2018/03/01/RunLoop实践/" >RunLoop实践</a>
         </li>
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">03/01</span><a class="archive-post-title" href= "/2018/03/01/Runloop理论/" >Runloop理论</a>
+            <span class="archive-post-date">03/01</span><a class="archive-post-title" href= "/2018/03/01/RunLoop理论/" >RunLoop理论</a>
         </li>
     
     
@@ -560,6 +620,8 @@ CFRunLoopSour...
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
+        <span class="sidebar-tag-name" data-tags="RunLoop"><span class="iconfont-archer">&#xe606;</span>RunLoop</span>
+    
         <span class="sidebar-tag-name" data-tags="Life"><span class="iconfont-archer">&#xe606;</span>Life</span>
     
         <span class="sidebar-tag-name" data-tags="Diary"><span class="iconfont-archer">&#xe606;</span>Diary</span>
@@ -568,9 +630,9 @@ CFRunLoopSour...
     
         <span class="sidebar-tag-name" data-tags="Tech"><span class="iconfont-archer">&#xe606;</span>Tech</span>
     
-        <span class="sidebar-tag-name" data-tags="Runloop"><span class="iconfont-archer">&#xe606;</span>Runloop</span>
-    
         <span class="sidebar-tag-name" data-tags="智能家居"><span class="iconfont-archer">&#xe606;</span>智能家居</span>
+    
+        <span class="sidebar-tag-name" data-tags="多线程"><span class="iconfont-archer">&#xe606;</span>多线程</span>
     
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
@@ -605,11 +667,11 @@ jsonContent:
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
+        <span class="sidebar-category-name" data-categories="iOS"><span class="iconfont-archer">&#xe60a;</span>iOS</span>
+    
         <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
     
         <span class="sidebar-category-name" data-categories="Hexo"><span class="iconfont-archer">&#xe60a;</span>Hexo</span>
-    
-        <span class="sidebar-category-name" data-categories="iOS"><span class="iconfont-archer">&#xe60a;</span>iOS</span>
     
         <span class="sidebar-category-name" data-categories="Tech"><span class="iconfont-archer">&#xe60a;</span>Tech</span>
     

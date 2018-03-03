@@ -291,34 +291,39 @@
     
     
         <article class="index-post">
-            <a class="abstract-title" href = "/2018/02/08/Diary/" >
+            <a class="abstract-title" href = "/2018/03/03/多线程的理解——队列与执行方式/" >
                 
-                    <span>Diary</span>
+                    <span>多线程的理解——队列与执行方式</span>
             </a>
-            <a class="abstract-title" href = "/2018/02/08/Diary/" >
+            <a class="abstract-title" href = "/2018/03/03/多线程的理解——队列与执行方式/" >
                 <div class="abstract-content">
-                    2018年2月11日 周日
-添加了Livere评论控件，从此以后文章可以被评论了：）
+                    多线程的理解——队列与执行方式
+1.队列类型
+串行队列：顺序执行，一次执行一个任务。或者说依次从队列中取出一个任务执行，必须一个任务执行完了，才能从队列里面取出下一个任务。
+并行队列：任务是按照加入到队列中的顺序开始执行，但任务完成时的顺序是不确定的。
+主队列：主线程中的串行队列（系统默认创建）。
+全局队列：是全局的并行队列（系统默认创建。几乎等效于并行队列）。
 
-2018年2月9日 周五
-发现博客首页的_content内容摘要部分部分，无法点击进入文章详情。今天就在archer主题的文件里做了个小改动，实现内容的点击事件实现方法也非常简单。首先需要找到首页的布局文件,其文件目录大概是：1/blogRootDir/themes/archer/layout/index.ejs
-使用文档编辑器打开index.ejs文件，找到以下内容：123&lt;div class="abstract-content"&gt;    &lt;%- _content %&gt;&lt...
+2.执行方式
+同步执行sync：不开新线程
+异步执行async：开辟新线程
+
+3.队列与执行方式
+串行队列同步执行：不开线程，在原来线程里面一个一个顺序执行
+串行队列异步执行：开一条线程，在这个新线程里面一个一个顺序执行
+并行...
                 </div>
             </a>
             <div class="abstract-post-meta">
                 <!-- date  -->
                 <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/02/08</span>
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/03/03</span>
                 </div>
                 <!-- tags  -->
                 
                 <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = Life>Life</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = Diary>Diary</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = 成长>成长</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = 多线程>多线程</a>
     
 </div>
                 
