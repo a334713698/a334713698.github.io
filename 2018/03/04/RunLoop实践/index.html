@@ -347,7 +347,7 @@
 <li>手动run（启动）</li>
 <li>启动RunLoop之前，最好用@autoreleasepool{}包住</li>
 </ul>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">[<span class="keyword">super</span> viewDidLoad];</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建线程</span></span><br><span class="line"><span class="keyword">self</span>.thread = [[<span class="built_in">NSThread</span> alloc]initWithTarget:<span class="keyword">self</span> selector:<span class="keyword">@selector</span>(run) object:<span class="literal">nil</span>];</span><br><span class="line"><span class="comment">//开始执行线程任务</span></span><br><span class="line">[<span class="keyword">self</span>.thread start];</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)run&#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"------run-----"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">@autoreleasepool</span>&#123;</span><br><span class="line"><span class="comment">//每条线程都有唯一的与之对应的RunLoop对象</span></span><br><span class="line"><span class="comment">//获取（创建）当前子线程的RunLoop</span></span><br><span class="line"><span class="comment">//并为RunLoop添加 Source事件源(有基于Port的数据源)</span></span><br><span class="line"><span class="comment">//如果RunLoop不包含任何Timer、Source、Observer，它就会自我销亡</span></span><br><span class="line">[[<span class="built_in">NSRunLoop</span> currentRunLoop] addPort:[<span class="built_in">NSPort</span> port] forMode:<span class="built_in">NSDefaultRunLoopMode</span>];</span><br><span class="line"><span class="comment">//启动当前RunLoop，使其保持运行状态（即底层死循环），但依旧能监听外部事件</span></span><br><span class="line">[[<span class="built_in">NSRunLoop</span> currentRunLoop] run];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"这句话，按道理是执行不到的"</span>);</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)test&#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"--------test--%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">&#125;</span><br><span class="line">-(<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event&#123;</span><br><span class="line"><span class="comment">//在同一个线程中执行test方法</span></span><br><span class="line">[<span class="keyword">self</span> performSelector:<span class="keyword">@selector</span>(test) onThread:<span class="keyword">self</span>.thread withObject:<span class="literal">nil</span> waitUntilDone:<span class="literal">NO</span>];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line"></span><br><span class="line">//创建线程</span><br><span class="line">self.thread = [[NSThread alloc]initWithTarget:self selector:@selector(run) object:nil];</span><br><span class="line">//开始执行线程任务</span><br><span class="line">[self.thread start];</span><br><span class="line">&#125;</span><br><span class="line">-(void)run&#123;</span><br><span class="line"></span><br><span class="line">NSLog(@&quot;------run-----&quot;);</span><br><span class="line"></span><br><span class="line">@autoreleasepool&#123;</span><br><span class="line">//每条线程都有唯一的与之对应的RunLoop对象</span><br><span class="line">//获取（创建）当前子线程的RunLoop</span><br><span class="line">//并为RunLoop添加 Source事件源(有基于Port的数据源)</span><br><span class="line">//如果RunLoop不包含任何Timer、Source、Observer，它就会自我销亡</span><br><span class="line">[[NSRunLoop currentRunLoop] addPort:[NSPort port] forMode:NSDefaultRunLoopMode];</span><br><span class="line">//启动当前RunLoop，使其保持运行状态（即底层死循环），但依旧能监听外部事件</span><br><span class="line">[[NSRunLoop currentRunLoop] run];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">NSLog(@&quot;这句话，按道理是执行不到的&quot;);</span><br><span class="line">&#125;</span><br><span class="line">-(void)test&#123;</span><br><span class="line">NSLog(@&quot;--------test--%@&quot;,[NSThread currentThread]);</span><br><span class="line">&#125;</span><br><span class="line">-(void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event&#123;</span><br><span class="line">//在同一个线程中执行test方法</span><br><span class="line">[self performSelector:@selector(test) onThread:self.thread withObject:nil waitUntilDone:NO];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="（二）RunLoop面试题"><a href="#（二）RunLoop面试题" class="headerlink" title="（二）RunLoop面试题"></a>（二）RunLoop面试题</h4><h5 id="1-什么是RunLoop"><a href="#1-什么是RunLoop" class="headerlink" title="1.什么是RunLoop"></a>1.什么是RunLoop</h5><ul>
 <li>从字面看：就是运行循环</li>
 <li>从内部看，就是do-while循环，在这个循环内部不断地处理各种任务（比如Source、Timer、Observer）</li>
@@ -370,6 +370,11 @@
     <!-- 前后页  -->
     <ul class="post-paginator">
         <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" title= 使用Xcode的Instruments(Leaks)监测App的内存泄漏问题 >
+                    <div class="nextTitle">使用Xcode的Instruments(Leaks)监测App的内存泄漏问题</div>
+                </a>
             
         </li>
         <li class="previous">
@@ -565,7 +570,18 @@
     
     
     
-    <div class="total-archive"> Total : 8 </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-archive"> Total : 9 </div>
     
     <div class="post-archive">
     
@@ -574,6 +590,11 @@
     
     <div class="archive-year"> 2018 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/20</span><a class="archive-post-title" href= "/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" >使用Xcode的Instruments(Leaks)监测App的内存泄漏问题</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -629,6 +650,16 @@
         <span class="sidebar-tag-name" data-tags="Tech"><span class="iconfont-archer">&#xe606;</span>Tech</span>
     
         <span class="sidebar-tag-name" data-tags="RunLoop"><span class="iconfont-archer">&#xe606;</span>RunLoop</span>
+    
+        <span class="sidebar-tag-name" data-tags="Xcode"><span class="iconfont-archer">&#xe606;</span>Xcode</span>
+    
+        <span class="sidebar-tag-name" data-tags="Instruments"><span class="iconfont-archer">&#xe606;</span>Instruments</span>
+    
+        <span class="sidebar-tag-name" data-tags="Leaks"><span class="iconfont-archer">&#xe606;</span>Leaks</span>
+    
+        <span class="sidebar-tag-name" data-tags="内存泄漏"><span class="iconfont-archer">&#xe606;</span>内存泄漏</span>
+    
+        <span class="sidebar-tag-name" data-tags="调试优化"><span class="iconfont-archer">&#xe606;</span>调试优化</span>
     
         <span class="sidebar-tag-name" data-tags="多线程"><span class="iconfont-archer">&#xe606;</span>多线程</span>
     

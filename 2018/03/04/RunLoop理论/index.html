@@ -384,17 +384,17 @@
 <li>CFRunLoopTimerRef基本上就是NSTimer，它受RunLoop的Mode影响。</li>
 <li>GCD的定时器不受RunLoop的Mode影响。</li>
 <li><p>① NSTimer默认加入RunLoop，且是NSDefaultRunLoopMode。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//调用了scheduledTimer返回的定时器，已经自动被添加到当前RunLoop中，默认是NSDefaultRunLoopMode</span></span><br><span class="line">NSTimer *timer = [NSTimer <span class="string">scheduledTimerWithTimeInterval:</span><span class="number">2.0</span> <span class="string">target:</span>self <span class="string">selector:</span><span class="meta">@selector</span>(run) <span class="string">userInfo:</span>nil <span class="string">repeats:</span>YES];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改模式</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//调用了scheduledTimer返回的定时器，已经自动被添加到当前RunLoop中，默认是NSDefaultRunLoopMode</span><br><span class="line">NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(run) userInfo:nil repeats:YES];</span><br><span class="line"></span><br><span class="line">// 修改模式</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>②三种模式分析</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">NSTimer *timer = [NSTimer <span class="string">timerWithTimeInterval:</span><span class="number">2.0</span> <span class="string">target:</span>self <span class="string">selector:</span><span class="meta">@selector</span>(run) <span class="string">userInfo:</span>nil <span class="string">repeats:</span>YES];</span><br><span class="line"><span class="comment">// 定时器只运行在NSDefaultRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>NSDefaultRunLoopMode];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定时器只运行在UITrackingRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>UITrackingRunLoopMode];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定时器会跑在标记为common modes的模式下</span></span><br><span class="line"><span class="comment">// 标记为common modes的模式：UITrackingRunLoopMode和NSDefaultRunLoopMode</span></span><br><span class="line">[[NSRunLoop currentRunLoop] <span class="string">addTimer:</span>timer <span class="string">forMode:</span>NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">NSTimer *timer = [NSTimer timerWithTimeInterval:2.0 target:self selector:@selector(run) userInfo:nil repeats:YES];</span><br><span class="line">// 定时器只运行在NSDefaultRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];</span><br><span class="line"></span><br><span class="line">// 定时器只运行在UITrackingRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:UITrackingRunLoopMode];</span><br><span class="line"></span><br><span class="line">// 定时器会跑在标记为common modes的模式下</span><br><span class="line">// 标记为common modes的模式：UITrackingRunLoopMode和NSDefaultRunLoopMode</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <h4 id="（六）Oberserver（观察者）"><a href="#（六）Oberserver（观察者）" class="headerlink" title="（六）Oberserver（观察者）"></a>（六）Oberserver（观察者）</h4><ul>
 <li>CFRunLoopObserverRef是观察者，能够监听RunLoop的状态改变</li>
 <li>可以监听以下几个时间点：<br>CFRunLoopActivity的取值<br>kCFRunLoopEntry = (1UL &lt;&lt;0),<br>kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1),<br>kCFRunLoopBeforeSources = (1UL &lt;&lt; 2),<br>kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5),<br>kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6),<br>kCFRunLoopExit = (1UL &lt;&lt; 7),<br>kCFRunLoopAllActivities = 0x0FFFFFFFU</li>
 </ul>
-<h5 id="1-CFRunLoopObserverRef的使用"><a href="#1-CFRunLoopObserverRef的使用" class="headerlink" title="1.CFRunLoopObserverRef的使用"></a>1.CFRunLoopObserverRef的使用</h5><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)observer&#123;</span><br><span class="line"><span class="comment">// 1. 创建observer</span></span><br><span class="line"><span class="built_in">CFRunLoopObserverRef</span> observer = <span class="built_in">CFRunLoopObserverCreateWithHandler</span>(<span class="built_in">CFAllocatorGetDefault</span>(), kCFRunLoopAllActivities, <span class="literal">YES</span>, <span class="number">0</span>, ^(<span class="built_in">CFRunLoopObserverRef</span> observer, <span class="built_in">CFRunLoopActivity</span> activity) &#123;</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"----监听到RunLoop状态发生改变---%zd"</span>, activity);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 2. 添加观察者：监听RunLoop的状态</span></span><br><span class="line"><span class="built_in">CFRunLoopAddObserver</span>(<span class="built_in">CFRunLoopGetCurrent</span>(), observer, kCFRunLoopDefaultMode);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 释放Observer</span></span><br><span class="line"><span class="built_in">CFRelease</span>(observer);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">CF的内存管理（Core Foundation）</span></span><br><span class="line"><span class="comment">1.凡是带有Create、Copy、Retain等字眼的函数，创建出来的对象，都需要在最后做一次release</span></span><br><span class="line"><span class="comment">* 比如CFRunLoopObserverCreate</span></span><br><span class="line"><span class="comment">2.release函数：CFRelease(对象);</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h5 id="1-CFRunLoopObserverRef的使用"><a href="#1-CFRunLoopObserverRef的使用" class="headerlink" title="1.CFRunLoopObserverRef的使用"></a>1.CFRunLoopObserverRef的使用</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (void)observer&#123;</span><br><span class="line">// 1. 创建observer</span><br><span class="line">CFRunLoopObserverRef observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault(), kCFRunLoopAllActivities, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) &#123;</span><br><span class="line">NSLog(@&quot;----监听到RunLoop状态发生改变---%zd&quot;, activity);</span><br><span class="line">&#125;);</span><br><span class="line">// 2. 添加观察者：监听RunLoop的状态</span><br><span class="line">CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, kCFRunLoopDefaultMode);</span><br><span class="line"></span><br><span class="line">// 3. 释放Observer</span><br><span class="line">CFRelease(observer);</span><br><span class="line">&#125;</span><br><span class="line">/*</span><br><span class="line">CF的内存管理（Core Foundation）</span><br><span class="line">1.凡是带有Create、Copy、Retain等字眼的函数，创建出来的对象，都需要在最后做一次release</span><br><span class="line">* 比如CFRunLoopObserverCreate</span><br><span class="line">2.release函数：CFRelease(对象);</span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
 <h4 id="（七）RunLoop整体处理逻辑"><a href="#（七）RunLoop整体处理逻辑" class="headerlink" title="（七）RunLoop整体处理逻辑"></a>（七）RunLoop整体处理逻辑</h4><p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1foxdggdlw4j30n20hen3v.jpg" alt=""></p>
 
     </article>
@@ -601,7 +601,18 @@
     
     
     
-    <div class="total-archive"> Total : 8 </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-archive"> Total : 9 </div>
     
     <div class="post-archive">
     
@@ -610,6 +621,11 @@
     
     <div class="archive-year"> 2018 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/20</span><a class="archive-post-title" href= "/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" >使用Xcode的Instruments(Leaks)监测App的内存泄漏问题</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -665,6 +681,16 @@
         <span class="sidebar-tag-name" data-tags="Tech"><span class="iconfont-archer">&#xe606;</span>Tech</span>
     
         <span class="sidebar-tag-name" data-tags="RunLoop"><span class="iconfont-archer">&#xe606;</span>RunLoop</span>
+    
+        <span class="sidebar-tag-name" data-tags="Xcode"><span class="iconfont-archer">&#xe606;</span>Xcode</span>
+    
+        <span class="sidebar-tag-name" data-tags="Instruments"><span class="iconfont-archer">&#xe606;</span>Instruments</span>
+    
+        <span class="sidebar-tag-name" data-tags="Leaks"><span class="iconfont-archer">&#xe606;</span>Leaks</span>
+    
+        <span class="sidebar-tag-name" data-tags="内存泄漏"><span class="iconfont-archer">&#xe606;</span>内存泄漏</span>
+    
+        <span class="sidebar-tag-name" data-tags="调试优化"><span class="iconfont-archer">&#xe606;</span>调试优化</span>
     
         <span class="sidebar-tag-name" data-tags="多线程"><span class="iconfont-archer">&#xe606;</span>多线程</span>
     
