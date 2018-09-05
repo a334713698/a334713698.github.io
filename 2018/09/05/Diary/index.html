@@ -9,7 +9,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
-    <title>DJ Hong&#39;s BLOG</title>
+    <title>Diary · DJ Hong&#39;s BLOG</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -252,6 +252,8 @@
 </head>
 
     
+        <body class="post-body">
+    
     
 <header class="header">
 
@@ -259,162 +261,151 @@
     <div class="header-sidebar-menu">&#xe775;</div>
     <!-- post页的toggle banner  -->
     
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >DJ Hong&#39;s BLOG</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Diary</a>
+            </div>
+    </div>
+    
     <a class="home-link" href=/>DJ Hong's BLOG</a>
 </header>
     <div class="wrapper">
         <div class="site-intro">
     
     <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
             
-    <div class="site-intro-img" style="background-image: url(/)"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
     <div class="site-intro-placeholder"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
             
+            Diary
+            <!-- 404 -->
+            
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
             
+            
+            <!-- 404 -->
+            
         </p>
         <!-- 文章页meta -->
+        
+            <!-- 文章页标签  -->
+            
+                <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = Life>Life</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = Diary>Diary</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = 成长>成长</a>
+    
+</div>
+            
+            <script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "2", "bdMiniList": false, "bdPic": "", "bdStyle": "1", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = "/static/api/js/share.js"];</script>
+            <div class="post-intro-meta">
+                <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                <span class="post-intro-time">2018/09/05</span>
+                
+                <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                    <span class="iconfont-archer">&#xe604;</span>
+                    <span id="busuanzi_value_page_pv"></span>
+                </span>
+                
+                <span class="shareWrapper">
+                    <span class="iconfont-archer shareIcon">
+                        &#xe601;
+                    </span>
+                    <span class="bdsharebuttonbox">
+                        <a href="#" class="bds_more shareText" data-cmd="more">Share</a>
+                    </span>
+                </span>
+            </div>
         
     </div>
 </div>
         <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
 
         <div class="container container-unloaded">
-            <main class="main index-page">
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/03/04/RunLoop实践/" >
-                
-                    <span>RunLoop实践</span>
-            </a>
-            <a class="abstract-title" href = "/2018/03/04/RunLoop实践/" >
-                <div class="abstract-content">
-                    （一）RunLoop的用途1.常驻线程
-保证线程不死。
-一般来说执行完任务的线程会被销毁。而被strong强引用的线程执行完任务也会进入销亡状态，也无法使用了
-所以可以通过RunLoop使线程常驻
-RunLoop底层是一个死循环，但是它能监听到外部的事件
-注意：如果一个RunLoop不包含任何Timer、Source、Observer。就会自我销亡。
-子线程里的RunLoop启动需要满足两个条件
-RunLoop中有东西
-手动run（启动）
-启动RunLoop之前，最好用@autoreleasepool{}包住
+            <main class="main post-page">
+    <article class="article-entry">
+        <h3 id="2018年9月5日-周三"><a href="#2018年9月5日-周三" class="headerlink" title="2018年9月5日 周三"></a>2018年9月5日 周三</h3><hr>
+<p>今天尝试着将小程序上传提交审核了。<br>从8月8日创建项目开始，历时将近一个月时间，算是做了点东西出来。<br>一个产品在设计伊始应该先有个原型，但是我不是产品经理，所以我就用Page画了一些简单的图形，来提现界面的雏形。<br>然后…然后就直接上手开发了。<br>可发过程中也遇到了很多问题，例如如何获取小程序的全局变量，如何去适配屏幕的高宽，单位的使用，是用px，还是rpx，等等，等等<br>不过好在，所有这些问题，在搜索引擎的帮助下基本都能解决。<br>对JS的感觉是，既陌生又熟悉，因为同时在学习Swift的缘故，发现二者还是有一些相似之处。<br>HTML和CSS是上大学那会儿学的，写的时候，还是不得不时不时查阅文档才能达到想要的效果。<br>最近，腾讯还上线了云开发，但是目前还在公测阶段，需要申请公测资格，我填写了好几次信息，都没有收到允许公测的邮件..<br>所有后面直接用了Bomb的后台云。<br>Bomb后端云的免费版每月有10万次的API调用额度，20GB的存储空间，20GB的流量，以及30条短信。<br>如果用完了或者不够用，也可以按需充值。还是蛮方便的<br>这个小项目下做来，有些感慨，在做事情之前，还是应该有相对充分的准备。<br>对于不熟悉的语言，按需学习做项目的方式，会让人特别难受，特别是前期，还处于摸索的阶段，基本上是五行代码一小查，十行代码一大查的状态。<br>小程序的页面花了大概三周的时间，每天基本只用半天的时间去写（下午学习Swift），9个页面，包括信息的展示页面，和信息的发布界面，以及个人中心页面，最后只用来两个信息展示页面…内容的展示姑且先用CVS记录，再导入数据库进行管理。是骡子是马，先拉出去溜溜看吧。<br>估计在小程序上线过程中，还会遇到一些问题，不知道会不会因为功能过于简单，直接不让上了…<br>另外，下一个项目还是回归苹果，iOS端有试着用Swift写的想法…<br><br></p>
+<h3 id="2018年9月2日-周一"><a href="#2018年9月2日-周一" class="headerlink" title="2018年9月2日 周一"></a>2018年9月2日 周一</h3><hr>
+<p>使用Bomb作为小程序的后端，在线编辑数据库，亦可导入cvs的文件，非常方便使用。<br>不需要自己写后端代码，甚至连服务器都不需要部署跟购买，在满足需求的程度上够用了。</p>
+<p><br></p>
+<h3 id="2018年8月29日-周三"><a href="#2018年8月29日-周三" class="headerlink" title="2018年8月29日 周三"></a>2018年8月29日 周三</h3><hr>
+<p>进入2018的下半年，感觉夏天是个的烙印，让人觉得真真切切度过了经历过了这一年。<br>近段时间，一遍在学习Swift，一遍玩儿小程序，两件事情几乎同时进行<br>在最开始的时候，就考虑过按照怎样一个方式去进行<br>针对Swift，采用系统的学习方式，从语法一点一点开始看，做笔记，写Demo<br>针对小程序，则直接上手，变写变查文档，各种Google，也算是堆出了一些东西<br>在两者同时进行的过程中，尝试使用“番茄钟”让工作更专注，实际体验效果一般般，感觉“番茄钟”的存在感非常低，或许这就是“番茄钟”这款工具的优势吧——体会不到工具的存在，只专注于工作。<br>所以，又有了自行开发一款“番茄钟”的计划。<br>从APP Store下载了一些“番茄钟”，使用过程中，觉得各有各的优点和特色</p>
+<p><center>1.首页</center><br>首页，同时也是倒计时的专注界面，首先个人非常喜欢这个蓝色，非常怡人；其次，界面简单，倒计时外加角落里的图标，仅此而已（个人觉得如果把图标统一设计到下面，可能会更好）<br><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fuqlt7ufj1j30yi1pcnfc.jpg" alt="image"></p>
+<p><center>2.设置</center><br><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fuqlt71dg4j30yi1pc42z.jpg" alt="image"></p>
+<p><center>3.统计</center><br><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fuqlt6m91ej30yi1pcq5s.jpg" alt="image"></p>
+<p><br></p>
+<h3 id="2018年2月11日-周日"><a href="#2018年2月11日-周日" class="headerlink" title="2018年2月11日 周日"></a>2018年2月11日 周日</h3><hr>
+<p>添加了Livere评论控件，从此以后文章可以被评论了：）</p>
+<p><br></p>
+<h3 id="2018年2月9日-周五"><a href="#2018年2月9日-周五" class="headerlink" title="2018年2月9日 周五"></a>2018年2月9日 周五</h3><hr>
+<p>发现博客首页的_content内容摘要部分部分，无法点击进入文章详情。今天就在archer主题的文件里做了个小改动，实现内容的点击事件<br>实现方法也非常简单。首先需要找到首页的布局文件,其文件目录大概是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/blogRootDir/themes/archer/layout/index.ejs</span><br></pre></td></tr></table></figure></p>
+<p>使用文档编辑器打开<code>index.ejs</code>文件，找到以下内容：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"abstract-content"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">%-</span> <span class="attr">_content</span> %&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>改成如下代码，就搞定了：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"abstract-title"</span> <span class="attr">href</span> = <span class="string">"&lt;%- url_for(_post.path) %&gt;"</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"abstract-content"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">%-</span> <span class="attr">_content</span> %&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h3 id="2018年2月8日-周四"><a href="#2018年2月8日-周四" class="headerlink" title="2018年2月8日 周四"></a>2018年2月8日 周四</h3><hr>
+<p>今天写下第一篇，和技术有一点点关系的博客。虽然大部分内容是通过粘贴和借鉴的。不过在排版和Markdown的语法上，还是得到了学习。<br>想对自己说，再接再厉吧。<br>以后想通过Diary这个页面，记录自己生活和学习的点滴，希望在未来的某一天，能看到自己逐步地成长。</p>
 
-12345678910111213141516171819202122232...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/03/04</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = RunLoop>RunLoop</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/03/04/RunLoop理论/" >
-                
-                    <span>RunLoop理论</span>
-            </a>
-            <a class="abstract-title" href = "/2018/03/04/RunLoop理论/" >
-                <div class="abstract-content">
-                    （一）概念
-运行循环
-保持程序持续运行
-处理app的各种事件（比如触摸事件、定时器事件、Selector事件）
+    </article>
+    <!-- 前后页  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" title= 使用Xcode的Instruments(Leaks)监测App的内存泄漏问题 >
+                    <div class="prevTitle">使用Xcode的Instruments(Leaks)监测App的内存泄漏问题</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
 
-1.RunLoop与线程
-每条线程都有唯一的与之对应的RunLoop对象
-主线程的RunLoop是自动创建好的，子线程的RunLoop需要手动创建
-RunLoop在第一次获取时创建，在线程结束时销毁。而如果该RunLoop不包含任何Timer、Source、Observer，它就会自我销亡
+    <div id="lv-container" data-id="city" data-uid= MTAyMC8zNDA4OS8xMDYyNw==>
+        <script type="text/javascript">
+            (function (d, s) {
+                var j, e = d.getElementsByTagName(s)[0];
+                if (typeof LivereTower === 'function') { return; }
+                j = d.createElement(s);
+                j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                j.async = true;
 
-（二）RunLoop相关类
-在 CoreFoundation 里面关于 RunLoop 有5个类:
-CFRunLoopRef
-CFRunLoopModeRef
-CFRunLoopSour...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/03/04</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = RunLoop>RunLoop</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/03/03/多线程的理解——队列与执行方式/" >
-                
-                    <span>多线程的理解——队列与执行方式</span>
-            </a>
-            <a class="abstract-title" href = "/2018/03/03/多线程的理解——队列与执行方式/" >
-                <div class="abstract-content">
-                    多线程的理解——队列与执行方式
-1.队列类型
-串行队列：顺序执行，一次执行一个任务。依次从队列中取出一个任务执行，必须一个任务执行完了，才能从队列里面取出下一个任务。
-并行队列：任务是按照加入到队列中的顺序开始执行，但任务完成时的顺序是不确定的。
-主队列：主线程中的串行队列（系统默认创建）。
-全局队列：是全局的并行队列（系统默认创建。几乎等效于并行队列）。
+                e.parentNode.insertBefore(j, e);
+            })(document, 'script');
+        </script>
+        <noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+    </div>
 
-2.执行方式
-同步执行sync：不开新线程
-异步执行async：开辟新线程
+<!-- City版安装代码已完成 -->
+    
+    
+    <!--PC版-->
 
-3.队列与执行方式
-串行队列同步执行：不开线程，在原来线程里面一个一个顺序执行
-串行队列异步执行：开一条线程，在这个新线程里面一个一个顺序执行
-并行队列同...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/03/03</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
+    <!--PC版-->
+
+
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = 多线程>多线程</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    <!-- paginator  -->
-    
+    <!-- 评论 -->
 </main>
-
             <!-- profile -->
             
         </div>
@@ -470,6 +461,13 @@ CFRunLoopSour...
 
     </div>
     <!-- toc -->
+    
+    <div class="toc-wrapper">
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#2018年9月5日-周三"><span class="toc-number">1.</span> <span class="toc-text">2018年9月5日 周三</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2018年9月2日-周一"><span class="toc-number">2.</span> <span class="toc-text">2018年9月2日 周一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2018年8月29日-周三"><span class="toc-number">3.</span> <span class="toc-text">2018年8月29日 周三</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2018年2月11日-周日"><span class="toc-number">4.</span> <span class="toc-text">2018年2月11日 周日</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2018年2月9日-周五"><span class="toc-number">5.</span> <span class="toc-text">2018年2月9日 周五</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2018年2月8日-周四"><span class="toc-number">6.</span> <span class="toc-text">2018年2月8日 周四</span></a></li></ol>
+    </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
     <div class="sidebar sidebar-hide">
