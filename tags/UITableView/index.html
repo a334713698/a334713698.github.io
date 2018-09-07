@@ -291,27 +291,28 @@
     
     
         <article class="index-post">
-            <a class="abstract-title" href = "/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" >
+            <a class="abstract-title" href = "/2018/09/07/自定义UITableView左滑删除样式/" >
                 
-                    <span>Mac上搭建基于GitHub的Hexo博客</span>
+                    <span>自定义UITableView左滑删除样式</span>
             </a>
-            <a class="abstract-title" href = "/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" >
+            <a class="abstract-title" href = "/2018/09/07/自定义UITableView左滑删除样式/" >
                 <div class="abstract-content">
-                    2017农历的最后几天，项目都完成得差不多了。想着建立一个自己的博客，花了两天时间，在网上搜索各种资料，总算是把个人博客建起来了。过程就是不断试错，是在进行不下去了，就推翻重来。本人是一枚iOS coder，工作机是一台Mac，所以就讲讲在macOS系统上如何基于Hexo+Github创建个人博客。文章开始前，需要提醒一下，文中出现的$符号，在终端中都是不需要输入或粘贴的。
-环境配置Node.js用来生成静态页面。可直接在Node.js官网，下载镜像安装。
-Git用来提交本地的Hexo内容到Github上。电脑上如果已经装了Xcode，可不比进行本步骤，因为Xcode自带git。如果没有...
+                    最近在做番茄钟的项目，其中涉及到任务列表的界面，希望实现左滑删除的功能。UITableViewDelegate自带简单的左滑删除的接口，通过实现canEditRowAtIndexPath方法打开tableView可编辑的开关，再实现editActionsForRowAtIndexPath方法处理事件，UITableViewRowAction的实例允许修改文字和背景色。实现效果如下：
+而我的需求是想把删除键做成一个垃圾桶图标。而系统没有直接可用的API，那就只能曲线救国了。
+首先，这个删除按钮在 iOS11 和 iOS11以下的系统中，所处的父级是不一样的。
+在iOS11以前删除按钮的父级...
                 </div>
             </a>
             <div class="abstract-post-meta">
                 <!-- date  -->
                 <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/02/08</span>
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/09/07</span>
                 </div>
                 <!-- tags  -->
                 
                 <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = Tech>Tech</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = UITableView>UITableView</a>
     
 </div>
                 
