@@ -304,6 +304,42 @@
     
     
         <article class="index-post">
+            <a class="abstract-title" href = "/2018/11/30/iOS-UITableView-长按移动yiCell的位置/" >
+                
+                    <span>iOS UITableView 长按移动yiCell的位置</span>
+            </a>
+            <a class="abstract-title" href = "/2018/11/30/iOS-UITableView-长按移动yiCell的位置/" >
+                <div class="abstract-content">
+                    实现思路：
+长按获取当前手指所在位置的indexPath
+通过indexPath获取对应cell，并生成快照
+移动。 3.1. 快照跟随手指移动 3.2. 当手指移动到其他cell的位置时，执行位置互换，和数据互换
+放开手指，移除快照
+
+
+实现步骤：准备：(UITableView)tableView，数据源(NSMutableArray)lists
+第一步：为tableView添加长按手势12UILongPressGestureRecognizer* longRec = [[UILongPressGestureRecognizer alloc] initWithTarget:self a...
+                </div>
+            </a>
+            <div class="abstract-post-meta">
+                <!-- date  -->
+                <div class="abstract-date">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/11/30</span>
+                </div>
+                <!-- tags  -->
+                
+                <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags = UITableView>UITableView</a>
+    
+</div>
+                
+            </div>
+        </article>
+    
+    
+    
+        <article class="index-post">
             <a class="abstract-title" href = "/2018/09/07/自定义UITableView左滑删除样式/" >
                 
                     <span>自定义UITableView左滑删除样式</span>
@@ -627,43 +663,11 @@ Git用来提交本地的Hexo内容到Github上。电脑上如果已经装了Xcod
             </div>
         </article>
     
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/02/07/第一篇文章/" >
-                
-                    <span>第一篇文章</span>
-            </a>
-            <a class="abstract-title" href = "/2018/02/07/第一篇文章/" >
-                <div class="abstract-content">
-                    捯饬了两天，终于把博客弄起来了，随便写点儿什么吧..通过看Hexo官网的文档，初步了解了Hexo建站的方式和一些常用的命令行另外参考了两名博主的文章，对本次建站都非常地有帮助，分别是：嘟嘟独立博客、与佳期的个人博客使用的theme来自Yilia (hexo-theme-yilia)可直接点击括号里的链接，前往主题所存的Github页面  
-2018年2月8日更换主题：来自Wee(hexo-theme-archer)  
-创建博客的初衷：  
-
-博客的存在，能够表达自己的情感；
-书写技术文章，督促自己对技术知识点的归纳、总结和理解；
-自主建站，非常酷。这也是当初选择编程这项实业的原因。
-
-
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/02/07</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = Life>Life</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
     <!-- paginator  -->
+    
+    <nav class="page-nav">
+        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">NEXT &#62;</a>
+    </nav>
     
 </main>
 
@@ -904,12 +908,7 @@ Git用来提交本地的Hexo内容到Github上。电脑上如果已经装了Xcod
     
     
     
-    
-    
-    
-    
-    
-    <div class="total-archive"> Total : 10 </div>
+    <div class="total-archive"> Total : 11 </div>
     
     <div class="post-archive">
     
@@ -918,6 +917,11 @@ Git用来提交本地的Hexo内容到Github上。电脑上如果已经装了Xcod
     
     <div class="archive-year"> 2018 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/2018/11/30/iOS-UITableView-长按移动yiCell的位置/" >iOS UITableView 长按移动yiCell的位置</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -936,12 +940,12 @@ Git用来提交本地的Hexo内容到Github上。电脑上如果已经装了Xcod
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">03/04</span><a class="archive-post-title" href= "/2018/03/04/RunLoop理论/" >RunLoop理论</a>
+            <span class="archive-post-date">03/04</span><a class="archive-post-title" href= "/2018/03/04/RunLoop实践/" >RunLoop实践</a>
         </li>
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">03/04</span><a class="archive-post-title" href= "/2018/03/04/RunLoop实践/" >RunLoop实践</a>
+            <span class="archive-post-date">03/04</span><a class="archive-post-title" href= "/2018/03/04/RunLoop理论/" >RunLoop理论</a>
         </li>
     
     
@@ -974,15 +978,19 @@ Git用来提交本地的Hexo内容到Github上。电脑上如果已经装了Xcod
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
+        <span class="sidebar-tag-name" data-tags="RunLoop"><span class="iconfont-archer">&#xe606;</span>RunLoop</span>
+    
+        <span class="sidebar-tag-name" data-tags="UITableView"><span class="iconfont-archer">&#xe606;</span>UITableView</span>
+    
+        <span class="sidebar-tag-name" data-tags="Tech"><span class="iconfont-archer">&#xe606;</span>Tech</span>
+    
         <span class="sidebar-tag-name" data-tags="Life"><span class="iconfont-archer">&#xe606;</span>Life</span>
     
         <span class="sidebar-tag-name" data-tags="Diary"><span class="iconfont-archer">&#xe606;</span>Diary</span>
     
         <span class="sidebar-tag-name" data-tags="成长"><span class="iconfont-archer">&#xe606;</span>成长</span>
     
-        <span class="sidebar-tag-name" data-tags="Tech"><span class="iconfont-archer">&#xe606;</span>Tech</span>
-    
-        <span class="sidebar-tag-name" data-tags="RunLoop"><span class="iconfont-archer">&#xe606;</span>RunLoop</span>
+        <span class="sidebar-tag-name" data-tags="多线程"><span class="iconfont-archer">&#xe606;</span>多线程</span>
     
         <span class="sidebar-tag-name" data-tags="智能家居"><span class="iconfont-archer">&#xe606;</span>智能家居</span>
     
@@ -995,10 +1003,6 @@ Git用来提交本地的Hexo内容到Github上。电脑上如果已经装了Xcod
         <span class="sidebar-tag-name" data-tags="内存泄漏"><span class="iconfont-archer">&#xe606;</span>内存泄漏</span>
     
         <span class="sidebar-tag-name" data-tags="调试优化"><span class="iconfont-archer">&#xe606;</span>调试优化</span>
-    
-        <span class="sidebar-tag-name" data-tags="UITableView"><span class="iconfont-archer">&#xe606;</span>UITableView</span>
-    
-        <span class="sidebar-tag-name" data-tags="多线程"><span class="iconfont-archer">&#xe606;</span>多线程</span>
     
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
@@ -1033,11 +1037,11 @@ jsonContent:
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
+        <span class="sidebar-category-name" data-categories="iOS"><span class="iconfont-archer">&#xe60a;</span>iOS</span>
     
         <span class="sidebar-category-name" data-categories="Hexo"><span class="iconfont-archer">&#xe60a;</span>Hexo</span>
     
-        <span class="sidebar-category-name" data-categories="iOS"><span class="iconfont-archer">&#xe60a;</span>iOS</span>
+        <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
     
         <span class="sidebar-category-name" data-categories="Tech"><span class="iconfont-archer">&#xe60a;</span>Tech</span>
     

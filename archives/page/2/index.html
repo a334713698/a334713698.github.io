@@ -291,229 +291,33 @@
     
     
         <article class="index-post">
-            <a class="abstract-title" href = "/2018/11/30/iOS-UITableView-长按移动yiCell的位置/" >
+            <a class="abstract-title" href = "/2018/02/07/第一篇文章/" >
                 
-                    <span>iOS UITableView 长按移动yiCell的位置</span>
+                    <span>第一篇文章</span>
             </a>
-            <a class="abstract-title" href = "/2018/11/30/iOS-UITableView-长按移动yiCell的位置/" >
+            <a class="abstract-title" href = "/2018/02/07/第一篇文章/" >
                 <div class="abstract-content">
-                    实现思路：
-长按获取当前手指所在位置的indexPath
-通过indexPath获取对应cell，并生成快照
-移动。 3.1. 快照跟随手指移动 3.2. 当手指移动到其他cell的位置时，执行位置互换，和数据互换
-放开手指，移除快照
+                    捯饬了两天，终于把博客弄起来了，随便写点儿什么吧..通过看Hexo官网的文档，初步了解了Hexo建站的方式和一些常用的命令行另外参考了两名博主的文章，对本次建站都非常地有帮助，分别是：嘟嘟独立博客、与佳期的个人博客使用的theme来自Yilia (hexo-theme-yilia)可直接点击括号里的链接，前往主题所存的Github页面  
+2018年2月8日更换主题：来自Wee(hexo-theme-archer)  
+创建博客的初衷：  
+
+博客的存在，能够表达自己的情感；
+书写技术文章，督促自己对技术知识点的归纳、总结和理解；
+自主建站，非常酷。这也是当初选择编程这项实业的原因。
 
 
-实现步骤：准备：(UITableView)tableView，数据源(NSMutableArray)lists
-第一步：为tableView添加长按手势12UILongPressGestureRecognizer* longRec = [[UILongPressGestureRecognizer alloc] initWithTarget:self a...
                 </div>
             </a>
             <div class="abstract-post-meta">
                 <!-- date  -->
                 <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/11/30</span>
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/02/07</span>
                 </div>
                 <!-- tags  -->
                 
                 <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" data-tags = UITableView>UITableView</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/09/07/自定义UITableView左滑删除样式/" >
-                
-                    <span>自定义UITableView左滑删除样式</span>
-            </a>
-            <a class="abstract-title" href = "/2018/09/07/自定义UITableView左滑删除样式/" >
-                <div class="abstract-content">
-                    最近在做番茄钟的项目，其中涉及到任务列表的界面，希望实现左滑删除的功能。UITableViewDelegate自带简单的左滑删除的接口，通过实现canEditRowAtIndexPath方法打开tableView可编辑的开关，再实现editActionsForRowAtIndexPath方法处理事件，UITableViewRowAction的实例允许修改文字和背景色。实现效果如下：
-而我的需求是想把删除键做成一个垃圾桶图标。而系统没有直接可用的API，那就只能曲线救国了。
-首先，这个删除按钮在 iOS11 和 iOS11以下的系统中，所处的父级是不一样的。
-在iOS11以前删除按钮的父级...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/09/07</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = UITableView>UITableView</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" >
-                
-                    <span>使用Xcode的Instruments(Leaks)监测App的内存泄漏问题</span>
-            </a>
-            <a class="abstract-title" href = "/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" >
-                <div class="abstract-content">
-                    最近项目提交App Store审核，有些闲暇时间，打算用Instruments工具里的Leaks检查一下项目中存在的内存泄漏问题。
-一、准备工作1.edit scheme修改为测试环境将Profile中的Build Configuration选为Debug
-2.Debug Information Format设置调试运行的时候生成 dSYM文件（用于代码定位）
-Build Settings --&gt; Debug Information Format
-
-二、开始监测1.打开Instruments在Xcode的导航栏中找到Instruments。
-Xcode --&gt; Open De...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/06/20</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = Xcode>Xcode</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = Instruments>Instruments</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = Leaks>Leaks</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = 内存泄漏>内存泄漏</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = 调试优化>调试优化</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/03/04/RunLoop实践/" >
-                
-                    <span>RunLoop实践</span>
-            </a>
-            <a class="abstract-title" href = "/2018/03/04/RunLoop实践/" >
-                <div class="abstract-content">
-                    （一）RunLoop的用途1.常驻线程
-保证线程不死。
-一般来说执行完任务的线程会被销毁。而被strong强引用的线程执行完任务也会进入销亡状态，也无法使用了
-所以可以通过RunLoop使线程常驻
-RunLoop底层是一个死循环，但是它能监听到外部的事件
-注意：如果一个RunLoop不包含任何Timer、Source、Observer。就会自我销亡。
-子线程里的RunLoop启动需要满足两个条件
-RunLoop中有东西
-手动run（启动）
-启动RunLoop之前，最好用@autoreleasepool{}包住
-
-12345678910111213141516171819202122232...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/03/04</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = RunLoop>RunLoop</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/03/04/RunLoop理论/" >
-                
-                    <span>RunLoop理论</span>
-            </a>
-            <a class="abstract-title" href = "/2018/03/04/RunLoop理论/" >
-                <div class="abstract-content">
-                    （一）概念
-运行循环
-保持程序持续运行
-处理app的各种事件（比如触摸事件、定时器事件、Selector事件）
-
-1.RunLoop与线程
-每条线程都有唯一的与之对应的RunLoop对象
-主线程的RunLoop是自动创建好的，子线程的RunLoop需要手动创建
-RunLoop在第一次获取时创建，在线程结束时销毁。而如果该RunLoop不包含任何Timer、Source、Observer，它就会自我销亡
-
-（二）RunLoop相关类
-在 CoreFoundation 里面关于 RunLoop 有5个类:
-CFRunLoopRef
-CFRunLoopModeRef
-CFRunLoopSour...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/03/04</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = RunLoop>RunLoop</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/03/03/多线程的理解——队列与执行方式/" >
-                
-                    <span>多线程的理解——队列与执行方式</span>
-            </a>
-            <a class="abstract-title" href = "/2018/03/03/多线程的理解——队列与执行方式/" >
-                <div class="abstract-content">
-                    多线程的理解——队列与执行方式
-1.队列类型
-串行队列：顺序执行，一次执行一个任务。依次从队列中取出一个任务执行，必须一个任务执行完了，才能从队列里面取出下一个任务。
-并行队列：任务是按照加入到队列中的顺序开始执行，但任务完成时的顺序是不确定的。
-主队列：主线程中的串行队列（系统默认创建）。
-全局队列：是全局的并行队列（系统默认创建。几乎等效于并行队列）。
-
-2.执行方式
-同步执行sync：不开新线程
-异步执行async：开辟新线程
-
-3.队列与执行方式
-串行队列同步执行：不开线程，在原来线程里面一个一个顺序执行
-串行队列异步执行：开一条线程，在这个新线程里面一个一个顺序执行
-并行队列同...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/03/03</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = 多线程>多线程</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags = Life>Life</a>
     
 </div>
                 
@@ -521,6 +325,10 @@ CFRunLoopSour...
         </article>
     
     <!-- paginator  -->
+    
+    <nav class="page-nav">
+        <a class="extend prev" rel="prev" href="/archives/">&#60; PREV</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span>
+    </nav>
     
 </main>
 
