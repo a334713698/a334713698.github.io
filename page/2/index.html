@@ -1,920 +1,465 @@
 <!DOCTYPE html>
-<html>
-    <!-- title -->
-
-
-
-
+<html lang="en">
 
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
-    <title>DJ Hong&#39;s BLOG</title>
-    <style type="text/css">
-    @font-face {
-        font-family: 'Oswald-Regular';
-        src: url("/font/Oswald-Regular.ttf");
-    }
-
-    body {
-        margin: 0;
-    }
-
-    header,
-    footer,
-    .back-top,
-    .sidebar,
-    .container,
-    .site-intro-meta,
-    .toc-wrapper {
-        display: none;
-    }
-
-    .site-intro {
-        position: relative;
-        z-index: 3;
-        width: 100%;
-        height: 50vh;
-        overflow: hidden;
-        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.7);
-    }
-
-    .site-intro-placeholder {
-        position: absolute;
-        z-index: -2;
-        top: 0;
-        left: 0;
-        width: calc(100% + 300px);
-        height: 100%;
-        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
-        background-position: center center;
-        transform: translate3d(-226px, 0, 0);
-        animation: gradient-move 2.5s ease-out 0s 1;
-    }
-
-    @keyframes gradient-move {
-        0% {
-            transform: translate3d(-226px, 0, 0);
-        }
-        100% {
-            transform: translate3d(0, 0, 0);
-        }
-    }
-
-</style>
-
-    <link rel="preload" href= /css/style.css?v=20180204 as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="stylesheet" type="text/css" href= /css/mobile.css?v=20180204 media="(max-width: 980px)"/>
-    <link rel="icon" href= /assets/favicon.ico>
-    <script>
-  // load webfont-loader async, and add callback function
-  function async(u, c) {
-    var d = document, t = 'script',
-      o = d.createElement(t),
-      s = d.getElementsByTagName(t)[0];
-    o.src = u;
-    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-    s.parentNode.insertBefore(o, s);
-  }
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="iOS coder,Machine-learning,DJ Hong的个人博客" />
   
-  // get user agent
-  var browser = {
-    versions: function () {
-      var u = window.navigator.userAgent;
-      return {
-        userAgent: u,
-        trident: u.indexOf('Trident') > -1, //IE内核
-        presto: u.indexOf('Presto') > -1, //opera内核
-        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
-        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
-        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
-        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
-        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
-        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
-        iPad: u.indexOf('iPad') > -1, //是否为iPad
-        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
-        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
-        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
-      };
-    }()
-  }
-  console.log("userAgent:" + browser.versions.userAgent);
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+     GG266
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.jpg" />
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/pace.min.js"></script>
 
-  // callback
-  function fontLoaded() {
-    console.log('font loaded');
-    if (document.getElementsByClassName('site-intro-meta')) {
-      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
-      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
-      var postIntroTags = document.getElementsByClassName('post-intro-tags')[0],
-        postIntroMeat = document.getElementsByClassName('post-intro-meta')[0];
-      if (postIntroTags) {
-        postIntroTags.classList.add('post-fade-in');
-      }
-      if (postIntroMeat) {
-        postIntroMeat.classList.add('post-fade-in');
-      }
-    }
-  }
+  
 
-  // UC不支持跨域，所以直接显示
-  function asyncCb(){
-    if (browser.versions.uc) {
-      console.log("UCBrowser");
-      fontLoaded();
-    } else {
-      WebFont.load({
-        custom: {
-          families: ['Oswald-Regular']
-        },
-        loading: function () {  //所有字体开始加载
-          // console.log('loading');
-        },
-        active: function () {  //所有字体已渲染
-          fontLoaded();
-        },
-        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
-          console.log('inactive: timeout');
-          fontLoaded();
-        },
-        timeout: 5000 // Set the timeout to two seconds
-      });
-    }
-  }
+  
 
-  async("https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", asyncCb)
-</script>
-    <script>
-        (function (w) {
-            "use strict";
-            // rel=preload support test
-            if (!w.loadCSS) {
-                w.loadCSS = function () { };
-            }
-            // define on the loadCSS obj
-            var rp = loadCSS.relpreload = {};
-            // rel=preload feature support test
-            // runs once and returns a function for compat purposes
-            rp.support = (function () {
-                var ret;
-                try {
-                    ret = w.document.createElement("link").relList.supports("preload");
-                } catch (e) {
-                    ret = false;
-                }
-                return function () {
-                    return ret;
-                };
-            })();
-
-            // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
-            // then change that media back to its intended value on load
-            rp.bindMediaToggle = function (link) {
-                // remember existing media attr for ultimate state, or default to 'all'
-                var finalMedia = link.media || "all";
-
-                function enableStylesheet() {
-                    link.media = finalMedia;
-                }
-
-                // bind load handlers to enable media
-                if (link.addEventListener) {
-                    link.addEventListener("load", enableStylesheet);
-                } else if (link.attachEvent) {
-                    link.attachEvent("onload", enableStylesheet);
-                }
-
-                // Set rel and non-applicable media type to start an async request
-                // note: timeout allows this to happen async to let rendering continue in IE
-                setTimeout(function () {
-                    link.rel = "stylesheet";
-                    link.media = "only x";
-                });
-                // also enable media after 3 seconds,
-                // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
-                setTimeout(enableStylesheet, 3000);
-            };
-
-            // loop through link elements in DOM
-            rp.poly = function () {
-                // double check this to prevent external calls from running
-                if (rp.support()) {
-                    return;
-                }
-                var links = w.document.getElementsByTagName("link");
-                for (var i = 0; i < links.length; i++) {
-                    var link = links[i];
-                    // qualify links to those with rel=preload and as=style attrs
-                    if (link.rel === "preload" && link.getAttribute("as") === "style" && !link.getAttribute("data-loadcss")) {
-                        // prevent rerunning on link
-                        link.setAttribute("data-loadcss", true);
-                        // bind listeners to toggle media back
-                        rp.bindMediaToggle(link);
-                    }
-                }
-            };
-
-            // if unsupported, run the polyfill
-            if (!rp.support()) {
-                // run once at least
-                rp.poly();
-
-                // rerun poly on an interval until onload
-                var run = w.setInterval(rp.poly, 500);
-                if (w.addEventListener) {
-                    w.addEventListener("load", function () {
-                        rp.poly();
-                        w.clearInterval(run);
-                    });
-                } else if (w.attachEvent) {
-                    w.attachEvent("onload", function () {
-                        rp.poly();
-                        w.clearInterval(run);
-                    });
-                }
-            }
-            // commonjs
-            if (typeof exports !== "undefined") {
-                exports.loadCSS = loadCSS;
-            }
-            else {
-                w.loadCSS = loadCSS;
-            }
-        }(typeof global !== "undefined" ? global : this));
-    </script>
-    <script src="//cdn.staticfile.org/jquery/3.2.1/jquery.min.js" defer></script>
-    
-    <script src="/scripts/main.js" defer></script>
-    <!-- 百度统计  -->
-    
-    <!-- 谷歌统计  -->
-    
 </head>
 
-    
-        <body class="home-body">
-    
-    
-<header class="header index-header">
+</html>
 
-    <div class="read-progress"></div>
-    <div class="header-sidebar-menu">&#xe775;</div>
-    <!-- post页的toggle banner  -->
+<body>
+  <div id="app">
+    <main class="content">
+      
+<section class="cover">
     
-    <a class="home-link" href=/>DJ Hong's BLOG</a>
-</header>
-    <div class="wrapper">
-        <div class="site-intro">
+      
+      <a class="forkMe" href="https://github.com/a334713698"
+        target="_blank"><img width="149" height="149" src="/images/forkme.png"
+          class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
     
-    <!-- 主页  -->
-    
-    
-    <!-- 文章页  -->
-            
-    <div class="site-intro-img" style="background-image: url(/intro/index-bg.jpg)"></div>
-    <div class="site-intro-placeholder"></div>
-    <div class="site-intro-meta">
-        <!-- 标题  -->
-        <h1 class="intro-title">
-            <!-- 主页  -->
-            
-            DJ Hong's BLOG
-            <!-- 文章页  -->
-            
-        </h1>
-        <!-- 副标题 -->
-        <p class="intro-subtitle">
-            <!-- 主页副标题  -->
-            
-            
-                GG266
-            
-            <!-- 文章页  -->
-            
-        </p>
-        <!-- 文章页meta -->
-        
+  <div class="cover-frame">
+    <div class="bg-box">
+      <img src="/images/cover9.jpg" alt="image frame" />
     </div>
-</div>
-        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
-
-        <div class="container container-unloaded">
-            <main class="main index-page">
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/02/12/智能家居场景设想/" >
-                
-                    <span>智能家居场景设想</span>
-            </a>
-            <a class="abstract-title" href = "/2018/02/12/智能家居场景设想/" >
-                <div class="abstract-content">
-                    新家还在装修中，总体格局是一个上下135平米左右的复式房个人非常喜欢“科技改变生活”这句话近两年智能家居已经不仅仅是概念性的名词BAT、京东、苏宁、小米、苹果、谷歌、微软、亚马逊各大科技巨头厂商都已设下布局而我的目光就首先锁定了为“发烧而生”的小米身上。这两年，小米推出的商品可以说能够涉及到我们生活的各个场景。作为科技厂商，智能家居产品，也是“顺理成章”地出现在小米商城的货架上。我收集整理了一下，“米家有品”里成列的和智能家居有关，而我可能会用得到的产品，详情在另一篇博文中可见：《小米智能家居设备清单（自用版）》当然，我也不是完全跪舔米家的产品（因为没收钱呐）！看过产品下面的评论后，我觉...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/02/12</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = 智能家居>智能家居</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/02/09/小米智能家居设备清单（自用版）/" >
-                
-                    <span>小米智能家居设备清单（自制自用版）</span>
-            </a>
-            <a class="abstract-title" href = "/2018/02/09/小米智能家居设备清单（自用版）/" >
-                <div class="abstract-content">
-                    小米AI音响
-小AI同学
-
-家电
-空气净化器   – &nbsp; 型号待定
-净水器   – &nbsp; 厨下式（首选）   – &nbsp; 厨上式
-生活电器   – &nbsp; 扫地机器人
-
-智能
-智能家居套装  – &nbsp; Aqara智能卧室套装￼  – &nbsp; 米家智能家庭礼品装￼  – &nbsp; 米家智能看护套装￼  – &nbsp; 米家智能温控套装￼
-安防  – &nbsp; 米家门窗传感器  – &nbsp; 天然气报警器
-网关/传感器  – &nbsp; Aqara窗帘电机  – &nbsp; 温湿度计（有无屏幕）  – &nbsp; 米家多功能网关...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/02/09</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = 智能家居>智能家居</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" >
-                
-                    <span>Mac上搭建基于GitHub的Hexo博客</span>
-            </a>
-            <a class="abstract-title" href = "/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" >
-                <div class="abstract-content">
-                    2017农历的最后几天，项目都完成得差不多了。想着建立一个自己的博客，花了两天时间，在网上搜索各种资料，总算是把个人博客建起来了。过程就是不断试错，是在进行不下去了，就推翻重来。本人是一枚iOS coder，工作机是一台Mac，所以就讲讲在macOS系统上如何基于Hexo+Github创建个人博客。文章开始前，需要提醒一下，文中出现的$符号，在终端中都是不需要输入或粘贴的。
-环境配置Node.js用来生成静态页面。可直接在Node.js官网，下载镜像安装。
-Git用来提交本地的Hexo内容到Github上。电脑上如果已经装了Xcode，可不比进行本步骤，因为Xcode自带git。如果没有...
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/02/08</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = Tech>Tech</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    
-    
-        <article class="index-post">
-            <a class="abstract-title" href = "/2018/02/07/第一篇文章/" >
-                
-                    <span>第一篇文章</span>
-            </a>
-            <a class="abstract-title" href = "/2018/02/07/第一篇文章/" >
-                <div class="abstract-content">
-                    捯饬了两天，终于把博客弄起来了，随便写点儿什么吧..通过看Hexo官网的文档，初步了解了Hexo建站的方式和一些常用的命令行另外参考了两名博主的文章，对本次建站都非常地有帮助，分别是：嘟嘟独立博客、与佳期的个人博客使用的theme来自Yilia (hexo-theme-yilia)可直接点击括号里的链接，前往主题所存的Github页面  
-2018年2月8日更换主题：来自Wee(hexo-theme-archer)  
-创建博客的初衷：  
-
-博客的存在，能够表达自己的情感；
-书写技术文章，督促自己对技术知识点的归纳、总结和理解；
-自主建站，非常酷。这也是当初选择编程这项实业的原因。
-
-
-                </div>
-            </a>
-            <div class="abstract-post-meta">
-                <!-- date  -->
-                <div class="abstract-date">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/02/07</span>
-                </div>
-                <!-- tags  -->
-                
-                <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags = Life>Life</a>
-    
-</div>
-                
-            </div>
-        </article>
-    
-    <!-- paginator  -->
-    
-    <nav class="page-nav">
-        <a class="extend prev" rel="prev" href="/">&#60; PREV</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
-    </nav>
-    
-</main>
-
-            <!-- profile -->
-            
-            <div class="profile">
-    <img class="profile-avatar" src= /avatar/avatar.jpg >
-    <div class="profile-name">DJ Hong</div>
-    
-    <div class="profile-signature">
-        An iOS coder
-    </div>
-    
-    
-    <div class="profile-social">
+    <div class="cover-inner text-center text-white">
+      <h1><a href="/">GG266</a></h1>
+      <h2>DJ Hong的个人博客</h2>
+      <div>
         
-    
-        
-    
-        
-            
-                <a href="https://github.com/a334713698" class="iconfont-archer github" target="_blank" title="github"></a>
-            
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-
-    </div>
-    
-    
-        <div class="friends">
-            <div>FRIENDS</div>
-            
-                <span>
-                    <a href= http://zeinber.top/ target="_black">Zeinber</a>
-                </span>
-            
-        </div>
-    
-    
-        <div class="about-me">
-            <a href = "/about" >ABOUT ME</a>
-        </div>
-    
-</div>
-            
-        </div>
-        <footer class="footer footer-unloaded">
-    <!-- social  -->
-    
-    <div class="social">
-        
-    
-        
-    
-        
-            
-                <a href="https://github.com/a334713698" class="iconfont-archer github" target="_blank" title="github"></a>
-            
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-        
-    
-
-    </div>
-    
-    <!-- powered by Hexo  -->
-    <div class="copyright">
-        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
-    </div>
-    <!-- 不蒜子  -->
-    
-    <div class="busuanzi-container">
-        <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span>
-        &nbsp&nbsp&nbsp
-        UV:<span id="busuanzi_value_site_uv"></span>
-        </span>
-    </div>
-    
-    <div style="width:300px;margin:0 auto; padding:20px 0;">
-      <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010902002204" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">
-        <img src="assets/icpicon.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">浙公网安备 33010902002204号</p>
-      </a>
-    </div>
-
-</footer>
-
-    </div>
-    <!-- toc -->
-    
-    <div class="back-top iconfont-archer">&#xe639;</div>
-    <div class="sidebar sidebar-hide">
-    <ul class="sidebar-tabs sidebar-tabs-active-0">
-        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
-        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
-        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
-    </ul>
-    <div class="sidebar-content sidebar-content-show-archive">
-          <div class="sidebar-panel-archives">
-    <!-- 在ejs中将archive按照时间排序 -->
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <div class="total-archive"> Total : 14 </div>
-    
-    <div class="post-archive">
-    
-    
-    
-    
-    <div class="archive-year"> 2020 </div>
-    <ul class="year-list">
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">01/08</span><a class="archive-post-title" href= "/2020/01/08/2019年年终工作总结/" >2019年年终工作总结</a>
-        </li>
-    
-    
-    
-    
-    
-        </ul>
-    
-    <div class="archive-year"> 2019 </div>
-    <ul class="year-list">
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">08/26</span><a class="archive-post-title" href= "/2019/08/26/2019年8月读书心得/" >2019年8月读书心得</a>
-        </li>
-    
-    
-    
-    
-    
-        </ul>
-    
-    <div class="archive-year"> 2018 </div>
-    <ul class="year-list">
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">12/25</span><a class="archive-post-title" href= "/2018/12/25/iOS源码阅读——YYWebImage/" >iOS源码阅读——YYWebImage</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/2018/11/30/iOS-UITableView-长按移动Cell的位置/" >iOS UITableView 长按移动Cell的位置</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/07</span><a class="archive-post-title" href= "/2018/09/07/自定义UITableView左滑删除样式/" >自定义UITableView左滑删除样式</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/05</span><a class="archive-post-title" href= "/2018/09/05/Diary/" >Diary</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">06/20</span><a class="archive-post-title" href= "/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" >使用Xcode的Instruments(Leaks)监测App的内存泄漏问题</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">03/04</span><a class="archive-post-title" href= "/2018/03/04/RunLoop实践/" >RunLoop实践</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">03/04</span><a class="archive-post-title" href= "/2018/03/04/RunLoop理论/" >RunLoop理论</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">03/03</span><a class="archive-post-title" href= "/2018/03/03/多线程的理解——队列与执行方式/" >多线程的理解——队列与执行方式</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/12</span><a class="archive-post-title" href= "/2018/02/12/智能家居场景设想/" >智能家居场景设想</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/09</span><a class="archive-post-title" href= "/2018/02/09/小米智能家居设备清单（自用版）/" >小米智能家居设备清单（自制自用版）</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/08</span><a class="archive-post-title" href= "/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" >Mac上搭建基于GitHub的Hexo博客</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">02/07</span><a class="archive-post-title" href= "/2018/02/07/第一篇文章/" >第一篇文章</a>
-        </li>
-    
+      </div>
     </div>
   </div>
-        <div class="sidebar-panel-tags">
-    <div class="sidebar-tags-name">
+  <div class="cover-learn-more">
+    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
+  </div>
+</section>
+
+<div id="main">
+  <section class="outer">
+  <article class="articles">
     
-        <span class="sidebar-tag-name" data-tags="读书心得"><span class="iconfont-archer">&#xe606;</span>读书心得</span>
     
-        <span class="sidebar-tag-name" data-tags="Life"><span class="iconfont-archer">&#xe606;</span>Life</span>
     
-        <span class="sidebar-tag-name" data-tags="Diary"><span class="iconfont-archer">&#xe606;</span>Diary</span>
     
-        <span class="sidebar-tag-name" data-tags="成长"><span class="iconfont-archer">&#xe606;</span>成长</span>
+    <article id="post-小米智能家居设备清单（自用版）" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
     
-        <span class="sidebar-tag-name" data-tags="Tech"><span class="iconfont-archer">&#xe606;</span>Tech</span>
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/02/09/小米智能家居设备清单（自用版）/"
+    >小米智能家居设备清单（自制自用版）</a
+  >
+</h2>
+  
+
+    </header>
     
-        <span class="sidebar-tag-name" data-tags="RunLoop"><span class="iconfont-archer">&#xe606;</span>RunLoop</span>
+
     
-        <span class="sidebar-tag-name" data-tags="UITableView"><span class="iconfont-archer">&#xe606;</span>UITableView</span>
-    
-        <span class="sidebar-tag-name" data-tags="源码阅读"><span class="iconfont-archer">&#xe606;</span>源码阅读</span>
-    
-        <span class="sidebar-tag-name" data-tags="YYWebImage"><span class="iconfont-archer">&#xe606;</span>YYWebImage</span>
-    
-        <span class="sidebar-tag-name" data-tags="Xcode"><span class="iconfont-archer">&#xe606;</span>Xcode</span>
-    
-        <span class="sidebar-tag-name" data-tags="Instruments"><span class="iconfont-archer">&#xe606;</span>Instruments</span>
-    
-        <span class="sidebar-tag-name" data-tags="Leaks"><span class="iconfont-archer">&#xe606;</span>Leaks</span>
-    
-        <span class="sidebar-tag-name" data-tags="内存泄漏"><span class="iconfont-archer">&#xe606;</span>内存泄漏</span>
-    
-        <span class="sidebar-tag-name" data-tags="调试优化"><span class="iconfont-archer">&#xe606;</span>调试优化</span>
-    
-        <span class="sidebar-tag-name" data-tags="多线程"><span class="iconfont-archer">&#xe606;</span>多线程</span>
-    
-        <span class="sidebar-tag-name" data-tags="智能家居"><span class="iconfont-archer">&#xe606;</span>智能家居</span>
-    
-        <span class="sidebar-tag-name" data-tags="Work"><span class="iconfont-archer">&#xe606;</span>Work</span>
-    
+    <div class="article-meta">
+      <a href="/2018/02/09/小米智能家居设备清单（自用版）/" class="article-date">
+  <time datetime="2018-02-09T01:50:25.000Z" itemprop="datePublished">2018-02-09</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Tech/">Tech</a>
+  </div>
+
+      
+      
+      
     </div>
-    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
-    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
-    缺失模块。<br/>
-    1、请确保node版本大于6.2<br/>
-    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
-    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
-    3、在根目录_config.yml里添加配置：
-    <pre style="color: #787878; font-size: 0.6rem;">
-jsonContent:
-  meta: false
-  pages: false
-  posts:
-    title: true
-    date: true
-    path: true
-    text: false
-    raw: false
-    content: false
-    slug: false
-    updated: false
-    comments: false
-    link: false
-    permalink: false
-    excerpt: false
-    categories: true
-    tags: true</pre>
-    </div> 
-    <div class="sidebar-tags-list"></div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h3 id="小米AI音响"><a href="#小米AI音响" class="headerlink" title="小米AI音响"></a>小米AI音响</h3><ul>
+<li>小AI同学</li>
+</ul>
+<h3 id="家电"><a href="#家电" class="headerlink" title="家电"></a>家电</h3><ul>
+<li>空气净化器<br>   – &nbsp; 型号待定</li>
+<li>净水器<br>   – &nbsp; 厨下式（首选）<br>   – &nbsp; 厨上式</li>
+<li>生活电器<br>   – &nbsp; 扫地机器人</li>
+</ul>
+<h3 id="智能"><a href="#智能" class="headerlink" title="智能"></a>智能</h3><ul>
+<li>智能家居套装<br>  – &nbsp; Aqara智能卧室套装<br>￼<img src="https://tva1.sinaimg.cn/large/006tNbRwly1gaypypp12vj30u00ycae1.jpg" alt="Aqara智能卧室套装"><br>  – &nbsp; 米家智能家庭礼品装<br>￼<img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayq0hqhz1j30u00xodkr.jpg" alt="米家智能家庭礼品装"><br>  – &nbsp; 米家智能看护套装<br>￼<img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayq12u5ggj30w80t80vn.jpg" alt="米家智能看护套装"><br>  – &nbsp; 米家智能温控套装<br>￼<img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayq12o7h6j30uu0u0q4w.jpg" alt="    米家智能温控套装"></li>
+<li>安防<br>  – &nbsp; 米家门窗传感器<br>  – &nbsp; 天然气报警器</li>
+<li>网关/传感器<br>  – &nbsp; Aqara窗帘电机<br>  – &nbsp; 温湿度计（有无屏幕）<br>  – &nbsp; 米家多功能网关<br>  – &nbsp; 人体传感器（米家、Aqara）<br>  – &nbsp; 小米万能遥控器</li>
+<li>开关插座<br>  – &nbsp; 智能（墙壁）插座<br>  – &nbsp; 智能（无线）开关</li>
+</ul>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ck5gtie77000py3bumvpo6k88"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-Mac上搭建基于GitHub的Hexo博客" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/02/08/Mac上搭建基于GitHub的Hexo博客/"
+    >Mac上搭建基于GitHub的Hexo博客</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" class="article-date">
+  <time datetime="2018-02-08T06:32:18.000Z" itemprop="datePublished">2018-02-08</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>2017农历的最后几天，项目都完成得差不多了。想着建立一个自己的博客，花了两天时间，在网上搜索各种资料，总算是把个人博客建起来了。过程就是不断试错，是在进行不下去了，就推翻重来。本人是一枚iOS coder，工作机是一台Mac，所以就讲讲在macOS系统上如何基于<a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo</a>+<a href="https://github.com/" target="_blank" rel="noopener">Github</a>创建个人博客。文章开始前，需要提醒一下，文中出现的<code>$</code>符号，在终端中都是不需要输入或粘贴的。</p>
+<h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><h3 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h3><p>用来生成静态页面。可直接在<a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js官网</a>，下载镜像安装。</p>
+<h3 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h3><p>用来提交本地的Hexo内容到Github上。<br>电脑上如果已经装了Xcode，可不比进行本步骤，因为Xcode自带git。<br>如果没有Xcode，可以使用 <a href="https://brew.sh/" target="_blank" rel="noopener">Homebrew</a>, <a href="https://www.macports.org/" target="_blank" rel="noopener">MacPorts</a> ：brew install git;或下载 <a href="https://sourceforge.net/projects/git-osx-installer/" target="_blank" rel="noopener">安装程序</a> 安装<br>如果不是iOS开发者，其实真的没必要为了建站下一个好几G的Xcode</p>
+<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>所有必备的应用程序安装完成后，即可使用 npm 安装 Hexo。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install -g hexo-cli</span><br></pre></td></tr></table></figure></p>
+<p>这里如果报错，可以尝试sudo命令。输入管理员密码（Mac登录密码）即开始安装。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> sudo npm install -g hexo-cli</span><br></pre></td></tr></table></figure></p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>终端cd到一个你选定的目录（Mac支持直接将文件或文件夹拖入终端，直接显示路径），然后执行<code>hexo init</code>命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo init blogName</span><br></pre></td></tr></table></figure></p>
+<p>这里需要提一下，如果需要把博客的根目录文件夹建在桌面上：cd到桌面，然后执行<code>hexo init blogName</code>命令即可。系统会创建blogName这个目录在桌面上。<br>下一步，cd到<code>blogName</code>，执行安装命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install</span><br></pre></td></tr></table></figure></p>
+<p>安装完毕后，指定文件夹的目录如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds</span><br><span class="line">├── source</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts</span><br><span class="line">└── themes</span><br></pre></td></tr></table></figure></p>
+<p>此时，可开启hexo服务器<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo server</span><br><span class="line">简写：</span><br><span class="line"><span class="meta">$</span> hexo s</span><br></pre></td></tr></table></figure></p>
+<p>服务器成功开启。系统会提示<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INFO  Start processing</span><br><span class="line">INFO  Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
+<p>此时，在可以在浏览器中输入<code>http://localhost:4000/</code> 或 <code>127.0.0.1:4000</code> ，如果出现了下图页面，就说明已获得“阶段性”的成功。<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gaypwewni6j31dq0u0b29.jpg" alt="hexo_default_page"></p>
+<h2 id="关联Github"><a href="#关联Github" class="headerlink" title="关联Github"></a>关联Github</h2><h3 id="新建仓库"><a href="#新建仓库" class="headerlink" title="新建仓库"></a>新建仓库</h3><p>在自己的GitHub账户上创建一个新的仓库（repository）<br>命名规则为：<code>你的用户名.github.io</code>，如<code>a334713698.github.io</code></p>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>在blogName文件中，找到名为<code>_config.yml</code>的文件，使用任意文本编辑器打开此文件。<br>找到如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https://hexo.io/docs/deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type:</span><br></pre></td></tr></table></figure></p>
+<p>可通过键盘<code>command+F</code>，调起编辑器的搜索功能，查找“deploy”字段<br>并将内容填充为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: https://github.com/a334713698/a334713698.github.io.git</span><br></pre></td></tr></table></figure></p>
+<p>注意：<code>repository:</code>后填写的应该是自己的创建的仓库地址。</p>
+<h3 id="生成静态页面"><a href="#生成静态页面" class="headerlink" title="生成静态页面"></a>生成静态页面</h3><p>此时应保证自己在blogName根目录下。如果不在指定目录，在终端上输入cd ，再直接将指定文件夹拖进终端，即可获取文件夹路径，按下回车，进入指定目录下。<br>接着执行<code>generate</code>命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo generate</span><br><span class="line">简写：</span><br><span class="line"><span class="meta">$</span> hexo g</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">若出现如下报错：</span><br><span class="line">ERROR Local hexo not found in ~/blog</span><br><span class="line">ERROR Try runing: &apos;npm install hexo --save&apos;</span><br><span class="line"></span><br><span class="line">则执行命令：</span><br><span class="line">$ npm install hexo --save</span><br><span class="line"></span><br><span class="line">若无报错，自行忽略此步骤。</span><br></pre></td></tr></table></figure>
+<h3 id="部署网页到git上"><a href="#部署网页到git上" class="headerlink" title="部署网页到git上"></a>部署网页到git上</h3><p>执行部署的命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo deploy</span><br><span class="line">简写：</span><br><span class="line"><span class="meta">$</span> hexo d</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">若执行命令hexo deploy仍然报错：</span><br><span class="line">无法连接git或找不到git</span><br><span class="line"></span><br><span class="line">则执行命令：</span><br><span class="line">$ npm install hexo-deployer-git --save  </span><br><span class="line"></span><br><span class="line">然后再次执行</span><br><span class="line">$ hexo generate //生成静态页面</span><br><span class="line">$ hexo deploy   //部署到git</span><br><span class="line"></span><br><span class="line">tip：静态页面生成和部署两个步骤可以合并写成：</span><br><span class="line">$ hexo g -d</span><br></pre></td></tr></table></figure>
+<p>若未关联过Github，则执行hexo deploy命令时终端会提示你输入Github的用户名和密码，正确填写GitHub的账号密码即可。<br><code>hexo deploy</code>部署成功后，浏览器中打开网址 <a href="http://a334713698.github.io" target="_blank" rel="noopener">http://a334713698.github.io</a> （将a334713698换成自己的用户名）也能看到博客的主页。</p>
+<h3 id="添加ssh-key到Github"><a href="#添加ssh-key到Github" class="headerlink" title="添加ssh key到Github"></a>添加ssh key到Github</h3><h4 id="检查SSH-keys是否存在Github"><a href="#检查SSH-keys是否存在Github" class="headerlink" title="检查SSH keys是否存在Github"></a>检查SSH keys是否存在Github</h4><p>执行如下命令，检查SSH keys是否存在。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> ls -al ~/.ssh</span><br></pre></td></tr></table></figure></p>
+<p>如果有文件<code>id_rsa.pub</code> 或 <code>id_dsa.pub</code>，则直接进入<code>将SSH key添加到Github中</code>的步骤，否则进入下一步生成SSH key。</p>
+<h4 id="生成新的ssh-key"><a href="#生成新的ssh-key" class="headerlink" title="生成新的ssh key"></a>生成新的ssh key</h4><p>执行如下命令生成public/private rsa key pair，注意将your_email@example.com换成你自己注册Github的邮箱地址。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> ssh-keygen -t rsa -C "your_email@example.com"</span><br></pre></td></tr></table></figure></p>
+<p>默认会在相应路径下（~/.ssh/id_rsa.pub）生成id_rsa和id_rsa.pub两个文件。</p>
+<h4 id="将ssh-key添加到Github中"><a href="#将ssh-key添加到Github中" class="headerlink" title="将ssh key添加到Github中"></a>将ssh key添加到Github中</h4><p>Finder（访达）前往<code>~/.ssh/id_rsa.pub</code>打开id_rsa.pub文件，里面的信息即为SSH key，将这些信息复制到Github的Add SSH key页面即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">进入Github –&gt; Settings –&gt; SSH and GPG keys –&gt; add SSH key</span><br></pre></td></tr></table></figure></p>
+<p>Title任意填（也可不填，我就没填），粘贴内容要从头部的<code>ssh-rsa</code>开始粘，将复制的内容粘贴到Key里，点击下方<code>Add key</code>完成设置。</p>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>到这里，建站工作基本搞定。接下去，就可以发布文章，更换主题了。<br>本文大部分内容都参考于<a href="http://gonghonglou.com/" target="_blank" rel="noopener">与佳期的个人博客</a> 的 <a href="http://gonghonglou.com/2016/02/03/firstblog/" target="_blank" rel="noopener">《Mac上搭建基于GitHub的Hexo博客<br>述》</a>一文。文中还涉及文章发布，域名绑定，主题更换等内容，都非常有帮助。</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ck5gtie6q0005y3bumb0279o4"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/">Tech</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-第一篇文章" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/02/07/第一篇文章/"
+    >第一篇文章</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/02/07/第一篇文章/" class="article-date">
+  <time datetime="2018-02-07T08:19:21.000Z" itemprop="datePublished">2018-02-07</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/随笔/">随笔</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>捯饬了两天，终于把博客弄起来了，随便写点儿什么吧..<br>通过看<a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo官网</a>的文档，初步了解了Hexo建站的方式和一些常用的命令行<br>另外参考了两名博主的文章，对本次建站都非常地有帮助，分别是：<a href="http://tengj.top/tags/hexo/" target="_blank" rel="noopener">嘟嘟独立博客</a>、<a href="http://gonghonglou.com/2016/02/03/firstblog/" target="_blank" rel="noopener">与佳期的个人博客</a><br>使用的theme来自Yilia (<a href="https://github.com/litten/hexo-theme-yilia" target="_blank" rel="noopener">hexo-theme-yilia</a>)可直接点击括号里的链接，前往主题所存的Github页面  </p>
+<p>2018年2月8日<br>更换主题：来自Wee(<a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank" rel="noopener">hexo-theme-archer</a>)  </p>
+<p>创建博客的初衷：  </p>
+<ul>
+<li>博客的存在，能够表达自己的情感；</li>
+<li>书写技术文章，督促自己对技术知识点的归纳、总结和理解；</li>
+<li>自主建站，非常酷。这也是当初选择编程这项实业的原因。</li>
+</ul>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ck5gtie78000ty3buddtcj50d"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+  </article>
+  
+
+  
+  <nav class="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
+  
+</section>
 </div>
-        <div class="sidebar-panel-categories">
-    <div class="sidebar-categories-name">
-    
-        <span class="sidebar-category-name" data-categories="阅读"><span class="iconfont-archer">&#xe60a;</span>阅读</span>
-    
-        <span class="sidebar-category-name" data-categories="随记"><span class="iconfont-archer">&#xe60a;</span>随记</span>
-    
-        <span class="sidebar-category-name" data-categories="Hexo"><span class="iconfont-archer">&#xe60a;</span>Hexo</span>
-    
-        <span class="sidebar-category-name" data-categories="iOS"><span class="iconfont-archer">&#xe60a;</span>iOS</span>
-    
-        <span class="sidebar-category-name" data-categories="Tech"><span class="iconfont-archer">&#xe60a;</span>Tech</span>
-    
-        <span class="sidebar-category-name" data-categories="随笔"><span class="iconfont-archer">&#xe60a;</span>随笔</span>
-    
-    </div>
-    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
-    <div class="sidebar-categories-list"></div>
+
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2018-2020
+        GG266
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
 </div>
+      </div>
+    </main>
+    
+      <aside class="sidebar">
+        
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/avatar.svg" alt="GG266"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
     </div>
-</div> 
-    <script>
-    var siteMeta = {
-        root: '/'
-    }
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
 </script>
-    <!-- 不蒜子  -->
-    
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    
-    <!-- CNZZ统计  -->
-    
-    </div>
-    </body>
+
+<script src="/js/ayer.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  
+  
+
+  </div>
+</body>
+
 </html>
