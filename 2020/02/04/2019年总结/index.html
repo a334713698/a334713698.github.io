@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    使用Xcode的Instruments(Leaks)监测App的内存泄漏问题 |  GG266的个人博客
+    2019年总结 |  GG266的个人博客
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -29,7 +29,7 @@
   <div id="app">
     <main class="content">
       <section class="outer">
-  <article id="post-使用Xcode的Instruments-Leaks-监测App的内存泄漏问题" class="article article-type-post" itemscope
+  <article id="post-2019年总结" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -37,7 +37,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  使用Xcode的Instruments(Leaks)监测App的内存泄漏问题
+  2019年总结
 </h1>
   
 
@@ -46,12 +46,12 @@
 
     
     <div class="article-meta">
-      <a href="/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" class="article-date">
-  <time datetime="2018-06-20T08:58:13.000Z" itemprop="datePublished">2018-06-20</time>
+      <a href="/2020/02/04/2019年总结/" class="article-date">
+  <time datetime="2020-02-04T08:25:07.000Z" itemprop="datePublished">2020-02-04</time>
 </a>
       
   <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+    <a class="article-category-link" href="/categories/年终总结/">年终总结</a>
   </div>
 
       
@@ -61,7 +61,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">353字</span>
+            <span class="post-count">955字</span>
         </span>
     </span>
 
@@ -70,7 +70,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">1分钟</span>
+            <span class="post-count">3分钟</span>
         </span>
     </span>
 </div>
@@ -96,33 +96,29 @@
       
 
       
-      <p>最近项目提交App Store审核，有些闲暇时间，打算用Instruments工具里的Leaks<br>检查一下项目中存在的内存泄漏问题。</p>
-<h4 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h4><h5 id="1-edit-scheme"><a href="#1-edit-scheme" class="headerlink" title="1.edit scheme"></a>1.edit scheme</h5><p>修改为测试环境<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayq6uqwk2j30jk0e4gnd.jpg" alt=""><br>将Profile中的Build Configuration选为Debug<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayq6ull6nj31ds0s0whn.jpg" alt=""></p>
-<h5 id="2-Debug-Information-Format"><a href="#2-Debug-Information-Format" class="headerlink" title="2.Debug Information Format"></a>2.Debug Information Format</h5><p>设置调试运行的时候生成 dSYM文件（用于代码定位）</p>
-<p><code>Build Settings --&gt; Debug Information Format</code></p>
-<p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqazbj7qj31jn0u0k00.jpg" alt=""></p>
-<h4 id="二、开始监测"><a href="#二、开始监测" class="headerlink" title="二、开始监测"></a>二、开始监测</h4><h5 id="1-打开Instruments"><a href="#1-打开Instruments" class="headerlink" title="1.打开Instruments"></a>1.打开Instruments</h5><p>在Xcode的导航栏中找到Instruments。</p>
-<p><code>Xcode --&gt; Open Developer Tool --&gt; Instruments</code></p>
-<p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqbb0inkj30qg0gegsf.jpg" alt=""></p>
-<h5 id="2-双击选择Leaks"><a href="#2-双击选择Leaks" class="headerlink" title="2.双击选择Leaks"></a>2.双击选择Leaks</h5><p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqbamrugj316s0o278d.jpg" alt=""></p>
-<h5 id="3-选择设备和项目"><a href="#3-选择设备和项目" class="headerlink" title="3.选择设备和项目"></a>3.选择设备和项目</h5><p>找到运行的设备和正在运行的项目。</p>
-<p>选好设备和项目，点击左侧的大红点，项目会在对应的设备中重新运行一次。并做好监测准备<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqbac3owj31ka0u0n43.jpg" alt=""></p>
-<h5 id="4-内存监测"><a href="#4-内存监测" class="headerlink" title="4.内存监测"></a>4.内存监测</h5><p>由于Leaks是动态监测，所以需要一边手动操作App，一边观察Leaks界面上的变化。当出现红色叉叉时，说明出现了内存泄漏，可以暂停进程，进行查看<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqba1hkvj30sc0kg40a.jpg" alt=""></p>
-<p>5.定位内存泄漏的位置<br>选择 <code>Leaks ——&gt; Call Tree</code>，最底下会出现4个选框<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqcb41w2j31gu0u0wjr.jpg" alt=""></p>
-<p>5.1 点击第二个<code>Call Tree</code>，勾选 <code>Invert Call Tree</code> 和 <code>Hide System Libraries</code></p>
-<p><strong>勾选前</strong><br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqcan6nrj31ha0u0n3k.jpg" alt=""></p>
-<p><strong>勾选后</strong><br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqc9pgknj31hj0u0aj8.jpg" alt=""></p>
-<h5 id="6-确认位置，修改代码"><a href="#6-确认位置，修改代码" class="headerlink" title="6.确认位置，修改代码"></a>6.确认位置，修改代码</h5><p>此时显示的就是若干条内存泄漏的代码部分，选择其中一条双击，即可显示代码。还可直接跳转到代码在Xcode中额具体位置<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqc9daqlj31hc0u0gw8.jpg" alt=""></p>
+      <p>2019是个忙碌的一年，公司的产品在市场的打磨下不断完善和优化，逐步走向正规，在开发之余还承担下了出差提供技术支持的工作，多少算是为久坐敲代码的状态，提供了外出运动的机会。<br>这一年的内容很丰富，但也有不足，话不多说，我来总结一下全年都做了什么。</p>
+<h2 id="产品"><a href="#产品" class="headerlink" title="产品"></a>产品</h2><p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbkcg9544kj317c0akdgu.jpg" alt=""></p>
+<p>GitHub上大部分contribution都来自我独立开发的一款App——五迷——专为五月天歌迷群体所开发的App，目前累计用户450+，因为我本身也是一为“暴民”（五月天粉丝的一种称呼）。所以这个App就应运而生了。其中的小工具都是较为实用的，为五迷群体定制的一些功能，我希望在未来还能继续优化和完善这个App，让它能够活跃起来，这也算是一种情怀吧。</p>
+<p>如果有兴趣，可以点击<a href="https://apps.apple.com/cn/app/id1461781133" target="_blank" rel="noopener">下载</a>跳转至App store进行安装。</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbkcyl9x2bj30sg0wd7g4.jpg" alt=""></p>
+<h2 id="技术"><a href="#技术" class="headerlink" title="技术"></a>技术</h2><p>2019年尝试了一些比较有趣的新技术，例如为App添加shortcut，通过Siri快速唤醒App及某项功能，同时通过阅读一些watchOS开发相关的文章，为Pigo番茄钟开发watchOS版本，个人认为番茄钟这类App注重效率，实际上最适合的平台应该是抬手即见的手表，或者是正在工作的设备上，例如手头的电脑，而不是需要解锁界面的手机。</p>
+<p>苹果公司在2019年的WWDC上推出了macOS Catalyst功能，能够将iPad app快速地转化成桌面应用，我十分期待，并想尝试将移动版的Pigo转换成桌面应用。</p>
+<h2 id="阅读"><a href="#阅读" class="headerlink" title="阅读"></a>阅读</h2><p>2019年8月正儿八经地读一本书——《美国陷阱》，阅读的时间比较耐人寻味，这里不做解释。针对书的内容，已记录在<a href="httpshttp://blog.gg266.tech/2019/08/26/2019%E5%B9%B48%E6%9C%88%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" target="_blank" rel="noopener">《2019年8月读书心得》</a>，这里也不做赘述。在这里想要分享的是对于电子书和实体书的阅读感受，我个人原本比较偏爱纸质书，因为纸质书有读书最“原始”的质感，是一种纯粹的读书感觉。不过这本书的40%我是在纸质书上阅读的，因为恰逢出差，需要在不同的地方来回穿梭，便下载了微信读书，完成了剩下60%的阅读。线上读书有很多好处，能够随时标记，发表自己的观点，同时查看和点评其他网友的见解，十分有趣，同时携带方便这一点就不用多说了。微信读书还能将微信公众号的阅读内容同步进来，这一点是十分惊喜的，这样可以相对统一地管理阅读内容，让微信成为更纯粹的社交聊天软件。</p>
+<h2 id="生活"><a href="#生活" class="headerlink" title="生活"></a>生活</h2><p>2019.2.14 从此以后不仅仅是情人节，还是我和老婆77M的结婚纪念日，一路走来，有欢笑也不乏争吵，时间的沉淀让我们发现自己便是对方的Mr/Miss Right，往后余生无论平淡荣华，都是你。</p>
+<p>同年10月，我们还迎来我们的天使小宝宝，他像极了他美丽的麻麻，他的每个微笑和啼哭，都牵动着我们，期待小家伙在我们的陪伴下健康、快乐地长大。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>在2019年，工作还算兢兢业业，通过阅读扩展见识，通过尝试新技术拓宽知识广度，同时在生活上由于身份的转变，让自己更加成熟。</p>
+<p>2019，忙碌、充实，但缺章法。</p>
+<p>2020，需要更加完善的时间和计划管理，不能让任务躺在清单里被忘记。新的一年，拭目以待。</p>
 
       
       <!-- 打赏 -->
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ck67moghe000f9ubuvlbkq355"
+      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ck67mogh600089ubum3x6ftzl"
         class="article-share-link">分享</a>
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Instruments/">Instruments</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leaks/">Leaks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Xcode/">Xcode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存泄漏/">内存泄漏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/调试优化/">调试优化</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随记/">随记</a></li></ul>
 
     </footer>
 
@@ -132,19 +128,10 @@
   
   <nav class="article-nav">
     
-      <a href="/2018/09/05/Diary/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            Diary
-          
-        </div>
-      </a>
     
-    
-      <a href="/2018/03/04/RunLoop实践/" class="article-nav-link">
+      <a href="/2020/01/17/Github项目迁移/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">RunLoop实践</div>
+        <div class="article-nav-title">Github项目迁移</div>
       </a>
     
   </nav>

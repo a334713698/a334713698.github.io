@@ -60,6 +60,89 @@
     
     
     
+    <article id="post-多线程的理解——队列与执行方式" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/03/03/多线程的理解——队列与执行方式/"
+    >多线程的理解——队列与执行方式</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/03/03/多线程的理解——队列与执行方式/" class="article-date">
+  <time datetime="2018-03-03T03:01:06.000Z" itemprop="datePublished">2018-03-03</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>多线程的理解——队列与执行方式</p>
+<h4 id="1-队列类型"><a href="#1-队列类型" class="headerlink" title="1.队列类型"></a>1.队列类型</h4><ul>
+<li>串行队列：顺序执行，一次执行一个任务。依次从队列中取出一个任务执行，必须一个任务执行完了，才能从队列里面取出下一个任务。</li>
+<li>并行队列：任务是按照加入到队列中的顺序开始执行，但任务完成时的顺序是不确定的。</li>
+<li>主队列：主线程中的串行队列（系统默认创建）。</li>
+<li>全局队列：是全局的并行队列（系统默认创建。几乎等效于并行队列）。<br><br></li>
+</ul>
+<h4 id="2-执行方式"><a href="#2-执行方式" class="headerlink" title="2.执行方式"></a>2.执行方式</h4><ul>
+<li>同步执行sync：不开新线程</li>
+<li>异步执行async：开辟新线程<br><br></li>
+</ul>
+<h4 id="3-队列与执行方式"><a href="#3-队列与执行方式" class="headerlink" title="3.队列与执行方式"></a>3.队列与执行方式</h4><ul>
+<li>串行队列同步执行：不开线程，在原来线程里面一个一个顺序执行</li>
+<li>串行队列异步执行：开一条线程，在这个新线程里面一个一个顺序执行</li>
+<li>并行队列同步执行：不开线程，在原来线程里面执行</li>
+<li>并行队列异步执行：开多个线程，并发执行（不一定是一个一个）执行<br><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fozfz2vff0j313o0c8dm6.jpg" alt=""><br><br></li>
+</ul>
+<h4 id="4-死锁问题"><a href="#4-死锁问题" class="headerlink" title="4.死锁问题"></a>4.死锁问题</h4><p>死锁问题的理解，可参考：<a href="https://www.jianshu.com/p/bd574fd21da5" target="_blank" rel="noopener">《为什么dispatch_sync在主线程会死锁》</a></p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ck67moghj000o9ubuxemzhz6f"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-智能家居场景设想" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -114,7 +197,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ck5ixncoj000rh16ovjwk152e"
+      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ck67moghh000k9ubu508w5dib"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -193,7 +276,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ck5ixncoi000nh16ov7fjopkd"
+      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ck67moghl000t9ubu43211nbo"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -285,7 +368,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ck5ixnco40006h16ob2jo11r0"
+      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ck67moghc000e9ubuinh6l65y"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/">Tech</a></li></ul>
@@ -358,7 +441,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ck5ixncok000sh16oqgcv6j2p"
+      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ck67moghm000v9ubupmjqc9fy"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
