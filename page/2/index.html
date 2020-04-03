@@ -29,36 +29,137 @@
   <div id="app">
     <main class="content">
       
-<section class="cover">
-    
-      
-      <a class="forkMe" href="https://github.com/a334713698"
-        target="_blank"><img width="149" height="149" src="/images/forkme.png"
-          class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
-    
-  <div class="cover-frame">
-    <div class="bg-box">
-      <img src="/images/cover8.jpg" alt="image frame" />
-    </div>
-    <div class="cover-inner text-center text-white">
-      <h1><a href="/">GG266的个人博客</a></h1>
-      <h2></h2>
-      <div>
-        
-      </div>
-    </div>
-  </div>
-  <div class="cover-learn-more">
-    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
-  </div>
-</section>
-
 <div id="main">
   <section class="outer">
   <article class="articles">
     
     
     
+    
+    <article id="post-RunLoop理论" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/03/04/RunLoop理论/"
+    >RunLoop理论</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/03/04/RunLoop理论/" class="article-date">
+  <time datetime="2018-03-04T07:20:39.000Z" itemprop="datePublished">2018-03-04</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h4 id="（一）概念"><a href="#（一）概念" class="headerlink" title="（一）概念"></a>（一）概念</h4><ul>
+<li>运行循环</li>
+<li>保持程序持续运行</li>
+<li>处理app的各种事件（比如触摸事件、定时器事件、Selector事件）</li>
+</ul>
+<h5 id="1-RunLoop与线程"><a href="#1-RunLoop与线程" class="headerlink" title="1.RunLoop与线程"></a>1.RunLoop与线程</h5><ul>
+<li>每条线程都有唯一的与之对应的RunLoop对象</li>
+<li>主线程的RunLoop是自动创建好的，子线程的RunLoop需要手动创建</li>
+<li>RunLoop在第一次获取时创建，在线程结束时销毁。而如果该RunLoop不包含任何Timer、Source、Observer，它就会自我销亡</li>
+</ul>
+<h4 id="（二）RunLoop相关类"><a href="#（二）RunLoop相关类" class="headerlink" title="（二）RunLoop相关类"></a>（二）RunLoop相关类</h4><ul>
+<li>在 CoreFoundation 里面关于 RunLoop 有5个类:</li>
+<li>CFRunLoopRef</li>
+<li>CFRunLoopModeRef</li>
+<li>CFRunLoopSourceRef：事件源</li>
+<li>CFRunLoopTimerRef：基于时间的触发器</li>
+<li>CFRunLoopObserverRef：观察者</li>
+</ul>
+<h5 id="1-获取RunLoop对象"><a href="#1-获取RunLoop对象" class="headerlink" title="1.获取RunLoop对象"></a>1.获取RunLoop对象</h5><ul>
+<li>Foundation</li>
+<li>[NSRunLoop currentRunLoop]; //获取当前线程的RunLoop对象</li>
+<li>[NSRunLoop mainRunLoop]; //获得主线程的RunLoop对象</li>
+<li>Core Foundation</li>
+<li>CFRunLoopGetCurrent(); //获取当前线程的RunLoop对象</li>
+<li>CFRunLoopGetMain(); //获得主线程的RunLoop对象</li>
+</ul>
+<h4 id="（三）CFRunLoopModeRef"><a href="#（三）CFRunLoopModeRef" class="headerlink" title="（三）CFRunLoopModeRef"></a>（三）CFRunLoopModeRef</h4><h5 id="1-常用Mode"><a href="#1-常用Mode" class="headerlink" title="1.常用Mode"></a>1.常用Mode</h5><ul>
+<li>NSDefaultRunLoopMode：App的默认Mode，通常主线程是在这个Mode下运行</li>
+<li>UITrackingRunLoopMode：界面跟踪Mode。用于追踪ScrollView的触摸滑动事件，保证界面滑动时不收其他Mode影响。</li>
+<li>NSRunLoopCommonModes：这是一个占位用的Mode(综合以上两种模式)，不是一中真正的Mode。</li>
+</ul>
+<h5 id="2-使用"><a href="#2-使用" class="headerlink" title="2.使用"></a>2.使用</h5><ul>
+<li>一个 RunLoop 包含若干个 Mode（模式），每个 Mode 又包含若干个Source/Timer/Observer。每次调用 RunLoop 的主函数时，只能指定一个 Mode，这个Mode被称作 CurrentMode（当前模式）。如果需要切换 Mode，只能退出当前 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</li>
+</ul>
+<h4 id="（四）CFRunLoopSourceRef"><a href="#（四）CFRunLoopSourceRef" class="headerlink" title="（四）CFRunLoopSourceRef"></a>（四）CFRunLoopSourceRef</h4><h5 id="1-按官方文档分类"><a href="#1-按官方文档分类" class="headerlink" title="1.按官方文档分类"></a>1.按官方文档分类</h5><ul>
+<li>Port-Base Source：继续端口的，与其他线程进行交互</li>
+<li>Custom Input Source</li>
+<li>Cocoa Perform Selector Source</li>
+</ul>
+<h5 id="2-根据函数调用栈分类："><a href="#2-根据函数调用栈分类：" class="headerlink" title="2.根据函数调用栈分类："></a>2.根据函数调用栈分类：</h5><ul>
+<li>Source0：非基于Port的。</li>
+<li>Source1：基于Port的，通过内核和其他线程通信，接受、分发系统事件。</li>
+<li>Source1接收到事件后，会交给Source0去处理</li>
+</ul>
+<h4 id="（五）CFRunLoopTimerRef"><a href="#（五）CFRunLoopTimerRef" class="headerlink" title="（五）CFRunLoopTimerRef"></a>（五）CFRunLoopTimerRef</h4><ul>
+<li>CFRunLoopTimerRef基本上就是NSTimer，它受RunLoop的Mode影响。</li>
+<li>GCD的定时器不受RunLoop的Mode影响。</li>
+<li><p>① NSTimer默认加入RunLoop，且是NSDefaultRunLoopMode。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//调用了scheduledTimer返回的定时器，已经自动被添加到当前RunLoop中，默认是NSDefaultRunLoopMode</span><br><span class="line">NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(run) userInfo:nil repeats:YES];</span><br><span class="line"></span><br><span class="line">// 修改模式</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>②三种模式分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">NSTimer *timer = [NSTimer timerWithTimeInterval:2.0 target:self selector:@selector(run) userInfo:nil repeats:YES];</span><br><span class="line">// 定时器只运行在NSDefaultRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];</span><br><span class="line"></span><br><span class="line">// 定时器只运行在UITrackingRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:UITrackingRunLoopMode];</span><br><span class="line"></span><br><span class="line">// 定时器会跑在标记为common modes的模式下</span><br><span class="line">// 标记为common modes的模式：UITrackingRunLoopMode和NSDefaultRunLoopMode</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="（六）Oberserver（观察者）"><a href="#（六）Oberserver（观察者）" class="headerlink" title="（六）Oberserver（观察者）"></a>（六）Oberserver（观察者）</h4><ul>
+<li>CFRunLoopObserverRef是观察者，能够监听RunLoop的状态改变</li>
+<li>可以监听以下几个时间点：<br>CFRunLoopActivity的取值<br>kCFRunLoopEntry = (1UL &lt;&lt;0),<br>kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1),<br>kCFRunLoopBeforeSources = (1UL &lt;&lt; 2),<br>kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5),<br>kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6),<br>kCFRunLoopExit = (1UL &lt;&lt; 7),<br>kCFRunLoopAllActivities = 0x0FFFFFFFU</li>
+</ul>
+<h5 id="1-CFRunLoopObserverRef的使用"><a href="#1-CFRunLoopObserverRef的使用" class="headerlink" title="1.CFRunLoopObserverRef的使用"></a>1.CFRunLoopObserverRef的使用</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (void)observer&#123;</span><br><span class="line">// 1. 创建observer</span><br><span class="line">CFRunLoopObserverRef observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault(), kCFRunLoopAllActivities, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) &#123;</span><br><span class="line">NSLog(@&quot;----监听到RunLoop状态发生改变---%zd&quot;, activity);</span><br><span class="line">&#125;);</span><br><span class="line">// 2. 添加观察者：监听RunLoop的状态</span><br><span class="line">CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, kCFRunLoopDefaultMode);</span><br><span class="line"></span><br><span class="line">// 3. 释放Observer</span><br><span class="line">CFRelease(observer);</span><br><span class="line">&#125;</span><br><span class="line">/*</span><br><span class="line">CF的内存管理（Core Foundation）</span><br><span class="line">1.凡是带有Create、Copy、Retain等字眼的函数，创建出来的对象，都需要在最后做一次release</span><br><span class="line">* 比如CFRunLoopObserverCreate</span><br><span class="line">2.release函数：CFRelease(对象);</span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
+<h4 id="（七）RunLoop整体处理逻辑"><a href="#（七）RunLoop整体处理逻辑" class="headerlink" title="（七）RunLoop整体处理逻辑"></a>（七）RunLoop整体处理逻辑</h4><p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1foxdggdlw4j30n20hen3v.jpg" alt=""></p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ck8jiok7y000jx8bu00ozxfwm"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
     
     <article id="post-多线程的理解——队列与执行方式" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
@@ -126,7 +227,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ck67moghj000o9ubuxemzhz6f"
+      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ck8jiok80000nx8buzmhii2ua"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
@@ -197,7 +298,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ck67moghh000k9ubu508w5dib"
+      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ck8jiok8a0017x8buqjadkjn8"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -276,7 +377,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ck67moghl000t9ubu43211nbo"
+      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ck8jiok82000sx8buhkg8phq1"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -368,7 +469,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ck67moghc000e9ubuinh6l65y"
+      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ck8jiok7w000ix8buzs4cc7h2"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/">Tech</a></li></ul>
@@ -441,7 +542,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ck67moghm000v9ubupmjqc9fy"
+      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ck8jiok880014x8bu6z50w9o4"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
