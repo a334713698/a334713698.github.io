@@ -36,6 +36,82 @@
     
     
     
+    <article id="post-自定义UITableView左滑删除样式" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/09/07/自定义UITableView左滑删除样式/"
+    >自定义UITableView左滑删除样式</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/09/07/自定义UITableView左滑删除样式/" class="article-date">
+  <time datetime="2018-09-07T08:57:59.000Z" itemprop="datePublished">2018-09-07</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>最近在做番茄钟的项目，其中涉及到任务列表的界面，希望实现左滑删除的功能。UITableViewDelegate自带简单的左滑删除的接口，通过实现<code>canEditRowAtIndexPath方法</code>打开tableView可编辑的开关，再实现<code>editActionsForRowAtIndexPath方法</code>处理事件，<code>UITableViewRowAction</code>的实例允许修改文字和背景色。<br><img src="https://ws1.sinaimg.cn/large/0069RVTdgy1fv11c5vl0gj30lu05cdj5.jpg" alt=""></p>
+<p>而我的需求是想把删除键做成一个垃圾桶图标。而系统没有直接可用的API，那就只能曲线救国了。</p>
+<p>首先，这个删除按钮在 iOS11 和 iOS11以下的系统中，所处的父级是不一样的。</p>
+<h2 id="在iOS11以前"><a href="#在iOS11以前" class="headerlink" title="在iOS11以前"></a>在iOS11以前</h2><p>删除按钮的父级是cell图。<br><img src="https://ws2.sinaimg.cn/large/0069RVTdgy1fv11nwlk64j319g0lc7fn.jpg" alt=""></p>
+<h2 id="iOS11"><a href="#iOS11" class="headerlink" title="iOS11+"></a>iOS11+</h2><p>删除按钮的父级类名为<code>UISwipeActionPullView</code>，<code>UISwipeActionPullView</code>的父级为<code>UITableViewRowAction</code>，也就是说<code>UISwipeActionPullView</code>和cell是同级的。<br><img src="https://ws3.sinaimg.cn/large/0069RVTdgy1fv11nwb7dpj31ae0jkds6.jpg" alt=""></p>
+<p>所以，两者需要以不同的方式实现。</p>
+<p>在两种系统中，当还未左滑调出删除按钮时，输出cell或tableView的所有子视图，发现并没有删除按钮的存在。也就是说，他们是在需要的时候，被创建出来的。所以，我们需要重写某个方法去截获这个删除按钮。</p>
+<h2 id="在iOS11以前-1"><a href="#在iOS11以前-1" class="headerlink" title="在iOS11以前"></a>在iOS11以前</h2><p>重写<code>insertSubview:atIndex</code>方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">- (void)insertSubview:(UIView *)view atIndex:(NSInteger)index &#123;</span><br><span class="line">    [super insertSubview:view atIndex:index];</span><br><span class="line">    DLog(@&quot;insertSubview&quot;);</span><br><span class="line">    if ([view isKindOfClass:NSClassFromString(@&quot;UITableViewCellDeleteConfirmationView&quot;)]) &#123;</span><br><span class="line">        for (UIButton *btn in view.subviews) &#123;</span><br><span class="line"></span><br><span class="line">            if ([btn isKindOfClass:[UIButton class]]) &#123;</span><br><span class="line">                [btn setBackgroundColor:[UIColor clearColor]];</span><br><span class="line">                [btn mas_updateConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">                    make.width.mas_equalTo(adaptWidth(35));</span><br><span class="line">                    make.height.mas_equalTo(adaptWidth(35));</span><br><span class="line">                    make.centerX.mas_equalTo(0);</span><br><span class="line">                    make.centerY.mas_equalTo(0);</span><br><span class="line">                &#125;];</span><br><span class="line"></span><br><span class="line">                [btn setTitle:nil forState:UIControlStateNormal];</span><br><span class="line">                UIImage *img = [IMAGE(@&quot;list_deleting&quot;) imageForThemeColor:[UIColor redColor]];</span><br><span class="line">                [btn setImage:img forState:UIControlStateNormal];</span><br><span class="line">                [btn setImage:img forState:UIControlStateHighlighted];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="iOS11-1"><a href="#iOS11-1" class="headerlink" title="iOS11+"></a>iOS11+</h2><p>新建并使用一个继承于UITableView的控件，重写<code>layoutSubviews</code>方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">- (void)layoutSubviews&#123;</span><br><span class="line">    [super layoutSubviews];</span><br><span class="line"></span><br><span class="line">    //iOS11版本以上,自定义删除按钮:</span><br><span class="line">    if ([[[UIDevice currentDevice] systemVersion] doubleValue] &gt;= 11.0) &#123;</span><br><span class="line">        for (UIView *subview in self.subviews)</span><br><span class="line">        &#123;</span><br><span class="line">            if([subview isKindOfClass:NSClassFromString(@&quot;UISwipeActionPullView&quot;)])</span><br><span class="line">            &#123;</span><br><span class="line">                UIView *swipeActionPullView = subview;</span><br><span class="line">                swipeActionPullView.backgroundColor =  [UIColor clearColor];</span><br><span class="line"></span><br><span class="line">                UIButton *swipeActionStandardBtn = subview.subviews[0];</span><br><span class="line">                if ([swipeActionStandardBtn isKindOfClass:NSClassFromString(@&quot;UISwipeActionStandardButton&quot;)]) &#123;</span><br><span class="line"></span><br><span class="line">                    [swipeActionStandardBtn mas_updateConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">                        make.width.mas_equalTo(adaptWidth(35));</span><br><span class="line">                        make.height.mas_equalTo(adaptWidth(35));</span><br><span class="line">                        make.left.mas_equalTo(0);</span><br><span class="line">                        make.centerY.mas_equalTo(0);</span><br><span class="line">                    &#125;];</span><br><span class="line">                    [swipeActionStandardBtn setTitle:nil forState:UIControlStateNormal];</span><br><span class="line">                    [swipeActionStandardBtn setImage:[IMAGE(@&quot;list_deleting&quot;) imageForThemeColor:[UIColor redColor]] forState:UIControlStateNormal];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>*在iOS11以前，左滑cell不会走<code>layoutSubviews</code>的方法。在iOS11上，左滑时tableView不会走<code>insertSubview:atIndex</code>方法。</p>
+<p><img src="https://ws2.sinaimg.cn/large/0069RVTdgy1fv12w0xbwqj30lm05gade.jpg" alt=""></p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/09/07/自定义UITableView左滑删除样式/" data-id="ckecud5xy001i83bueaazut4t"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UITableView/">UITableView</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-Diary" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -99,7 +175,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/09/05/Diary/" data-id="ck9yaoqzh0007ixbuszhme8qu"
+      <a data-url="http://yoursite.com/2018/09/05/Diary/" data-id="ckecud5x8000683bufhk6twii"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Diary/">Diary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/成长/">成长</a></li></ul>
@@ -181,7 +257,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ck9yaoqzu000pixbuz0ouvilp"
+      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ckecud5xm000u83buxlzvkn1t"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Instruments/">Instruments</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leaks/">Leaks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Xcode/">Xcode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存泄漏/">内存泄漏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/调试优化/">调试优化</a></li></ul>
@@ -275,7 +351,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ck9yaoqzm000dixbu844wx79g"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckecud5xi000j83buxhgfogd7"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -400,7 +476,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ck9yaoqzz0011ixbu61nczz83"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckecud5xw001g83buk7060cqi"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -483,7 +559,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ck9yaoqzw000uixbu6gfnsxqk"
+      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckecud5xq001283bu5xl32jqr"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
@@ -554,7 +630,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ck9yaor000013ixbug2c46afb"
+      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckecud5xr001483bu68gg6gz0"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -633,7 +709,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ck9yaoqzy0010ixbu3fax6ar5"
+      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckecud5xo000y83bumji00swg"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -725,7 +801,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ck9yaoqzt000nixbupzj1szcl"
+      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ckecud5xl000q83bufgocm85m"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/">Tech</a></li></ul>
@@ -798,7 +874,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ck9yaor020019ixbu5yj607yk"
+      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ckecud5xt001983bub4fkarch"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
