@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="iOS coder,Machine-learning,DJ Hong的个人博客" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    LPR浮动利率究竟是什么？ |  GG266的个人博客
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.jpg" />
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/pace.min.js"></script>
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-LPR浮动利率究竟是什么？" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  LPR浮动利率究竟是什么？
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/08/29/LPR浮动利率究竟是什么？/" class="article-date">
+  <time datetime="2020-08-29T05:40:19.000Z" itemprop="datePublished">2020-08-29</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/科普/">科普</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.4k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">5分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h3 id="写作目的"><a href="#写作目的" class="headerlink" title="写作目的"></a>写作目的</h3><p>相信各位可能和我一样，在前段时间收到了一条短信，内容大致为：</p>
+<blockquote>
+<p>按照人民银行[2019]30号公告要求，为简化您的操作，XX银行将于2020年8月25日起将您在我行的住房贷款转换为LPR浮动利率定价方式。</p>
+</blockquote>
+<p>此时的我，一脸懵逼，LPR利率是个什么玩儿？它还是浮动的？那岂不是以后的利息都没准儿？利息有可能会升高吗？</p>
+<p>在观看了B站李永乐老师的视频<a href="https://www.bilibili.com/video/BV1AJ41157sM" target="_blank" rel="noopener">《房贷合同要变了！LPR利率和固定利率哪个合算？会影响房价走势吗?》</a>之后，对LPR浮动利率和利率转换有了一定的认识，在这里和大家分享一下。</p>
+<h3 id="贷款基准利率"><a href="#贷款基准利率" class="headerlink" title="贷款基准利率"></a>贷款基准利率</h3><p>在实行LPR浮动利率之前，我们实行的是贷款基准利率，商业银行的利率计算公式为：</p>
+<blockquote>
+<p>商业银行贷款利率 = 基准利率 * (1 + 浮动加点)<br>央行基准利率：4.9%（2015公布~至今）<br>浮点：根据央行、政策、银行、个人情况而定</p>
+</blockquote>
+<p>实例：假设某个城市对首套房的浮动加点是10%，那么我们的贷款利率就是：</p>
+<blockquote>
+<p>首套贷款利率：4.9% * (1 + 10%) = 5.39%</p>
+</blockquote>
+<p>数字先放这儿，后面会用到。</p>
+<h3 id="利率的双轨制"><a href="#利率的双轨制" class="headerlink" title="利率的双轨制"></a>利率的双轨制</h3><p>原有的贷款利率带来的问题是，<code>市场利率</code>和<code>政策利率</code>存在双轨制。<br>市场利率也就是市场对资金需求程度，决定了利率的变化。市场如果非常需要资金，那么利率就上升；如果市场资金比较充裕，那么利率相对地就会下降。<br>这里涉及到MLF利率的问题，MLF的定义，我们不去管它，大体理解就是，央行给商行投钱，商行需要一些抵押给央行，后期在通过一定利率将钱还给央行，这里就存在一个MLF利率。<br>而政策利率，主要指的就是基准利率。商行拿到钱之后，再加上一定的浮动，贷款给客人或企业。<br>这样会出现一个问题，那就是货币政策传导不畅。<br>当MLF下调，商行拿到了钱。但是基准利率没有及时下调，那么贷款利率还是很高，那么个人和企业还是很难贷到钱。<br>这就是利率双轨制存在的问题。</p>
+<h3 id="贷款基础利率"><a href="#贷款基础利率" class="headerlink" title="贷款基础利率"></a>贷款基础利率</h3><p>也就是LPR利率。简单说：</p>
+<blockquote>
+<p>LPR利率 ＝ MLF利率 + 商行平均加点</p>
+</blockquote>
+<p>这里的商行平均加点，是怎么得来的呢？<br>它是由国内选出来的18家商业银行，一起来报价决定，这18家银行可能来自大型国有银行，城市银行，外资银行和物联网银行等不同的类型。这些银行有不同的特色，服务于不同的人群，可以综合地从各个方面代表整体的市场情况。由这些银行各自根据市场情况报价，最后去除最高和最低，取平均即可。</p>
+<p>在LPR利率下，我们的贷款利率就变为了：</p>
+<blockquote>
+<p>贷款利率 ＝ LPR利率 + 政策加点 + 商行附加利率<br>LPR利率：4.8%（2019年12月）<br>政策加点：如果国家觉得首套房利率不能下浮，那至少要保持LPR利率，那么政策加点可是是0%；限制二套房的购买，那二套房的政策加点可以定为0.6%<br>商行附加利率：商行需要盈利，所以也会有个加点。假设是0.59%</p>
+</blockquote>
+<p>那么首套房和二套房的利率就分别为：</p>
+<blockquote>
+<p>首套：4.8% + 0% + 0.59% = 5.39%<br>二套：4.8% + 0.6% + 0.59% = 5.99%</p>
+</blockquote>
+<p>以上都是针对新利率执行之后的贷款进行的解释，没有太大问题。而接下来就是我们最关心的问题，还在还款期内的贷款是如何转换的。</p>
+<h3 id="基准利率-转-基础理论"><a href="#基准利率-转-基础理论" class="headerlink" title="基准利率 转 基础理论"></a>基准利率 转 基础理论</h3><p>根据国家政策，在转化的第一年的一整年时间里，也就是2020年，它会保证我们的利率是和2019年12月20日是一模一样的。（上文我们假定了我们原先的贷款利率是5.39%）。细心的童鞋一定发现了，原先的贷款利率和LPR利率之间存在一个差值，我们可以称这个差值为<code>加点</code>，因为这是我们后期利率计算的条件之一。</p>
+<blockquote>
+<p>原有贷款利率 = LPR利率 + 加点(差值)<br>5.39% = 4.8% + <u>0.59%</u><br>注意：原本的利率如果是低于LPR利率的，加点值允许是负的。</p>
+</blockquote>
+<p>得到了加点的具体指，那么我们以后每年的房贷利率就会根据LPR的调整而改变了。有些人可能会担心，如果LPR上升了，我的贷款利率不就上去了吗？根据世界范围的运行规律，国家发展到一定程度后，利率都是会下降的。长期来看，利率下行的概率应该是高于利率上行的概率的。<br>下面附上一张近一年的利率走势表，供大家参考。</p>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>1年期LPR利率（%）</th>
+<th>5年期LPR利率（%）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020-08-20</td>
+<td>3.85</td>
+<td>4.65</td>
+</tr>
+<tr>
+<td>2020-07-20</td>
+<td>3.85</td>
+<td>4.65</td>
+</tr>
+<tr>
+<td>2020-06-20</td>
+<td>3.85</td>
+<td>4.65</td>
+</tr>
+<tr>
+<td>2020-05-20</td>
+<td>3.85</td>
+<td>4.65</td>
+</tr>
+<tr>
+<td>2020-04-20</td>
+<td>3.85</td>
+<td>4.65</td>
+</tr>
+<tr>
+<td>2020-03-20</td>
+<td>4.05</td>
+<td>4.75</td>
+</tr>
+<tr>
+<td>2020-02-20</td>
+<td>4.05</td>
+<td>4.75</td>
+</tr>
+<tr>
+<td>2020-01-20</td>
+<td>4.15</td>
+<td>4.80</td>
+</tr>
+<tr>
+<td>2019-12-20</td>
+<td>4.15</td>
+<td>4.80</td>
+</tr>
+<tr>
+<td>2019-11-20</td>
+<td>4.15</td>
+<td>4.80</td>
+</tr>
+<tr>
+<td>2019-10-20</td>
+<td>4.20</td>
+<td>4.85</td>
+</tr>
+<tr>
+<td>2019-09-20</td>
+<td>4.20</td>
+<td>4.85</td>
+</tr>
+<tr>
+<td>2019-08-20</td>
+<td>4.25</td>
+<td>4.85</td>
+</tr>
+</tbody>
+</table>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/29/LPR浮动利率究竟是什么？/" data-id="ckef8myna000elgbuacyajew5"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LPR/">LPR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/金融/">金融</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/08/28/LeetCode算法学习日记（2020年8月）/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">LeetCode算法学习日记（2020年8月）</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2018-2020
+        GG266
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s4.cnzz.com/z_stat.php?id=1278583018&amp;web_id=1278583018'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+    
+    <aside class="sidebar">
+      
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/avatar.svg" alt="GG266的个人博客"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+			onClick: (e) => {
+      	document.getElementById(e.target.innerText).scrollIntoView()
+      	return false;
+    	}
+    });
+  </script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+<script src="/js/ayer.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  
+  
+
+  </div>
+</body>
+
+</html>
