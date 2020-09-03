@@ -36,6 +36,109 @@
     
     
     
+    <article id="post-iOS源码阅读——YYModel" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/09/03/iOS源码阅读——YYModel/"
+    >iOS源码阅读——YYModel</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/09/03/iOS源码阅读——YYModel/" class="article-date">
+  <time datetime="2020-09-03T15:14:23.000Z" itemprop="datePublished">2020-09-03</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>YYModel作为一个 iOS/OSX 模型转换框架，为JSON与数据模型之间的转换，提供了高性能的解决方案。</p>
+<p>在我个人的日常开发中，主要使用的方法有以下几个：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// JSON|字典 转 模型</span><br><span class="line">+ (nullable instancetype)yy_modelWithJSON:(id)json;</span><br><span class="line">+ (nullable instancetype)yy_modelWithDictionary:(NSDictionary *)dictionary;</span><br><span class="line"></span><br><span class="line">// 通过 JSON|字典 为 模型赋值</span><br><span class="line">- (BOOL)yy_modelSetWithJSON:(id)json;</span><br><span class="line">- (BOOL)yy_modelSetWithDictionary:(NSDictionary *)dic;</span><br><span class="line"></span><br><span class="line">// 模型转JSON</span><br><span class="line">- (NSString *)yy_modelToJSONString;</span><br><span class="line"></span><br><span class="line">// JSON数组转模型数组</span><br><span class="line">+ (nullable NSArray *)yy_modelArrayWithClass:(Class)cls json:(id)json;</span><br></pre></td></tr></table></figure></p>
+<p>由于多个功能，最终调用的方法是相同的，所以这里仅列出主要方法的代码解析。</p>
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><h3 id="JSON转模型"><a href="#JSON转模型" class="headerlink" title="JSON转模型"></a>JSON转模型</h3><h4 id="yy-modelWithDictionary"><a href="#yy-modelWithDictionary" class="headerlink" title="+ yy_modelWithDictionary:"></a>+ yy_modelWithDictionary:</h4><p>由于调用<code>+ yy_modelWithJSON:</code>方法时，方法内部先将JSON序列化为可用的字典，然后调用<code>+ yy_modelWithDictionary:</code>方法。所以我们直接进入<code>+ yy_modelWithDictionary:</code>进行分析。</p>
+<p><strong>代码：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> 通过一组 键-值对(NSDictionary)，创建和返回一个新的实例</span><br><span class="line"> 此方法是线程安全的。</span><br><span class="line"></span><br><span class="line"> @参数： dictionary  一组能够映射实例属性的 键-值对(dictionary)</span><br><span class="line"> 无效的键值对将会被忽略。</span><br><span class="line"></span><br><span class="line"> @返回： 一个通过 键-值对(dictionary) 创建的新实例，出错的情况下返回nil。</span><br><span class="line"></span><br><span class="line"> @说明： 字典中的 key 和 value 将分别映射在模型的属性名，和属性值上。</span><br><span class="line"> 如果值得类型不发与属性相匹配，此方法将尝试根据如下规则，进行转化：</span><br><span class="line"></span><br><span class="line">     `NSString` or `NSNumber` -&gt; c number, such as BOOL, int, long, float, NSUInteger...</span><br><span class="line">     `NSString` -&gt; NSDate, parsed with format &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ssZ&quot;, &quot;yyyy-MM-dd HH:mm:ss&quot; or &quot;yyyy-MM-dd&quot;.</span><br><span class="line">     `NSString` -&gt; NSURL.</span><br><span class="line">     `NSValue` -&gt; struct or union, such as CGRect, CGSize, ...</span><br><span class="line">     `NSString` -&gt; SEL, Class.</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">+ (instancetype)yy_modelWithDictionary:(NSDictionary *)dictionary &#123;</span><br><span class="line">    if (!dictionary || dictionary == (id)kCFNull) return nil;</span><br><span class="line">    if (![dictionary isKindOfClass:[NSDictionary class]]) return nil;</span><br><span class="line"></span><br><span class="line">    // 创建当前类的类对象实例</span><br><span class="line">    Class cls = [self class];</span><br><span class="line">    // 创建和获取 模型的元类（包含类的详细信息）</span><br><span class="line">    _YYModelMeta *modelMeta = [_YYModelMeta metaWithClass:cls];</span><br><span class="line"></span><br><span class="line">    // 判断使用者是否自定义 类的（子类）类型</span><br><span class="line">    if (modelMeta-&gt;_hasCustomClassFromDictionary) &#123;</span><br><span class="line">        cls = [cls modelCustomClassForDictionary:dictionary] ?: cls;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 创建实例实例</span><br><span class="line">    NSObject *one = [cls new];</span><br><span class="line"></span><br><span class="line">    // 为属性赋值</span><br><span class="line">    if ([one yy_modelSetWithDictionary:dictionary]) return one;</span><br><span class="line">    return nil;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>+ yy_modelWithDictionary:</code>方法中，主要做了三件事：1.确定类型；2.创建实例；3.为实例赋值。</p>
+<h5 id="1-确定类型"><a href="#1-确定类型" class="headerlink" title="1. 确定类型"></a>1. 确定类型</h5><p>在类方法中使用<code>[self class]</code>可以轻松获取当前类的类对象，在这里作者通过类对象创建了该类的类元<code>_YYModelMeta *model</code>，类元中包含了丰富的关于该类的信息。</p>
+<p><strong><code>_YYModelMeta</code> 类元的定义：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/// 模型对象的类元信息</span><br><span class="line">@interface _YYModelMeta : NSObject &#123;</span><br><span class="line">    @package</span><br><span class="line">    YYClassInfo *_classInfo;</span><br><span class="line">    /// Key:mapped key and key path, Value:_YYModelPropertyMeta.  数据结构：&#123;&quot;pic&quot;: [_YYModelPropertyMeta new]&#125;</span><br><span class="line">    NSDictionary *_mapper;</span><br><span class="line">    /// Array&lt;_YYModelPropertyMeta&gt;, 所有有效属性元的数组</span><br><span class="line">    NSArray *_allPropertyMetas;</span><br><span class="line">    /// Array&lt;_YYModelPropertyMeta&gt;, 映射到键值路径的属性元</span><br><span class="line">    NSArray *_keyPathPropertyMetas;</span><br><span class="line">    /// Array&lt;_YYModelPropertyMeta&gt;, 映射到多个键的属性元</span><br><span class="line">    NSArray *_multiKeysPropertyMetas;</span><br><span class="line">    /// 有效的键值对数量，所谓有效即包含 _getter、_setter、成员变量。 值与 _mapper.count 相同</span><br><span class="line">    NSUInteger _keyMappedCount;</span><br><span class="line">    /// 数据类型</span><br><span class="line">    YYEncodingNSType _nsType;</span><br><span class="line"></span><br><span class="line">    BOOL _hasCustomWillTransformFromDictionary;</span><br><span class="line">    BOOL _hasCustomTransformFromDictionary;</span><br><span class="line">    BOOL _hasCustomTransformToDictionary;</span><br><span class="line">    BOOL _hasCustomClassFromDictionary;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
+<p>在确定类型之前，需要先判断使用者是否根据不同情况自定义了返回类的（子类）类型，即是否实现了<code>+ modelCustomClassForDictionary:(NSDictionary *)dictionary;</code>方法返回自定义类型。</p>
+<p><strong>官方示例：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@class YYCircle, YYRectangle, YYLine;</span><br><span class="line"></span><br><span class="line">@implementation YYShape</span><br><span class="line"></span><br><span class="line">+ (Class)modelCustomClassForDictionary:(NSDictionary*)dictionary &#123;</span><br><span class="line">    if (dictionary[@&quot;radius&quot;] != nil) &#123;</span><br><span class="line">        return [YYCircle class];</span><br><span class="line">    &#125; else if (dictionary[@&quot;width&quot;] != nil) &#123;</span><br><span class="line">        return [YYRectangle class];</span><br><span class="line">    &#125; else if (dictionary[@&quot;y2&quot;] != nil) &#123;</span><br><span class="line">        return [YYLine class];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return [self class];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
+<h5 id="2-创建实例"><a href="#2-创建实例" class="headerlink" title="2. 创建实例"></a>2. 创建实例</h5><p>确定数据类型后，通过类对象快速创建实例。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSObject *one = [cls new];</span><br></pre></td></tr></table></figure></p>
+<h5 id="3-为实例赋值"><a href="#3-为实例赋值" class="headerlink" title="3. 为实例赋值"></a>3. 为实例赋值</h5><p>调用 <code>-yy_modelSetWithDictionary:</code> 方法为实例赋值。</p>
+<p><strong>代码：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)yy_modelSetWithDictionary:(NSDictionary *)dic &#123;</span><br><span class="line">    if (!dic || dic == (id)kCFNull) return NO;</span><br><span class="line">    if (![dic isKindOfClass:[NSDictionary class]]) return NO;</span><br><span class="line"></span><br><span class="line">    // 创建和获取 模型的元类（包含类的详细信息）</span><br><span class="line">    _YYModelMeta *modelMeta = [_YYModelMeta metaWithClass:object_getClass(self)];</span><br><span class="line"></span><br><span class="line">    // 判断当前类的有效属性数量</span><br><span class="line">    if (modelMeta-&gt;_keyMappedCount == 0) return NO;</span><br><span class="line"></span><br><span class="line">    // 判断使用者是否自定义了转换映射</span><br><span class="line">    if (modelMeta-&gt;_hasCustomWillTransformFromDictionary) &#123;</span><br><span class="line">        dic = [((id&lt;YYModel&gt;)self) modelCustomWillTransformFromDictionary:dic];</span><br><span class="line">        if (![dic isKindOfClass:[NSDictionary class]]) return NO;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 创建 模型设置上下文</span><br><span class="line">    ModelSetContext context = &#123;0&#125;;</span><br><span class="line">    context.modelMeta = (__bridge void *)(modelMeta);</span><br><span class="line">    context.model = (__bridge void *)(self);</span><br><span class="line">    context.dictionary = (__bridge void *)(dic); //dic or json</span><br><span class="line"></span><br><span class="line">    //  比较 元模型的键值数量 &amp; 传入字典的键值数量</span><br><span class="line">    if (modelMeta-&gt;_keyMappedCount &gt;= CFDictionaryGetCount((CFDictionaryRef)dic)) &#123;</span><br><span class="line">        /**</span><br><span class="line">         @function CFDictionaryApplyFunction</span><br><span class="line">         对字典中的每个键值对调用函数一次。</span><br><span class="line"></span><br><span class="line">         @param  theDict</span><br><span class="line">         要查的字典。</span><br><span class="line"></span><br><span class="line">         @param  applier</span><br><span class="line">         要对字典中的每个值调用一次的回调函数。</span><br><span class="line"></span><br><span class="line">         @param context</span><br><span class="line">         一个指针大小的用户定义值，作为第三个参数传递给applier函数，但此函数不使用它。</span><br><span class="line"></span><br><span class="line">         */</span><br><span class="line">        CFDictionaryApplyFunction((CFDictionaryRef)dic, ModelSetWithDictionaryFunction, &amp;context);</span><br><span class="line"></span><br><span class="line">        if (modelMeta-&gt;_keyPathPropertyMetas) &#123;</span><br><span class="line">            CFArrayApplyFunction((CFArrayRef)modelMeta-&gt;_keyPathPropertyMetas,</span><br><span class="line">                                 CFRangeMake(0, CFArrayGetCount((CFArrayRef)modelMeta-&gt;_keyPathPropertyMetas)),</span><br><span class="line">                                 ModelSetWithPropertyMetaArrayFunction,</span><br><span class="line">                                 &amp;context);</span><br><span class="line">        &#125;</span><br><span class="line">        if (modelMeta-&gt;_multiKeysPropertyMetas) &#123;</span><br><span class="line">            CFArrayApplyFunction((CFArrayRef)modelMeta-&gt;_multiKeysPropertyMetas,</span><br><span class="line">                                 CFRangeMake(0, CFArrayGetCount((CFArrayRef)modelMeta-&gt;_multiKeysPropertyMetas)),</span><br><span class="line">                                 ModelSetWithPropertyMetaArrayFunction,</span><br><span class="line">                                 &amp;context);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        /**</span><br><span class="line">         @function CFArrayApplyFunction</span><br><span class="line">         对数组中的每个元素调用函数一次。</span><br><span class="line"></span><br><span class="line">         @param theArray</span><br><span class="line">         要操作的数组。</span><br><span class="line"></span><br><span class="line">         @param range</span><br><span class="line">         要将函数应用于的数组中的值范围。</span><br><span class="line"></span><br><span class="line">         @param applier</span><br><span class="line">         对数组中给定范围内的每个值调用一次的回调函数。如果此参数不是指向正确原型的函数的指针，则行为未定义。如果在应用程序函数期望的范围内存在或不能正确应用的值，则该行为是未定义的。</span><br><span class="line"></span><br><span class="line">         @param context</span><br><span class="line">         一个指针大小的用户定义值，它作为第二个参数传递给applier函数，但此函数不使用它。如果上下文不是applier函数所期望的内容，则行为是未定义的。</span><br><span class="line"></span><br><span class="line">         */</span><br><span class="line">        CFArrayApplyFunction((CFArrayRef)modelMeta-&gt;_allPropertyMetas,</span><br><span class="line">                             CFRangeMake(0, modelMeta-&gt;_keyMappedCount),</span><br><span class="line">                             ModelSetWithPropertyMetaArrayFunction,</span><br><span class="line">                             &amp;context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (modelMeta-&gt;_hasCustomTransformFromDictionary) &#123;</span><br><span class="line">        return [((id&lt;YYModel&gt;)self) modelCustomTransformFromDictionary:dic];</span><br><span class="line">    &#125;</span><br><span class="line">    return YES;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里会先判断使用者是否对数据字典做了额外的处理，即是否实现了 <code>-modelCustomWillTransformFromDictionary:</code> 方法。如果有，则返回和使用自定义的字典。</p>
+<p>一切准备就绪，创建模型设置上下文<code>ModelSetContext context</code>，准备赋值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct &#123;</span><br><span class="line">    void *modelMeta;  ///&lt; _YYModelMeta 类元</span><br><span class="line">    void *model;      ///&lt; id (self) 实例本身</span><br><span class="line">    void *dictionary; ///&lt; NSDictionary (json) 数据字典（json）</span><br><span class="line">&#125; ModelSetContext;</span><br></pre></td></tr></table></figure></p>
+<p>比较 <code>类元的有效键值数量</code> 和 <code>传入字典的键值数量</code>，以较小的代价进行属性的遍历赋值（减少不必要的循环次数）。这里分别使用<code>CFDictionaryApplyFunction()</code>和<code>CFArrayApplyFunction()</code> 对应 <code>ModelSetWithDictionaryFunction()</code>和<code>ModelSetWithPropertyMetaArrayFunction()</code>，进行遍历调用。二者最终都是通过 <code>ModelSetValueForProperty()</code> 函数进行赋值的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">static void ModelSetValueForProperty(__unsafe_unretained id model,// 实例对象</span><br><span class="line">                                     __unsafe_unretained id value,// 值</span><br><span class="line">                                     __unsafe_unretained _YYModelPropertyMeta *meta //属性元</span><br><span class="line">                                     )</span><br></pre></td></tr></table></figure>
+<p><code>ModelSetValueForProperty()</code> 函数中对属性的数据进行了详细的类型判断，主要分为三大类（C的基础数据类型、Foundation的NS数据类型、自定义数据类型）。除了C的基本数据类型，后者都通过消息发送 <code>objc_msgSend</code> 的方式，调用属性的 <code>meta-&gt;_setter</code> 方法进行赋值。</p>
+<p>由于实现代码较长，这里就不展示了，有兴趣的可以自行查看源码：<a href="https://github.com/ibireme/YYModel/blob/master/YYModel/NSObject+YYModel.m" target="_blank" rel="noopener">《YYModel/NSObject+YYModel.m》第784~1098行</a>。</p>
+<p>到此，JSON转模型的工作就完成了。</p>
+<h3 id="模型转JSON"><a href="#模型转JSON" class="headerlink" title="模型转JSON"></a>模型转JSON</h3><h4 id="yy-modelToJSONString"><a href="#yy-modelToJSONString" class="headerlink" title="+ yy_modelToJSONString:"></a>+ yy_modelToJSONString:</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">- (id)yy_modelToJSONObject &#123;</span><br><span class="line">    /*</span><br><span class="line">     Apple said:</span><br><span class="line">     The top level object is an NSArray or NSDictionary.</span><br><span class="line">     All objects are instances of NSString, NSNumber, NSArray, NSDictionary, or NSNull.</span><br><span class="line">     All dictionary keys are instances of NSString.</span><br><span class="line">     Numbers are not NaN or infinity.</span><br><span class="line">     */</span><br><span class="line">    id jsonObject = ModelToJSONObjectRecursive(self);</span><br><span class="line">    if ([jsonObject isKindOfClass:[NSArray class]]) return jsonObject;</span><br><span class="line">    if ([jsonObject isKindOfClass:[NSDictionary class]]) return jsonObject;</span><br><span class="line">    return nil;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSData *)yy_modelToJSONData &#123;</span><br><span class="line">    id jsonObject = [self yy_modelToJSONObject];</span><br><span class="line">    if (!jsonObject) return nil;</span><br><span class="line">    return [NSJSONSerialization dataWithJSONObject:jsonObject options:0 error:NULL];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSString *)yy_modelToJSONString &#123;</span><br><span class="line">    NSData *jsonData = [self yy_modelToJSONData];</span><br><span class="line">    if (jsonData.length == 0) return nil;</span><br><span class="line">    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从方法实现中不难看出，模型转JSON主要依赖于递归函数 <code>ModelToJSONObjectRecursive</code>，该函数最终将返回一个有效的JSON对象（NSArray/NSDictionary/NSString/NSNumber/NSNull）。</p>
+<p><strong><code>ModelToJSONObjectRecursive</code> 内部实现代码拆解：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if (!model || model == (id)kCFNull) return model;</span><br><span class="line">if ([model isKindOfClass:[NSString class]]) return model;</span><br><span class="line">if ([model isKindOfClass:[NSNumber class]]) return model;</span><br><span class="line">if ([model isKindOfClass:[NSURL class]]) return ((NSURL *)model).absoluteString;</span><br><span class="line">if ([model isKindOfClass:[NSAttributedString class]]) return ((NSAttributedString *)model).string;</span><br><span class="line">if ([model isKindOfClass:[NSDate class]]) return [YYISODateFormatter() stringFromDate:(id)model];</span><br><span class="line">if ([model isKindOfClass:[NSData class]]) return nil;</span><br></pre></td></tr></table></figure></p>
+<p>当模型值符合或接近目标类型时，可做简单的转换或直接返回.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">// 字典</span><br><span class="line">if ([model isKindOfClass:[NSDictionary class]]) &#123;</span><br><span class="line">    if ([NSJSONSerialization isValidJSONObject:model]) return model;</span><br><span class="line">    NSMutableDictionary *newDic = [NSMutableDictionary new];</span><br><span class="line">    [((NSDictionary *)model) enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) &#123;</span><br><span class="line">        NSString *stringKey = [key isKindOfClass:[NSString class]] ? key : key.description;</span><br><span class="line">        if (!stringKey) return;</span><br><span class="line">        id jsonObj = ModelToJSONObjectRecursive(obj);</span><br><span class="line">        if (!jsonObj) jsonObj = (id)kCFNull;</span><br><span class="line">        newDic[stringKey] = jsonObj;</span><br><span class="line">    &#125;];</span><br><span class="line">    return newDic;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 集合</span><br><span class="line">if ([model isKindOfClass:[NSSet class]]) &#123;</span><br><span class="line">    NSArray *array = ((NSSet *)model).allObjects;</span><br><span class="line">    if ([NSJSONSerialization isValidJSONObject:array]) return array;</span><br><span class="line">    NSMutableArray *newArray = [NSMutableArray new];</span><br><span class="line">    for (id obj in array) &#123;</span><br><span class="line">        if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSNumber class]]) &#123;</span><br><span class="line">            [newArray addObject:obj];</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            id jsonObj = ModelToJSONObjectRecursive(obj);</span><br><span class="line">            if (jsonObj &amp;&amp; jsonObj != (id)kCFNull) [newArray addObject:jsonObj];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return newArray;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 数组</span><br><span class="line">if ([model isKindOfClass:[NSArray class]]) &#123;</span><br><span class="line">    if ([NSJSONSerialization isValidJSONObject:model]) return model;</span><br><span class="line">    NSMutableArray *newArray = [NSMutableArray new];</span><br><span class="line">    for (id obj in (NSArray *)model) &#123;</span><br><span class="line">        if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSNumber class]]) &#123;</span><br><span class="line">            [newArray addObject:obj];</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            id jsonObj = ModelToJSONObjectRecursive(obj);</span><br><span class="line">            if (jsonObj &amp;&amp; jsonObj != (id)kCFNull) [newArray addObject:jsonObj];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return newArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当模型值为字典、集合数组类型时，需要遍历和递归其内部元素，直至逐一转化成有效的JSON对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">// 自定义类</span><br><span class="line">_YYModelMeta *modelMeta = [_YYModelMeta metaWithClass:[model class]];</span><br><span class="line">if (!modelMeta || modelMeta-&gt;_keyMappedCount == 0) return nil;</span><br><span class="line">NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithCapacity:64];</span><br><span class="line">__unsafe_unretained NSMutableDictionary *dic = result; // avoid retain and release in block</span><br><span class="line">[modelMeta-&gt;_mapper enumerateKeysAndObjectsUsingBlock:^(NSString *propertyMappedKey, _YYModelPropertyMeta *propertyMeta, BOOL *stop) &#123;</span><br><span class="line">    if (!propertyMeta-&gt;_getter) return;</span><br><span class="line"></span><br><span class="line">    id value = nil;</span><br><span class="line">    if (propertyMeta-&gt;_isCNumber) &#123;</span><br><span class="line">        value = ModelCreateNumberFromProperty(model, propertyMeta);</span><br><span class="line">    &#125; else if (propertyMeta-&gt;_nsType) &#123;</span><br><span class="line">        id v = ((id (*)(id, SEL))(void *) objc_msgSend)((id)model, propertyMeta-&gt;_getter);</span><br><span class="line">        value = ModelToJSONObjectRecursive(v);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        switch (propertyMeta-&gt;_type &amp; YYEncodingTypeMask) &#123;</span><br><span class="line">            case YYEncodingTypeObject: &#123;</span><br><span class="line">                id v = ((id (*)(id, SEL))(void *) objc_msgSend)((id)model, propertyMeta-&gt;_getter);</span><br><span class="line">                value = ModelToJSONObjectRecursive(v);</span><br><span class="line">                if (value == (id)kCFNull) value = nil;</span><br><span class="line">            &#125; break;</span><br><span class="line">            case YYEncodingTypeClass: &#123;</span><br><span class="line">                Class v = ((Class (*)(id, SEL))(void *) objc_msgSend)((id)model, propertyMeta-&gt;_getter);</span><br><span class="line">                value = v ? NSStringFromClass(v) : nil;</span><br><span class="line">            &#125; break;</span><br><span class="line">            case YYEncodingTypeSEL: &#123;</span><br><span class="line">                SEL v = ((SEL (*)(id, SEL))(void *) objc_msgSend)((id)model, propertyMeta-&gt;_getter);</span><br><span class="line">                value = v ? NSStringFromSelector(v) : nil;</span><br><span class="line">            &#125; break;</span><br><span class="line">            default: break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (!value) return;</span><br><span class="line"></span><br><span class="line">    if (propertyMeta-&gt;_mappedToKeyPath) &#123;</span><br><span class="line">        NSMutableDictionary *superDic = dic;</span><br><span class="line">        NSMutableDictionary *subDic = nil;</span><br><span class="line">        for (NSUInteger i = 0, max = propertyMeta-&gt;_mappedToKeyPath.count; i &lt; max; i++) &#123;</span><br><span class="line">            NSString *key = propertyMeta-&gt;_mappedToKeyPath[i];</span><br><span class="line">            if (i + 1 == max) &#123; // end</span><br><span class="line">                if (!superDic[key]) superDic[key] = value;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            subDic = superDic[key];</span><br><span class="line">            if (subDic) &#123;</span><br><span class="line">                if ([subDic isKindOfClass:[NSDictionary class]]) &#123;</span><br><span class="line">                    subDic = subDic.mutableCopy;</span><br><span class="line">                    superDic[key] = subDic;</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                subDic = [NSMutableDictionary new];</span><br><span class="line">                superDic[key] = subDic;</span><br><span class="line">            &#125;</span><br><span class="line">            superDic = subDic;</span><br><span class="line">            subDic = nil;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        if (!dic[propertyMeta-&gt;_mappedToKey]) &#123;</span><br><span class="line">            dic[propertyMeta-&gt;_mappedToKey] = value;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<p>当模型值为自定义类型时，需要遍历和递归其映射表<code>_mapper</code>（{属性名: 属性元}），通过消息发送 <code>objc_msgSend</code> 的方式，调用属性的 <code>meta-&gt;_getter</code> 方法进行取值，直至逐一转化成有效的JSON对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if (modelMeta-&gt;_hasCustomTransformToDictionary) &#123;</span><br><span class="line">    // 校验数据</span><br><span class="line">    BOOL suc = [((id&lt;YYModel&gt;)model) modelCustomTransformToDictionary:dic];</span><br><span class="line">    if (!suc) return nil;</span><br><span class="line">&#125;</span><br><span class="line">return result;</span><br></pre></td></tr></table></figure>
+<p>最后，判断使用者是否有额外的转换处理，并并校验数据的有效性。</p>
+<blockquote>
+<p>注意：<code>result</code> 和 <code>dic</code> 指向的是同一个实例，所以如果 <code>dic</code> 在外部函数中被修改了，等同于修改了 <code>result</code>。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>YYModel的使用无侵入性，采用Category的方式实现功能，比较灵活。</li>
+<li>容错方面，YYModel对数据类型做了详细的分类和判断，就算转换失败，也会自动留空（nil）。</li>
+<li>性能方面，使用 <code>CoreFoundation</code>、内联函数、runtime、缓存机制等方式，减少不必要的开销。</li>
+</ul>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/09/03/iOS源码阅读——YYModel/" data-id="ckemybo3p0010f5bun7fqevnf"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYModel/">YYModel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-2020年8月读书心得" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -147,7 +250,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/31/2020年8月读书心得/" data-id="ckeioe36s000e4rbu556r2t4m"
+      <a data-url="http://yoursite.com/2020/08/31/2020年8月读书心得/" data-id="ckemybo3k000of5bu4tge21b5"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -323,7 +426,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/29/LPR浮动利率究竟是什么？/" data-id="ckeioe372000o4rbuu7yl2cas"
+      <a data-url="http://yoursite.com/2020/08/29/LPR浮动利率究竟是什么？/" data-id="ckemybo3l000qf5bu6sitvatn"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LPR/">LPR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/金融/">金融</a></li></ul>
@@ -396,7 +499,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/28/LeetCode算法学习日记（2020年8月）/" data-id="ckeioe375000v4rbu189vn1gb"
+      <a data-url="http://yoursite.com/2020/08/28/LeetCode算法学习日记（2020年8月）/" data-id="ckemybo3h000kf5bujg1tppho"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -471,7 +574,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckeioe37l001p4rbu3lzi70fa"
+      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckemybo4p003gf5buf6osjje3"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -536,7 +639,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckeioe36q000a4rbuwapa2iwo"
+      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckemybo370006f5bueo09kp51"
         class="article-share-link">分享</a>
       
     </footer>
@@ -693,7 +796,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/10/2020年4月读书心得/" data-id="ckeioe36n00074rbufihxfufx"
+      <a data-url="http://yoursite.com/2020/04/10/2020年4月读书心得/" data-id="ckemybo390007f5buavhvw7rs"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -779,7 +882,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/03/2020年3月读书心得/" data-id="ckeioe36p00094rbuqfv9y4g0"
+      <a data-url="http://yoursite.com/2020/04/03/2020年3月读书心得/" data-id="ckemybo360005f5bu92rcrj6x"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -853,7 +956,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/24/LeetCode算法学习日记（2020年3月）/" data-id="ckeioe373000s4rbucqc7oxf0"
+      <a data-url="http://yoursite.com/2020/03/24/LeetCode算法学习日记（2020年3月）/" data-id="ckemybo3c000df5bu5pwawnw6"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -931,97 +1034,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ckeioe36j00034rbu7hb6dyyu"
+      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ckemybo320002f5bu9jx087mp"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随记/">随记</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-  
-
-</article>
-    
-    <article id="post-Github项目迁移" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/01/17/Github项目迁移/"
-    >Github项目迁移</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/01/17/Github项目迁移/" class="article-date">
-  <time datetime="2020-01-17T07:20:09.000Z" itemprop="datePublished">2020-01-17</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Git/">Git</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <p>最早用QQ号作为GitHub的登录名，感觉有点low，想着重新注册一个账号，把所有项目迁移过来，找了一些网上的资料，最后在《<a href="https://dev.tencent.com/help/git-import-tencentcloud" target="_blank" rel="noopener">如何将Git仓库导入腾讯云开发者平台？</a>》上找到了解决方案。<br>我是把项目从 GitHubUserOld 迁移到 GitHubUserNew 上的。不同平台的账户，操作方式相同。<br>具体操作如下：</p>
-<h3 id="新建项目"><a href="#新建项目" class="headerlink" title="新建项目"></a>新建项目</h3><p>首先在GitHubUserNew账号下，新建一个同名的空项目，不选择 <code>启用 README.md 文件初始化项目</code> ，以及任何 <code>License</code> 和 <code>.gitignore</code> 文件。</p>
-<h3 id="克隆项目"><a href="#克隆项目" class="headerlink" title="克隆项目"></a>克隆项目</h3><p>从 GitHubUserOld 中找到需要迁移的项目，复制出项目的web URL。</p>
-<p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gazlxcx88jj31di0u048s.jpg" alt=""></p>
-<p>确定当前路径所在，我这里是 cd 到桌面，到时候直接克隆到桌面。<br>在<code>Terminal</code>执行命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/GitHubUserOld/repo.git --bare</span><br></pre></td></tr></table></figure>
-<p>操作结束后，桌面上会多出一个 <code>repo.git</code> 文件夹</p>
-<h3 id="将克隆的仓库推送给新账户"><a href="#将克隆的仓库推送给新账户" class="headerlink" title="将克隆的仓库推送给新账户"></a>将克隆的仓库推送给新账户</h3><p>cd到 <code>repo.git</code> 文件夹</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd repo.git</span><br></pre></td></tr></table></figure>
-<p>并 <code>push</code> 所有的分支和对象到新账户的仓库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push https://github.com/GitHubUserNew/repo.git --all</span><br></pre></td></tr></table></figure>
-<p>完成后，再执行推送所有的标签。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push https://github.com/GitHubUserNew/repo.git --tags</span><br></pre></td></tr></table></figure>
-<p>到此，GitHubUserOld账号下的repo就被完美地迁移到了GitHubUserNew账户下。</p>
-<h3 id="克隆速度过慢问题"><a href="#克隆速度过慢问题" class="headerlink" title="克隆速度过慢问题"></a>克隆速度过慢问题</h3><p>我的某个项目达到了 <code>450M</code> 的大小，执行克隆操作的时候网速只有 <code>20k/s</code> 。如何解决克隆仓库时，网络过慢的问题呢。</p>
-<p>答案是，修改hosts，添加固定的DNS解析。</p>
-<h4 id="MacOS系统下的操作方式："><a href="#MacOS系统下的操作方式：" class="headerlink" title="MacOS系统下的操作方式："></a>MacOS系统下的操作方式：</h4><p>1.打开 <code>/etc/hosts</code> ，拷贝出该 <code>hosts</code> 文件；</p>
-<p>2.将下列内容加入到拷贝出的 <code>hosts</code> 文件的末尾</p>
-<p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gazn258bapj30n80dodl3.jpg" alt=""></p>
-<p>3.用拷贝出的文件替换 <code>hosts</code> 文件；</p>
-<p>4.刷新DNS缓存：sudo dscacheutil -flushcache</p>
-<p>参考文献：<a href="https://www.jianshu.com/p/2c18c13fbef3" target="_blank" rel="noopener">https://www.jianshu.com/p/2c18c13fbef3</a></p>
-
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/01/17/Github项目迁移/" data-id="ckeioe370000l4rbu3lysgjpm"
-        class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
 
     </footer>
 
