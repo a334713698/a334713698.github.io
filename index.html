@@ -36,6 +36,304 @@
     
     
     
+    <article id="post-MJExtension" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/09/14/MJExtension/"
+    >MJExtension</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/09/14/MJExtension/" class="article-date">
+  <time datetime="2020-09-14T12:13:12.000Z" itemprop="datePublished">2020-09-14</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p><code>YYModel</code>和<code>MJExtension</code>作为JSON模型转换工具，应该算是国内使用者比较多的第三方框架。相信两款都用过的开发者大有人在，我也是其中之一。既然如此，笔者便相继阅读了这两个库的主要源码，并参考<code>YYModel</code>作者<a href="https://blog.ibireme.com/" target="_blank" rel="noopener">ibireme</a>的<a href="https://blog.ibireme.com/2015/10/23/ios_model_framework_benchmark/" target="_blank" rel="noopener">《iOS JSON 模型转换库评测》</a>一文进行了的评测和展开。本文仅代表个人观点，如有异议，欢迎交流指导。</p>
+<h3 id="评测对象"><a href="#评测对象" class="headerlink" title="评测对象"></a>评测对象</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pod &apos;YYModel&apos;, &apos;~&gt; 1.0.4&apos;</span><br><span class="line"></span><br><span class="line">pod &apos;MJExtension&apos;, &apos;~&gt; 3.2.2&apos;</span><br></pre></td></tr></table></figure>
+<p>评测用例：<a href="https://github.com/a334713698/JSONModelTransformReview/tree/master/JSONModelTransformReview/GithubUserModel/user.json" target="_blank" rel="noopener">GithubUser</a>、<a href="https://github.com/a334713698/JSONModelTransformReview/tree/master/JSONModelTransformReview/WeiboModel/weibo.json" target="_blank" rel="noopener">WeiboStatus</a><br>评测代码：<a href="https://github.com/a334713698/JSONModelTransformReview" target="_blank" rel="noopener">https://github.com/a334713698/JSONModelTransformReview</a><br>运行环境：iOS 13.5 | iPhone XS Max</p>
+<h3 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h3><p>性能评测的方法是两个库执行相同次数的JSON模型转换，对比二者的耗时情况。</p>
+<h4 id="用例1：GithubUser"><a href="#用例1：GithubUser" class="headerlink" title="用例1：GithubUser"></a>用例1：GithubUser</h4><p><code>GithubUser</code>的数据主要类型是string，和少量的number，主要测试转换库的基本功能。<br>我们分三遍执行两个转换库的相关方法，每遍执行<u><strong>50000</strong></u>次，统计耗时毫秒数。<br>结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>Json 2 Model</th>
+<th>第一次</th>
+<th>第二次</th>
+<th>第三次</th>
+<th>遍历次数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td>1481.25 ms</td>
+<td>1468.86 ms</td>
+<td>1452.77 ms</td>
+<td>1,550,000</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>257.29 ms</td>
+<td>250.48 ms</td>
+<td>250.39 ms</td>
+<td>1,400,000</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Model 2 Json</th>
+<th>第一次</th>
+<th>第二次</th>
+<th>第三次</th>
+<th>遍历次数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td>1182.23 ms</td>
+<td>1162.47 ms</td>
+<td>1173.69 ms</td>
+<td>1,550,000</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>382.40 ms</td>
+<td>373.91 ms</td>
+<td>379.84 ms</td>
+<td>1,300,000</td>
+</tr>
+</tbody>
+</table>
+<h4 id="用例2：WeiboStatus"><a href="#用例2：WeiboStatus" class="headerlink" title="用例2：WeiboStatus"></a>用例2：WeiboStatus</h4><p>微博数据<code>WeiboStatus</code>包含大量的复杂类型，主要测试转换库在复杂数据类型情况下的性能。<br>我们分三遍执行这个方法，每遍执行<u><strong>5000</strong></u>次，统计耗时毫秒数。<br>结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>Json 2 Model</th>
+<th>第一遍</th>
+<th>第二遍</th>
+<th>第三遍</th>
+<th>遍历次数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td>4061.77 ms</td>
+<td>4054.89 ms</td>
+<td>4057.63 ms</td>
+<td>2,290,000</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>813.44 ms</td>
+<td>803.64 ms</td>
+<td>806.97 ms</td>
+<td>2,285,000</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Model 2 Json</th>
+<th>第一遍</th>
+<th>第二遍</th>
+<th>第三遍</th>
+<th>遍历次数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td>596.46 ms</td>
+<td>592.42 ms</td>
+<td>589.69 ms</td>
+<td>475,000</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>660.04 ms</td>
+<td>626.69 ms</td>
+<td>615.30 ms</td>
+<td>1,215,000</td>
+</tr>
+</tbody>
+</table>
+<h4 id="性能评测结果"><a href="#性能评测结果" class="headerlink" title="性能评测结果"></a>性能评测结果</h4><ul>
+<li>每个用例的第一遍评测，都会比后两遍有稍多的用时，是因为第一遍运行，会首次创建和缓存类的类元信息和属性元信息，后两遍再运行的时候，可以直接使用缓存，减少重复生成类元和属性元造成的开销。</li>
+<li>系统方法和容器使用方面：<code>MJExtension</code>主要使用的是Foundation框架的NSArray、NSDictionary，以及KVC的方法进行取值和赋值。<code>YYModel</code>主要使用了CoreFoundation框架的容器和遍历方法，通过<code>objc_msgSend</code>消息发送的方式，调用属性的<code>_setter</code>和<code>_getter</code>进行取值和赋值，部分地方还使用inline和纯C函数。</li>
+</ul>
+<h3 id="容错"><a href="#容错" class="headerlink" title="容错"></a>容错</h3><p>容错性主要是测试，当JSON和Model之间的数据格式不完全相同时，转换库是如何处理的，是否会产生错误或造成Crash。</p>
+<table>
+<thead>
+<tr>
+<th>用例 1</th>
+<th>JSON属性是：数值，Model属性是：NSString</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td>100 -&gt; @”100”</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>100 -&gt; @”100”</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>用例 2</th>
+<th>JSON属性是：数值字符串，Model属性是数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td>@”100” -&gt; 100</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>@”100” -&gt; 100</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>用例 3</th>
+<th>JSON属性是时间字符串，Model属性是NSDate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td>nil，属性类型与值类型不匹配</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>支持<a href="https://baike.baidu.com/item/ISO%208601/3910715" target="_blank" rel="noopener">ISO标准时间格式</a>的时间字符串自动转成NSDate</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>用例 4</th>
+<th>JSON属性是字符串，Model属性是NSValue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td>nil，属性类型与值类型不匹配</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>nil，属性类型与值类型不匹配</td>
+</tr>
+</tbody>
+</table>
+<p><code>YYModel</code> 和 <code>MJExtension</code> 都会都属性类型与值类型进行类型检测，避免属性被赋予了错误的类型值，以避免潜在的风险。</p>
+<blockquote>
+<p>这里需要提一下，ibireme发布的<a href="https://github.com/ibireme/YYModel/tree/master/Benchmark" target="_blank" rel="noopener">转换库评测代码</a>发布于2015-09-18。当时<code>MJExtension</code>的最高版本应该是<a href="https://github.com/CoderMJLee/MJExtension/releases/tag/2.5.7" target="_blank" rel="noopener"><code>2.5.7版本</code></a>，此时的代码中还未添加类型检测的代码。</p>
+</blockquote>
+<p>对于NSDate类型的JSON数据，如果时间格式满足ISO标准，<code>YYModel</code>支持将ISO标准时间格式的字符串，转换成NSDate类型的值；而<code>MJExtension</code>会因为类型检测不匹配，为模型赋空值（nil）。</p>
+<h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><table>
+<thead>
+<tr>
+<th>功能</th>
+<th style="text-align:center">属性名转换</th>
+<th style="text-align:center">自定义属性值转换</th>
+<th style="text-align:center">黑白名单</th>
+<th style="text-align:center">Coding</th>
+<th style="text-align:center">Copying</th>
+<th style="text-align:center">hash/equal</th>
+<th style="text-align:center">CoreData</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MJExtension</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">✅</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="侵入性"><a href="#侵入性" class="headerlink" title="侵入性"></a>侵入性</h3><p><code>YYModel</code>、<code>MJExtension</code>都采用Category来实现，无侵入，并在方法名之前添加了前缀，与原生方法进行区分。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p><code>YYModel</code>、<code>MJExtension</code>从逻辑上来说是相似的，都通过Category无侵入性地实现功能，且都是使用runtime动态地获取、创建和缓存类元、属性元信息，再通过对数据的遍历进行转换。具体功能上都支持自定义属性名映射和自定义属性值转换，以及方便的归档接档的方法。少部分功能，略有差异，可根据需求选取。<br>从方法/函数使用上来说，<code>MJExtension</code>使用的是Foundation框架的方法，而<code>YYModel</code>使用的是相比之下更底层的CoreFoundation框架的函数，再配合使用内联和纯C函数，能够做到比<code>MJExtension</code>更少的资源开销，从而在性能上有显著的优势。</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/09/14/MJExtension/" data-id="ckf2hog76000qh2buc4pkvru1"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MJExtension/">MJExtension</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYModel/">YYModel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-iOS源码阅读 —— MJExtension" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -121,7 +419,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/09/09/iOS源码阅读 —— MJExtension/" data-id="ckevd229j001ckdbu6nc7w157"
+      <a data-url="http://yoursite.com/2020/09/09/iOS源码阅读 —— MJExtension/" data-id="ckf2hog7b0013h2bu0sbeo73e"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MJExtension/">MJExtension</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
@@ -224,7 +522,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/09/03/iOS源码阅读——YYModel/" data-id="ckevd229l001ekdbuyod90ycn"
+      <a data-url="http://yoursite.com/2020/09/03/iOS源码阅读——YYModel/" data-id="ckf2hog7c0015h2bumv7j9zj6"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYModel/">YYModel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
@@ -352,7 +650,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/31/2020年8月读书心得/" data-id="ckevd228z000ckdbuap3n7crl"
+      <a data-url="http://yoursite.com/2020/08/31/2020年8月读书心得/" data-id="ckf2hog71000gh2bu0r1xlf5a"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -528,7 +826,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/29/LPR浮动利率究竟是什么？/" data-id="ckevd229e0010kdbuv33kxjf6"
+      <a data-url="http://yoursite.com/2020/08/29/LPR浮动利率究竟是什么？/" data-id="ckf2hog78000vh2bun6va6n54"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LPR/">LPR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/金融/">金融</a></li></ul>
@@ -601,7 +899,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/28/LeetCode算法学习日记（2020年8月）/" data-id="ckevd2299000rkdbu5lzriod3"
+      <a data-url="http://yoursite.com/2020/08/28/LeetCode算法学习日记（2020年8月）/" data-id="ckf2hog75000nh2buzcxl9krl"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -676,7 +974,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckevd229v0021kdbuggt97ljk"
+      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckf2hog7o001yh2bugpxnecvk"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -741,7 +1039,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckevd228u0006kdbu4ayl9oqq"
+      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckf2hog6t0006h2buaogkndzu"
         class="article-share-link">分享</a>
       
     </footer>
@@ -898,7 +1196,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/10/2020年4月读书心得/" data-id="ckevd2292000ekdbuuat9rrbk"
+      <a data-url="http://yoursite.com/2020/04/10/2020年4月读书心得/" data-id="ckf2hog6y000ch2buimpmucd2"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -984,84 +1282,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/03/2020年3月读书心得/" data-id="ckevd228x0008kdbuc5n33pgm"
+      <a data-url="http://yoursite.com/2020/04/03/2020年3月读书心得/" data-id="ckf2hog6s0005h2bu64vbew4s"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-  
-
-</article>
-    
-    <article id="post-LeetCode算法学习日记（2020年3月）" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/03/24/LeetCode算法学习日记（2020年3月）/"
-    >LeetCode算法学习日记（2020年3月）</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/03/24/LeetCode算法学习日记（2020年3月）/" class="article-date">
-  <time datetime="2020-03-24T07:55:37.000Z" itemprop="datePublished">2020-03-24</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/算法/">算法</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <h3 id="2020-3-23"><a href="#2020-3-23" class="headerlink" title="2020.3.23"></a>2020.3.23</h3><hr>
-<p><b>题目：</b>求两数的最大公约数<br><b>知识点：</b>辗转相除法（欧几里得算法）<br><b>代码：</b><br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">getGreatestCommonDivisor</span><span class="params">(x : Int, y : Int)</span></span> -&gt; <span class="type">Int</span>&#123;</span><br><span class="line">        <span class="keyword">var</span> preDivisor = <span class="built_in">max</span>(x, y)</span><br><span class="line">        <span class="keyword">var</span> <span class="type">Divisor</span> = <span class="built_in">min</span>(x, y)</span><br><span class="line">        <span class="keyword">repeat</span>&#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="type">Remainder</span> = preDivisor%<span class="type">Divisor</span></span><br><span class="line">            <span class="keyword">if</span> <span class="type">Remainder</span> == <span class="number">0</span> &#123;</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line">            preDivisor = <span class="type">Divisor</span></span><br><span class="line">            <span class="type">Divisor</span> = <span class="type">Remainder</span></span><br><span class="line">        &#125;<span class="keyword">while</span> <span class="literal">true</span></span><br><span class="line">        <span class="keyword">return</span> <span class="type">Divisor</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b>算法理解：</b><br>假设x &gt; y，则有x = k·y + r（x，y，k，r都为正整数，且r≥0）<br>当r = 0，y为(x, y)<br>当r &gt; 0，r = x%y = x - k·y<br>假设d为(x, y)的公约数，记做 <code>d|x</code>（x能够被d整除）和 <code>d|y</code>（y能够被d整除）<br>则以上等式可以写成r/d = x/d - k·y/d，而等式的右边一定是正整数，所以r也能被d整除，即记做 <code>d|r</code><br>所以x, y, x%y具有相同的公约数集<br>同理可得x_0 = y, y_0 = x%y, r_0 = x_0 % y_0 = y%(x%y)具有相同的公约数集，并以此类推<br>当首次出现x_n%y_n = 0时，即为(x, y)的最大公约数</p>
-<h3 id="2020-3-24"><a href="#2020-3-24" class="headerlink" title="2020.3.24"></a>2020.3.24</h3><hr>
-<p><b>题目：</b>【水壶问题】有两个容量分别为 x升 和 y升 的水壶以及无限多的水。请判断能否通过使用这两个水壶，从而可以得到恰好 z升 的水？<br>如果可以，最后请用以上水壶中的一或两个来盛放取得的 z升 水。<br>允许操作：<br><b>·</b> 装满任意一个水壶<br><b>·</b> 清空任意一个水壶<br><b>·</b> 从一个水壶向另外一个水壶倒水，直到装满或者倒空<br><b>知识点：</b>裴蜀定理（贝祖定理）<br><b>代码：</b><br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">gcd</span><span class="params">(<span class="number">_</span> x : Int,<span class="number">_</span> y : Int)</span></span> -&gt; <span class="type">Int</span>&#123;</span><br><span class="line">        <span class="keyword">let</span> preDivisor = <span class="built_in">max</span>(x, y)</span><br><span class="line">        <span class="keyword">let</span> <span class="type">Divisor</span> = <span class="built_in">min</span>(x, y)</span><br><span class="line">        <span class="keyword">if</span> preDivisor % <span class="type">Divisor</span> == <span class="number">0</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="type">Divisor</span></span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> gcd(x: <span class="type">Divisor</span>, y: preDivisor % <span class="type">Divisor</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">canMeasureWater</span><span class="params">(<span class="number">_</span> x: Int, <span class="number">_</span> y: Int, <span class="number">_</span> z: Int)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> z &gt; x+y&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> x==<span class="number">0</span> || y==<span class="number">0</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> (z==<span class="number">0</span>) || (x+y==z)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> z % gcd(x, y) == <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><b>算法理解：</b><br>由题可知，在z ≤ x+y，且x, y都不为0的情况下，两个水壶总水量的增加或减少，一定有至少一个壶是满的或是空的，不存在同时有水且都不满的情况。<br>当有一个水壶不满时，往不满的水壶里加满水，或是将水壶倒空，都是没有意义的，<br>所以，每次变动的 <code>总水量</code> 一定是 x 和 y 的变化量。<br>此时题目可以理解为 <code>总水量</code> 经过a次 x升，b次 y升 的变化，能否最终得到 z升？<br>也就获得了等式：</p>
-<center>ax + by = z</center>
-
-<p>而只要满足 z ≤ x+y，且这样的 a, b 存在，那么目标就可以达成。<br>根据 <a href="https://baike.baidu.com/item/%E8%A3%B4%E8%9C%80%E5%AE%9A%E7%90%86/5186593" target="_blank" rel="noopener">裴蜀定理(贝祖定理)</a>，ax+by = z 有解的充要条件是：当且仅当 z 是 (x, y) 最大的公约数的倍数。<br>因此我们只需要找到 (x, y) 的最大公约数并判断 z 是否是它的倍数即可。</p>
-
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/24/LeetCode算法学习日记（2020年3月）/" data-id="ckevd2297000mkdbuy8dqz10u"
-        class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
 
     </footer>
 

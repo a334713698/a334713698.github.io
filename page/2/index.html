@@ -36,6 +36,80 @@
     
     
     
+    <article id="post-LeetCode算法学习日记（2020年3月）" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/03/24/LeetCode算法学习日记（2020年3月）/"
+    >LeetCode算法学习日记（2020年3月）</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/03/24/LeetCode算法学习日记（2020年3月）/" class="article-date">
+  <time datetime="2020-03-24T07:55:37.000Z" itemprop="datePublished">2020-03-24</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/算法/">算法</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h3 id="2020-3-23"><a href="#2020-3-23" class="headerlink" title="2020.3.23"></a>2020.3.23</h3><hr>
+<p><b>题目：</b>求两数的最大公约数<br><b>知识点：</b>辗转相除法（欧几里得算法）<br><b>代码：</b><br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">getGreatestCommonDivisor</span><span class="params">(x : Int, y : Int)</span></span> -&gt; <span class="type">Int</span>&#123;</span><br><span class="line">        <span class="keyword">var</span> preDivisor = <span class="built_in">max</span>(x, y)</span><br><span class="line">        <span class="keyword">var</span> <span class="type">Divisor</span> = <span class="built_in">min</span>(x, y)</span><br><span class="line">        <span class="keyword">repeat</span>&#123;</span><br><span class="line">            <span class="keyword">let</span> <span class="type">Remainder</span> = preDivisor%<span class="type">Divisor</span></span><br><span class="line">            <span class="keyword">if</span> <span class="type">Remainder</span> == <span class="number">0</span> &#123;</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line">            preDivisor = <span class="type">Divisor</span></span><br><span class="line">            <span class="type">Divisor</span> = <span class="type">Remainder</span></span><br><span class="line">        &#125;<span class="keyword">while</span> <span class="literal">true</span></span><br><span class="line">        <span class="keyword">return</span> <span class="type">Divisor</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b>算法理解：</b><br>假设x &gt; y，则有x = k·y + r（x，y，k，r都为正整数，且r≥0）<br>当r = 0，y为(x, y)<br>当r &gt; 0，r = x%y = x - k·y<br>假设d为(x, y)的公约数，记做 <code>d|x</code>（x能够被d整除）和 <code>d|y</code>（y能够被d整除）<br>则以上等式可以写成r/d = x/d - k·y/d，而等式的右边一定是正整数，所以r也能被d整除，即记做 <code>d|r</code><br>所以x, y, x%y具有相同的公约数集<br>同理可得x_0 = y, y_0 = x%y, r_0 = x_0 % y_0 = y%(x%y)具有相同的公约数集，并以此类推<br>当首次出现x_n%y_n = 0时，即为(x, y)的最大公约数</p>
+<h3 id="2020-3-24"><a href="#2020-3-24" class="headerlink" title="2020.3.24"></a>2020.3.24</h3><hr>
+<p><b>题目：</b>【水壶问题】有两个容量分别为 x升 和 y升 的水壶以及无限多的水。请判断能否通过使用这两个水壶，从而可以得到恰好 z升 的水？<br>如果可以，最后请用以上水壶中的一或两个来盛放取得的 z升 水。<br>允许操作：<br><b>·</b> 装满任意一个水壶<br><b>·</b> 清空任意一个水壶<br><b>·</b> 从一个水壶向另外一个水壶倒水，直到装满或者倒空<br><b>知识点：</b>裴蜀定理（贝祖定理）<br><b>代码：</b><br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">gcd</span><span class="params">(<span class="number">_</span> x : Int,<span class="number">_</span> y : Int)</span></span> -&gt; <span class="type">Int</span>&#123;</span><br><span class="line">        <span class="keyword">let</span> preDivisor = <span class="built_in">max</span>(x, y)</span><br><span class="line">        <span class="keyword">let</span> <span class="type">Divisor</span> = <span class="built_in">min</span>(x, y)</span><br><span class="line">        <span class="keyword">if</span> preDivisor % <span class="type">Divisor</span> == <span class="number">0</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="type">Divisor</span></span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> gcd(x: <span class="type">Divisor</span>, y: preDivisor % <span class="type">Divisor</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">canMeasureWater</span><span class="params">(<span class="number">_</span> x: Int, <span class="number">_</span> y: Int, <span class="number">_</span> z: Int)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> z &gt; x+y&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> x==<span class="number">0</span> || y==<span class="number">0</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> (z==<span class="number">0</span>) || (x+y==z)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> z % gcd(x, y) == <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b>算法理解：</b><br>由题可知，在z ≤ x+y，且x, y都不为0的情况下，两个水壶总水量的增加或减少，一定有至少一个壶是满的或是空的，不存在同时有水且都不满的情况。<br>当有一个水壶不满时，往不满的水壶里加满水，或是将水壶倒空，都是没有意义的，<br>所以，每次变动的 <code>总水量</code> 一定是 x 和 y 的变化量。<br>此时题目可以理解为 <code>总水量</code> 经过a次 x升，b次 y升 的变化，能否最终得到 z升？<br>也就获得了等式：</p>
+<center>ax + by = z</center>
+
+<p>而只要满足 z ≤ x+y，且这样的 a, b 存在，那么目标就可以达成。<br>根据 <a href="https://baike.baidu.com/item/%E8%A3%B4%E8%9C%80%E5%AE%9A%E7%90%86/5186593" target="_blank" rel="noopener">裴蜀定理(贝祖定理)</a>，ax+by = z 有解的充要条件是：当且仅当 z 是 (x, y) 最大的公约数的倍数。<br>因此我们只需要找到 (x, y) 的最大公约数并判断 z 是否是它的倍数即可。</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/03/24/LeetCode算法学习日记（2020年3月）/" data-id="ckf2hog73000ih2bur4ccje0w"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-2019年总结" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -97,7 +171,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ckevd228q0003kdbuw1rcma14"
+      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ckf2hog6l0001h2buugok11ju"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随记/">随记</a></li></ul>
@@ -184,7 +258,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/01/17/Github项目迁移/" data-id="ckevd2295000jkdbuqnhvw75i"
+      <a data-url="http://yoursite.com/2020/01/17/Github项目迁移/" data-id="ckf2hog6u0007h2buz1wk9dlr"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
@@ -260,7 +334,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/08/26/2019年8月读书心得/" data-id="ckevd228l0001kdbup4y0ybdl"
+      <a data-url="http://yoursite.com/2019/08/26/2019年8月读书心得/" data-id="ckf2hog6o0002h2budiqlxl81"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -413,7 +487,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/25/iOS源码阅读——YYWebImage/" data-id="ckevd229s001vkdbuabbk0txg"
+      <a data-url="http://yoursite.com/2018/12/25/iOS源码阅读——YYWebImage/" data-id="ckf2hog7m001th2buxpzjou1r"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYWebImage/">YYWebImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
@@ -493,7 +567,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/30/iOS-UITableView-长按移动Cell的位置/" data-id="ckevd229d000zkdbue5jktr0k"
+      <a data-url="http://yoursite.com/2018/11/30/iOS-UITableView-长按移动Cell的位置/" data-id="ckf2hog7h001fh2buttanrenk"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UITableView/">UITableView</a></li></ul>
@@ -569,7 +643,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/09/07/自定义UITableView左滑删除样式/" data-id="ckevd229u001ykdbujmpjnhb1"
+      <a data-url="http://yoursite.com/2018/09/07/自定义UITableView左滑删除样式/" data-id="ckf2hog7p0021h2bups84hv6l"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UITableView/">UITableView</a></li></ul>
@@ -649,7 +723,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/09/05/Diary/" data-id="ckevd228w0007kdbuzvp0cveb"
+      <a data-url="http://yoursite.com/2018/09/05/Diary/" data-id="ckf2hog6w000bh2buq9thbq4h"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Diary/">Diary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/成长/">成长</a></li></ul>
@@ -731,7 +805,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ckevd229i0017kdbuhgxz8uet"
+      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ckf2hog7e0018h2bupgn1yscr"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Instruments/">Instruments</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leaks/">Leaks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Xcode/">Xcode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存泄漏/">内存泄漏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/调试优化/">调试优化</a></li></ul>
@@ -825,132 +899,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckevd229a000tkdbudezrs0a0"
-        class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-  
-
-</article>
-    
-    <article id="post-RunLoop理论" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2018/03/04/RunLoop理论/"
-    >RunLoop理论</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2018/03/04/RunLoop理论/" class="article-date">
-  <time datetime="2018-03-04T07:20:39.000Z" itemprop="datePublished">2018-03-04</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <h4 id="（一）概念"><a href="#（一）概念" class="headerlink" title="（一）概念"></a>（一）概念</h4><ul>
-<li>运行循环</li>
-<li>保持程序持续运行</li>
-<li>处理app的各种事件（比如触摸事件、定时器事件、Selector事件）</li>
-</ul>
-<h5 id="1-RunLoop与线程"><a href="#1-RunLoop与线程" class="headerlink" title="1.RunLoop与线程"></a>1.RunLoop与线程</h5><ul>
-<li>每条线程都有唯一的与之对应的RunLoop对象</li>
-<li>主线程的RunLoop是自动创建好的，子线程的RunLoop需要手动创建</li>
-<li>RunLoop在第一次获取时创建，在线程结束时销毁。而如果该RunLoop不包含任何Timer、Source、Observer，它就会自我销亡</li>
-</ul>
-<h4 id="（二）RunLoop相关类"><a href="#（二）RunLoop相关类" class="headerlink" title="（二）RunLoop相关类"></a>（二）RunLoop相关类</h4><ul>
-<li>在 CoreFoundation 里面关于 RunLoop 有5个类:</li>
-<li>CFRunLoopRef</li>
-<li>CFRunLoopModeRef</li>
-<li>CFRunLoopSourceRef：事件源</li>
-<li>CFRunLoopTimerRef：基于时间的触发器</li>
-<li>CFRunLoopObserverRef：观察者</li>
-</ul>
-<h5 id="1-获取RunLoop对象"><a href="#1-获取RunLoop对象" class="headerlink" title="1.获取RunLoop对象"></a>1.获取RunLoop对象</h5><ul>
-<li>Foundation</li>
-<li>[NSRunLoop currentRunLoop]; //获取当前线程的RunLoop对象</li>
-<li>[NSRunLoop mainRunLoop]; //获得主线程的RunLoop对象</li>
-<li>Core Foundation</li>
-<li>CFRunLoopGetCurrent(); //获取当前线程的RunLoop对象</li>
-<li>CFRunLoopGetMain(); //获得主线程的RunLoop对象</li>
-</ul>
-<h4 id="（三）CFRunLoopModeRef"><a href="#（三）CFRunLoopModeRef" class="headerlink" title="（三）CFRunLoopModeRef"></a>（三）CFRunLoopModeRef</h4><h5 id="1-常用Mode"><a href="#1-常用Mode" class="headerlink" title="1.常用Mode"></a>1.常用Mode</h5><ul>
-<li>NSDefaultRunLoopMode：App的默认Mode，通常主线程是在这个Mode下运行</li>
-<li>UITrackingRunLoopMode：界面跟踪Mode。用于追踪ScrollView的触摸滑动事件，保证界面滑动时不收其他Mode影响。</li>
-<li>NSRunLoopCommonModes：这是一个占位用的Mode(综合以上两种模式)，不是一中真正的Mode。</li>
-</ul>
-<h5 id="2-使用"><a href="#2-使用" class="headerlink" title="2.使用"></a>2.使用</h5><ul>
-<li>一个 RunLoop 包含若干个 Mode（模式），每个 Mode 又包含若干个Source/Timer/Observer。每次调用 RunLoop 的主函数时，只能指定一个 Mode，这个Mode被称作 CurrentMode（当前模式）。如果需要切换 Mode，只能退出当前 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</li>
-</ul>
-<h4 id="（四）CFRunLoopSourceRef"><a href="#（四）CFRunLoopSourceRef" class="headerlink" title="（四）CFRunLoopSourceRef"></a>（四）CFRunLoopSourceRef</h4><h5 id="1-按官方文档分类"><a href="#1-按官方文档分类" class="headerlink" title="1.按官方文档分类"></a>1.按官方文档分类</h5><ul>
-<li>Port-Base Source：继续端口的，与其他线程进行交互</li>
-<li>Custom Input Source</li>
-<li>Cocoa Perform Selector Source</li>
-</ul>
-<h5 id="2-根据函数调用栈分类："><a href="#2-根据函数调用栈分类：" class="headerlink" title="2.根据函数调用栈分类："></a>2.根据函数调用栈分类：</h5><ul>
-<li>Source0：非基于Port的。</li>
-<li>Source1：基于Port的，通过内核和其他线程通信，接受、分发系统事件。</li>
-<li>Source1接收到事件后，会交给Source0去处理</li>
-</ul>
-<h4 id="（五）CFRunLoopTimerRef"><a href="#（五）CFRunLoopTimerRef" class="headerlink" title="（五）CFRunLoopTimerRef"></a>（五）CFRunLoopTimerRef</h4><ul>
-<li>CFRunLoopTimerRef基本上就是NSTimer，它受RunLoop的Mode影响。</li>
-<li>GCD的定时器不受RunLoop的Mode影响。</li>
-<li><p>① NSTimer默认加入RunLoop，且是NSDefaultRunLoopMode。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//调用了scheduledTimer返回的定时器，已经自动被添加到当前RunLoop中，默认是NSDefaultRunLoopMode</span><br><span class="line">NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(run) userInfo:nil repeats:YES];</span><br><span class="line"></span><br><span class="line">// 修改模式</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>②三种模式分析</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">NSTimer *timer = [NSTimer timerWithTimeInterval:2.0 target:self selector:@selector(run) userInfo:nil repeats:YES];</span><br><span class="line">// 定时器只运行在NSDefaultRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];</span><br><span class="line"></span><br><span class="line">// 定时器只运行在UITrackingRunLoopMode下，一旦RunLoop进入其他模式，这个定时器就不会工作</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:UITrackingRunLoopMode];</span><br><span class="line"></span><br><span class="line">// 定时器会跑在标记为common modes的模式下</span><br><span class="line">// 标记为common modes的模式：UITrackingRunLoopMode和NSDefaultRunLoopMode</span><br><span class="line">[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h4 id="（六）Oberserver（观察者）"><a href="#（六）Oberserver（观察者）" class="headerlink" title="（六）Oberserver（观察者）"></a>（六）Oberserver（观察者）</h4><ul>
-<li>CFRunLoopObserverRef是观察者，能够监听RunLoop的状态改变</li>
-<li>可以监听以下几个时间点：<br>CFRunLoopActivity的取值<br>kCFRunLoopEntry = (1UL &lt;&lt;0),<br>kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1),<br>kCFRunLoopBeforeSources = (1UL &lt;&lt; 2),<br>kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5),<br>kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6),<br>kCFRunLoopExit = (1UL &lt;&lt; 7),<br>kCFRunLoopAllActivities = 0x0FFFFFFFU</li>
-</ul>
-<h5 id="1-CFRunLoopObserverRef的使用"><a href="#1-CFRunLoopObserverRef的使用" class="headerlink" title="1.CFRunLoopObserverRef的使用"></a>1.CFRunLoopObserverRef的使用</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (void)observer&#123;</span><br><span class="line">// 1. 创建observer</span><br><span class="line">CFRunLoopObserverRef observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault(), kCFRunLoopAllActivities, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) &#123;</span><br><span class="line">NSLog(@&quot;----监听到RunLoop状态发生改变---%zd&quot;, activity);</span><br><span class="line">&#125;);</span><br><span class="line">// 2. 添加观察者：监听RunLoop的状态</span><br><span class="line">CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, kCFRunLoopDefaultMode);</span><br><span class="line"></span><br><span class="line">// 3. 释放Observer</span><br><span class="line">CFRelease(observer);</span><br><span class="line">&#125;</span><br><span class="line">/*</span><br><span class="line">CF的内存管理（Core Foundation）</span><br><span class="line">1.凡是带有Create、Copy、Retain等字眼的函数，创建出来的对象，都需要在最后做一次release</span><br><span class="line">* 比如CFRunLoopObserverCreate</span><br><span class="line">2.release函数：CFRelease(对象);</span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
-<h4 id="（七）RunLoop整体处理逻辑"><a href="#（七）RunLoop整体处理逻辑" class="headerlink" title="（七）RunLoop整体处理逻辑"></a>（七）RunLoop整体处理逻辑</h4><p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1foxdggdlw4j30n20hen3v.jpg" alt=""></p>
-
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckevd229h0015kdbuw64whsov"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckf2hog79000yh2bu2wdv9qjz"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
