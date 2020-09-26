@@ -36,6 +36,100 @@
     
     
     
+    <article id="post-RunLoop实践" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/03/04/RunLoop实践/"
+    >RunLoop实践</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/03/04/RunLoop实践/" class="article-date">
+  <time datetime="2018-03-04T07:20:43.000Z" itemprop="datePublished">2018-03-04</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h4 id="（一）RunLoop的用途"><a href="#（一）RunLoop的用途" class="headerlink" title="（一）RunLoop的用途"></a>（一）RunLoop的用途</h4><h5 id="1-常驻线程"><a href="#1-常驻线程" class="headerlink" title="1.常驻线程"></a>1.常驻线程</h5><ul>
+<li>保证线程不死。</li>
+<li>一般来说执行完任务的线程会被销毁。而被strong强引用的线程执行完任务也会进入销亡状态，也无法使用了</li>
+<li>所以可以通过RunLoop使线程常驻</li>
+<li>RunLoop底层是一个死循环，但是它能监听到外部的事件</li>
+<li>注意：如果一个RunLoop不包含任何Timer、Source、Observer。就会自我销亡。</li>
+<li>子线程里的RunLoop启动需要满足两个条件</li>
+<li>RunLoop中有东西</li>
+<li>手动run（启动）</li>
+<li>启动RunLoop之前，最好用@autoreleasepool{}包住</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line"></span><br><span class="line">//创建线程</span><br><span class="line">self.thread = [[NSThread alloc]initWithTarget:self selector:@selector(run) object:nil];</span><br><span class="line">//开始执行线程任务</span><br><span class="line">[self.thread start];</span><br><span class="line">&#125;</span><br><span class="line">-(void)run&#123;</span><br><span class="line"></span><br><span class="line">NSLog(@&quot;------run-----&quot;);</span><br><span class="line"></span><br><span class="line">@autoreleasepool&#123;</span><br><span class="line">//每条线程都有唯一的与之对应的RunLoop对象</span><br><span class="line">//获取（创建）当前子线程的RunLoop</span><br><span class="line">//并为RunLoop添加 Source事件源(有基于Port的数据源)</span><br><span class="line">//如果RunLoop不包含任何Timer、Source、Observer，它就会自我销亡</span><br><span class="line">[[NSRunLoop currentRunLoop] addPort:[NSPort port] forMode:NSDefaultRunLoopMode];</span><br><span class="line">//启动当前RunLoop，使其保持运行状态（即底层死循环），但依旧能监听外部事件</span><br><span class="line">[[NSRunLoop currentRunLoop] run];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">NSLog(@&quot;这句话，按道理是执行不到的&quot;);</span><br><span class="line">&#125;</span><br><span class="line">-(void)test&#123;</span><br><span class="line">NSLog(@&quot;--------test--%@&quot;,[NSThread currentThread]);</span><br><span class="line">&#125;</span><br><span class="line">-(void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event&#123;</span><br><span class="line">//在同一个线程中执行test方法</span><br><span class="line">[self performSelector:@selector(test) onThread:self.thread withObject:nil waitUntilDone:NO];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="（二）RunLoop面试题"><a href="#（二）RunLoop面试题" class="headerlink" title="（二）RunLoop面试题"></a>（二）RunLoop面试题</h4><h5 id="1-什么是RunLoop"><a href="#1-什么是RunLoop" class="headerlink" title="1.什么是RunLoop"></a>1.什么是RunLoop</h5><ul>
+<li>从字面看：就是运行循环</li>
+<li>从内部看，就是do-while循环，在这个循环内部不断地处理各种任务（比如Source、Timer、Observer）</li>
+<li>一个线程对应一个RunLoop，主线程的RunLoop默认已经启动，子线程的RunLoop需要手动启动（调用run方法）</li>
+<li>RunLoop只能选择一个模式启动，如果当前RunLoop没有任何内容，RunLoop将自动退出内部循环</li>
+</ul>
+<h5 id="2-为RunLoop添加的自动释放池什么时候释放"><a href="#2-为RunLoop添加的自动释放池什么时候释放" class="headerlink" title="2.为RunLoop添加的自动释放池什么时候释放"></a>2.为RunLoop添加的自动释放池什么时候释放</h5><ul>
+<li>在RunLoop顺面之前释放（kCFRunLoopBeforeWaiting）</li>
+</ul>
+<h5 id="3-使用场景"><a href="#3-使用场景" class="headerlink" title="3.使用场景"></a>3.使用场景</h5><ul>
+<li>开启常驻线程（让一个子线程不进入销亡状态，等待其他线程发来消息，处理其他事件）</li>
+<li>在子线程开启一个定时器</li>
+<li>在子线程中进行一些长期监控</li>
+<li>可以控制定时器在特定模式下执行</li>
+<li>可以让某些事件（行为、任务）在特定模式下执行</li>
+<li>可以添加Observer监听RunLoop的状态，比如监听点击事件的处理（在所有点击事件之前做一些事情）</li>
+</ul>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckfjmfp9l000v2mbuo75odsmz"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-RunLoop理论" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -144,7 +238,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckfckz5eq0013ccbux2ct8xxa"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckfjmfp9o00132mbu38jau0gb"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -227,7 +321,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckfckz5eu001bccbuml7uvd49"
+      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckfjmfp9t001h2mbufh257znb"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
@@ -298,7 +392,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckfckz5ey001mccbukjlk1n13"
+      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckfjmfp9w001n2mbu4jfo9h14"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -377,7 +471,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckfckz5ew001gccbuqs6afmww"
+      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckfjmfp9u001j2mbuaplzi0d7"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -469,7 +563,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ckfckz5eo000yccbuuw3lys7m"
+      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ckfjmfp9n00112mbuw11oqbzm"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/">Tech</a></li></ul>
@@ -542,7 +636,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ckfckz5ex001iccbun92ttzb4"
+      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ckfjmfp9x001o2mbukbvslart"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
