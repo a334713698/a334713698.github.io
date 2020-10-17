@@ -36,6 +36,88 @@
     
     
     
+    <article id="post-使用Xcode的Instruments-Leaks-监测App的内存泄漏问题" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/"
+    >使用Xcode的Instruments(Leaks)监测App的内存泄漏问题</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" class="article-date">
+  <time datetime="2018-06-20T08:58:13.000Z" itemprop="datePublished">2018-06-20</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>最近项目提交App Store审核，有些闲暇时间，打算用Instruments工具里的Leaks<br>检查一下项目中存在的内存泄漏问题。</p>
+<h4 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h4><h5 id="1-edit-scheme"><a href="#1-edit-scheme" class="headerlink" title="1.edit scheme"></a>1.edit scheme</h5><p>修改为测试环境<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayq6uqwk2j30jk0e4gnd.jpg" alt=""><br>将Profile中的Build Configuration选为Debug<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayq6ull6nj31ds0s0whn.jpg" alt=""></p>
+<h5 id="2-Debug-Information-Format"><a href="#2-Debug-Information-Format" class="headerlink" title="2.Debug Information Format"></a>2.Debug Information Format</h5><p>设置调试运行的时候生成 dSYM文件（用于代码定位）</p>
+<p><code>Build Settings --&gt; Debug Information Format</code></p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqazbj7qj31jn0u0k00.jpg" alt=""></p>
+<h4 id="二、开始监测"><a href="#二、开始监测" class="headerlink" title="二、开始监测"></a>二、开始监测</h4><h5 id="1-打开Instruments"><a href="#1-打开Instruments" class="headerlink" title="1.打开Instruments"></a>1.打开Instruments</h5><p>在Xcode的导航栏中找到Instruments。</p>
+<p><code>Xcode --&gt; Open Developer Tool --&gt; Instruments</code></p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqbb0inkj30qg0gegsf.jpg" alt=""></p>
+<h5 id="2-双击选择Leaks"><a href="#2-双击选择Leaks" class="headerlink" title="2.双击选择Leaks"></a>2.双击选择Leaks</h5><p><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqbamrugj316s0o278d.jpg" alt=""></p>
+<h5 id="3-选择设备和项目"><a href="#3-选择设备和项目" class="headerlink" title="3.选择设备和项目"></a>3.选择设备和项目</h5><p>找到运行的设备和正在运行的项目。</p>
+<p>选好设备和项目，点击左侧的大红点，项目会在对应的设备中重新运行一次。并做好监测准备<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqbac3owj31ka0u0n43.jpg" alt=""></p>
+<h5 id="4-内存监测"><a href="#4-内存监测" class="headerlink" title="4.内存监测"></a>4.内存监测</h5><p>由于Leaks是动态监测，所以需要一边手动操作App，一边观察Leaks界面上的变化。当出现红色叉叉时，说明出现了内存泄漏，可以暂停进程，进行查看<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqba1hkvj30sc0kg40a.jpg" alt=""></p>
+<p>5.定位内存泄漏的位置<br>选择 <code>Leaks ——&gt; Call Tree</code>，最底下会出现4个选框<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqcb41w2j31gu0u0wjr.jpg" alt=""></p>
+<p>5.1 点击第二个<code>Call Tree</code>，勾选 <code>Invert Call Tree</code> 和 <code>Hide System Libraries</code></p>
+<p><strong>勾选前</strong><br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqcan6nrj31ha0u0n3k.jpg" alt=""></p>
+<p><strong>勾选后</strong><br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqc9pgknj31hj0u0aj8.jpg" alt=""></p>
+<h5 id="6-确认位置，修改代码"><a href="#6-确认位置，修改代码" class="headerlink" title="6.确认位置，修改代码"></a>6.确认位置，修改代码</h5><p>此时显示的就是若干条内存泄漏的代码部分，选择其中一条双击，即可显示代码。还可直接跳转到代码在Xcode中额具体位置<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gayqc9daqlj31hc0u0gw8.jpg" alt=""></p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ckgdq92zo001hj3bum45fn38z"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Instruments/">Instruments</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leaks/">Leaks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Xcode/">Xcode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存泄漏/">内存泄漏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/调试优化/">调试优化</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-RunLoop实践" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -113,7 +195,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckfjmfp9l000v2mbuo75odsmz"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckgdq92zi0012j3bu017ax9qa"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -238,7 +320,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckfjmfp9o00132mbu38jau0gb"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckgdq92zn001fj3bujhx8uh8o"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -321,7 +403,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckfjmfp9t001h2mbufh257znb"
+      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckgdq92zr001nj3but9uguo4f"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
@@ -392,7 +474,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckfjmfp9w001n2mbu4jfo9h14"
+      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckgdq92zt001uj3burmzxmn0l"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -471,7 +553,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckfjmfp9u001j2mbuaplzi0d7"
+      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckgdq92zs001rj3bu8k6nv29l"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -563,7 +645,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ckfjmfp9n00112mbuw11oqbzm"
+      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ckgdq92zj0016j3bufysjkzos"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/">Tech</a></li></ul>
@@ -636,7 +718,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ckfjmfp9x001o2mbukbvslart"
+      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ckgdq92zv001zj3budlftprl2"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>
