@@ -36,6 +36,86 @@
     
     
     
+    <article id="post-Diary" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/09/05/Diary/"
+    >Diary</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/09/05/Diary/" class="article-date">
+  <time datetime="2018-09-05T06:28:00.000Z" itemprop="datePublished">2018-09-05</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/随记/">随记</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h3 id="2018年9月5日-周三"><a href="#2018年9月5日-周三" class="headerlink" title="2018年9月5日 周三"></a>2018年9月5日 周三</h3><hr>
+<p>今天尝试着将小程序上传提交审核了。<br>从8月8日创建项目开始，历时将近一个月时间，算是做了点东西出来。<br>一个产品在设计伊始应该先有个原型，但是我不是产品经理，所以我就用Page画了一些简单的图形，来提现界面的雏形。<br>然后…然后就直接上手开发了。<br>可发过程中也遇到了很多问题，例如如何获取小程序的全局变量，如何去适配屏幕的高宽，单位的使用，是用px，还是rpx，等等，等等<br>不过好在，所有这些问题，在搜索引擎的帮助下基本都能解决。<br>对JS的感觉是，既陌生又熟悉，因为同时在学习Swift的缘故，发现二者还是有一些相似之处。<br>HTML和CSS是上大学那会儿学的，写的时候，还是不得不时不时查阅文档才能达到想要的效果。<br>最近，腾讯还上线了云开发，但是目前还在公测阶段，需要申请公测资格，我填写了好几次信息，都没有收到允许公测的邮件..<br>所有后面直接用了Bomb的后台云。<br>Bomb后端云的免费版每月有10万次的API调用额度，20GB的存储空间，20GB的流量，以及30条短信。<br>如果用完了或者不够用，也可以按需充值。还是蛮方便的<br>这个小项目下做来，有些感慨，在做事情之前，还是应该有相对充分的准备。<br>对于不熟悉的语言，按需学习做项目的方式，会让人特别难受，特别是前期，还处于摸索的阶段，基本上是五行代码一小查，十行代码一大查的状态。<br>小程序的页面花了大概三周的时间，每天基本只用半天的时间去写（下午学习Swift），9个页面，包括信息的展示页面，和信息的发布界面，以及个人中心页面，最后只用来两个信息展示页面…内容的展示姑且先用CVS记录，再导入数据库进行管理。是骡子是马，先拉出去溜溜看吧。<br>估计在小程序上线过程中，还会遇到一些问题，不知道会不会因为功能过于简单，直接不让上了…<br><br></p>
+<h3 id="2018年9月2日-周一"><a href="#2018年9月2日-周一" class="headerlink" title="2018年9月2日 周一"></a>2018年9月2日 周一</h3><hr>
+<p>使用Bomb作为小程序的后端，在线编辑数据库，亦可导入cvs的文件，非常方便使用。<br>不需要自己写后端代码，甚至连服务器都不需要部署跟购买，在满足需求的程度上够用了。</p>
+<p><br></p>
+<h3 id="2018年2月11日-周日"><a href="#2018年2月11日-周日" class="headerlink" title="2018年2月11日 周日"></a>2018年2月11日 周日</h3><hr>
+<p>添加了Livere评论控件，从此以后文章可以被评论了：）</p>
+<p><br></p>
+<h3 id="2018年2月9日-周五"><a href="#2018年2月9日-周五" class="headerlink" title="2018年2月9日 周五"></a>2018年2月9日 周五</h3><hr>
+<p>发现博客首页的_content内容摘要部分部分，无法点击进入文章详情。今天就在archer主题的文件里做了个小改动，实现内容的点击事件<br>实现方法也非常简单。首先需要找到首页的布局文件,其文件目录大概是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/blogRootDir/themes/archer/layout/index.ejs</span><br></pre></td></tr></table></figure></p>
+<p>使用文档编辑器打开<code>index.ejs</code>文件，找到以下内容：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"abstract-content"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">%-</span> <span class="attr">_content</span> %&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>改成如下代码，就搞定了：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"abstract-title"</span> <span class="attr">href</span> = <span class="string">"&lt;%- url_for(_post.path) %&gt;"</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"abstract-content"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">%-</span> <span class="attr">_content</span> %&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p><br></p>
+<h3 id="2018年2月8日-周四"><a href="#2018年2月8日-周四" class="headerlink" title="2018年2月8日 周四"></a>2018年2月8日 周四</h3><hr>
+<p>今天写下第一篇，和技术有一点点关系的博客。虽然大部分内容是通过粘贴和借鉴的。不过在排版和Markdown的语法上，还是得到了学习。<br>想对自己说，再接再厉吧。<br>以后想通过Diary这个页面，记录自己生活和学习的点滴，希望在未来的某一天，能看到自己逐步地成长。</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/09/05/Diary/" data-id="ckhnfj2x1000k5tbukxkh0vhu"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Diary/">Diary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/成长/">成长</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-使用Xcode的Instruments-Leaks-监测App的内存泄漏问题" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -101,7 +181,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ckgx5nsfr001l0gbuy1xpd09l"
+      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ckhnfj2xh001o5tbu5n7somv4"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Instruments/">Instruments</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leaks/">Leaks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Xcode/">Xcode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存泄漏/">内存泄漏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/调试优化/">调试优化</a></li></ul>
@@ -195,7 +275,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckgx5nsfk00120gbu6jjfgdfi"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckhnfj2x900155tbuvn5ypf8n"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -320,7 +400,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckgx5nsfp001e0gbubtnad6uf"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckhnfj2x7000y5tbu9qqb9bww"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -403,7 +483,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckgx5nsfq001j0gbunlq9fcfz"
+      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckhnfj2xi001q5tbue1fcx7d1"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
@@ -474,7 +554,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckgx5nsfx001y0gbuffhzxmf1"
+      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckhnfj2xo00245tbuepjpnrhm"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -553,7 +633,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckgx5nsfu001r0gbupg66in3i"
+      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckhnfj2xk001v5tbu9x9d4vue"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -645,7 +725,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ckgx5nsfm00160gbuk870wd71"
+      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ckhnfj2xd001e5tbunldu6epx"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/">Tech</a></li></ul>
@@ -718,7 +798,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ckgx5nsfz00230gbuordfr3rp"
+      <a data-url="http://yoursite.com/2018/02/07/第一篇文章/" data-id="ckhnfj2xl001x5tbuavc7a97r"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li></ul>

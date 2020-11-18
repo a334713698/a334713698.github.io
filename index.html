@@ -36,6 +36,171 @@
     
     
     
+    <article id="post-iOS源码阅读——MJRefresh" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/18/iOS源码阅读——MJRefresh/"
+    >iOS源码阅读——MJRefresh</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/11/18/iOS源码阅读——MJRefresh/" class="article-date">
+  <time datetime="2020-11-18T13:14:06.000Z" itemprop="datePublished">2020-11-18</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>MJRefresh几乎是我们开发工作中必用的一款三方库，它提供一套非常简单实用的拖拽执行回调事件的解决方案。下面是官方提供的框架图。<br><img src="https://camo.githubusercontent.com/c839b424e7dfa6e86f74fc61f9d66ad3f37d2ba209a1896b9afb5ecb24ae7f36/687474703a2f2f696d61676573302e636e626c6f67732e636f6d2f626c6f67323031352f3439373237392f3230313530362f3133323233323435363133393137372e706e67" alt=""><br>其中最常用的几个默认视图类分别是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">下拉刷新控件：MJRefreshNormalHeader</span><br><span class="line">上拉加载控件：MJRefreshAutoNormalFooter、MJRefreshBackNormalFooter</span><br><span class="line">左滑加载控件：MJRefreshNormalTrailer</span><br></pre></td></tr></table></figure></p>
+<p>下面将对这些类，自上而下地进行分析。</p>
+<h2 id="公共基类控件"><a href="#公共基类控件" class="headerlink" title="公共基类控件"></a>公共基类控件</h2><h3 id="MJRefreshComponent"><a href="#MJRefreshComponent" class="headerlink" title="MJRefreshComponent"></a>MJRefreshComponent</h3><p>通过框架图可以看出所有视图都源于同一个基类——<code>MJRefreshComponent</code>，它为子类提供了公用的属性和事件，主要有：</p>
+<ul>
+<li>回调对象和回调方法</li>
+<li>拖拽状态定义和控制</li>
+<li>通过KVO，对事件（控件偏移、内容尺寸、手势状态）添加监听（回调响应交给子类实现）</li>
+<li>其他：<ul>
+<li>拖拽百分比</li>
+<li>根据拖拽比例自动切换透明度</li>
+</ul>
+</li>
+</ul>
+<p><code>MJRefreshComponent</code>还为子类搭建了基本的逻辑框架：</p>
+<h4 id="视图创建"><a href="#视图创建" class="headerlink" title="视图创建"></a>视图创建</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 1.初始化</span><br><span class="line">- (instancetype)initWithFrame:(CGRect)frame&#123;;&#125;</span><br><span class="line"></span><br><span class="line">// 2.准备工作</span><br><span class="line">- (void)prepare&#123;;&#125;</span><br><span class="line"></span><br><span class="line">// 3.视图即将被父视图加入</span><br><span class="line">- (void)willMoveToSuperview:(UIView *)newSuperview&#123;</span><br><span class="line">    // 滚动视图初始值的记录</span><br><span class="line">    // 一些值的更新</span><br><span class="line">    // 监听事件的更新</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 4.布局</span><br><span class="line">- (void)layoutSubviews&#123;</span><br><span class="line">    [self placeSubviews];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="滚动视图状态回调"><a href="#滚动视图状态回调" class="headerlink" title="滚动视图状态回调"></a>滚动视图状态回调</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 当偏移值发生变化</span><br><span class="line">- (void)scrollViewContentOffsetDidChange:(NSDictionary *)change&#123;&#125;</span><br><span class="line">// 当内容大小发生变化</span><br><span class="line">- (void)scrollViewContentSizeDidChange:(NSDictionary *)change&#123;&#125;</span><br><span class="line">// 当点击手势状态发生变化</span><br><span class="line">- (void)scrollViewPanStateDidChange:(NSDictionary *)change&#123;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="状态设置"><a href="#状态设置" class="headerlink" title="状态设置"></a>状态设置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 状态设置</span><br><span class="line">- (void)setState:(MJRefreshState)state&#123;;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 进入刷新状态</span><br><span class="line">- (void)beginRefreshing&#123;;&#125;</span><br><span class="line">// 结束刷新状态</span><br><span class="line">- (void)endRefreshing&#123;;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 自动切换透明度</span><br><span class="line">- (void)setAutoChangeAlpha:(BOOL)autoChangeAlpha&#123;;&#125;</span><br><span class="line">- (BOOL)isAutoChangeAlpha&#123;;&#125;</span><br><span class="line">- (void)setAutomaticallyChangeAlpha:(BOOL)automaticallyChangeAlpha&#123;;&#125;</span><br><span class="line"></span><br><span class="line">// 根据拖拽进度实时设置透明度</span><br><span class="line">- (void)setPullingPercent:(CGFloat)pullingPercent&#123;;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="下拉刷新控件（Header）"><a href="#下拉刷新控件（Header）" class="headerlink" title="下拉刷新控件（Header）"></a>下拉刷新控件（Header）</h2><p>下拉刷新控件包含四个类：</p>
+<ul>
+<li>MJRefreshHeader<ul>
+<li>MJRefreshStateHeader<ul>
+<li>MJRefreshNormalHeader</li>
+</ul>
+</li>
+<li>MJRefreshGifHeader</li>
+</ul>
+</li>
+</ul>
+<h3 id="MJRefreshHeader"><a href="#MJRefreshHeader" class="headerlink" title="MJRefreshHeader"></a>MJRefreshHeader</h3><p><code>MJRefreshHeader</code>类是一个包含了完整的下拉刷新功能逻辑的空白视图，子类<code>MJRefreshStateHeader</code>和<code>MJRefreshGifHeader</code>只需要再添加一些额外的图片和文字，就能提升使用体验和保持代码的简洁易读性。</p>
+<h4 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h4><h5 id="1-初始化"><a href="#1-初始化" class="headerlink" title="1.初始化"></a>1.初始化</h5><p>创建视图，设置高度和位置。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (void)prepare &#123;</span><br><span class="line">    [super prepare];</span><br><span class="line">    // 设置存储key</span><br><span class="line">    // 设置Header的高度</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)placeSubviews &#123;</span><br><span class="line">    [super placeSubviews];    </span><br><span class="line">    // 设置Header的位置（y坐标）</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="2-偏移变化：-scrollViewContentSizeDidChange"><a href="#2-偏移变化：-scrollViewContentSizeDidChange" class="headerlink" title="2.偏移变化：- scrollViewContentSizeDidChange"></a>2.偏移变化：<code>- scrollViewContentSizeDidChange</code></h5><p>当用户拖拽滚动控件，是其偏移值发生改变时，会回调<code>- scrollViewContentOffsetDidChange:(NSDictionary *)change</code>方法，在不同的状态下执行对应的逻辑。如果滚动视图已经将Header滚动至屏幕外，则不处理后续逻辑。</p>
+<p><code>- scrollViewContentOffsetDidChange:(NSDictionary *)change</code>方法中，有一些关键的变量值，分别是:</p>
+<ul>
+<li>当前滚动的偏移值：offsetY</li>
+<li>头部控件刚好出现的偏移值：happenOffsetY</li>
+<li>即将刷新的临界点：normal2pullingOffsetY</li>
+</ul>
+<p>通过对这些变量值的比较，可以计算出拖拽动作应该被设置为何种状态。</p>
+<ul>
+<li>控件正在被拖拽<ul>
+<li>当拖拽时的偏移量大于临界值，且原状态为闲置时，将状态置为即将刷新</li>
+<li>当拖拽时的偏移量小于临界值，且原状态为即将刷新时，将状态重置会闲置</li>
+</ul>
+</li>
+<li>控件未被拖拽，且当前状态为松手进行刷新<ul>
+<li>执行开始刷新的方法</li>
+</ul>
+</li>
+<li>控件未被拖拽，且为达到执行刷新回调的临界点</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">if (self.scrollView.isDragging) &#123; // 如果正在拖拽</span><br><span class="line">    self.pullingPercent = pullingPercent;</span><br><span class="line"></span><br><span class="line">    // 当拖拽时的偏移量大于临界值，且原状态为闲置时，将状态置为即将刷新</span><br><span class="line">    if (self.state == MJRefreshStateIdle &amp;&amp; offsetY &lt; normal2pullingOffsetY) &#123;</span><br><span class="line">        // 转为即将刷新状态</span><br><span class="line">        self.state = MJRefreshStatePulling;</span><br><span class="line">    &#125;</span><br><span class="line">    // 当拖拽时的偏移量小于临界值，且原状态为即将刷新时，将状态重置会闲置</span><br><span class="line">    else if (self.state == MJRefreshStatePulling &amp;&amp; offsetY &gt;= normal2pullingOffsetY) &#123;</span><br><span class="line">        // 转为普通状态</span><br><span class="line">        self.state = MJRefreshStateIdle;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 原状态为即将刷新，且手已松开</span><br><span class="line">else if (self.state == MJRefreshStatePulling) &#123;</span><br><span class="line">    // 开始刷新</span><br><span class="line">    [self beginRefreshing];</span><br><span class="line">&#125;</span><br><span class="line">// 未达到刷新的偏移量，且手已松开</span><br><span class="line">else if (pullingPercent &lt; 1) &#123;</span><br><span class="line">    // 记录header露出的百分比</span><br><span class="line">    self.pullingPercent = pullingPercent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里需要注意的是，当Header的状态处于<code>MJRefreshStateRefreshing</code>正在刷新，且控件还在滚动时，会执行<code>- resetInset</code>方法，目的是记录刷新结束后需要调整的上边距值<code>insetTDelta</code>，同时避免 CollectionView 在使用根据 Autolayout 和 内容自动伸缩 Cell, 刷新时导致的 Layout 异常渲染问题。</p>
+<h5 id="3-状态设置"><a href="#3-状态设置" class="headerlink" title="3.状态设置"></a>3.状态设置</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (void)setState:(MJRefreshState)state&#123;</span><br><span class="line">    _state = state;</span><br><span class="line"></span><br><span class="line">    // 加入主队列的目的是等setState:方法调用完毕、设置完文字后再去布局子控件</span><br><span class="line">    MJRefreshDispatchAsyncOnMainQueue([self setNeedsLayout];)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>视图刷新被加入了异步队列的主线程中，是为了尽量等空间的属性设置完毕后再进行布局的刷新。</p>
+<h5 id="4-开始刷新"><a href="#4-开始刷新" class="headerlink" title="4.开始刷新"></a>4.开始刷新</h5><p>执行<code>- beginRefreshing</code>方法，设置状态为<code>MJRefreshStateRefreshing</code>刷新中。<br>方法调用流程如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">1.开始刷新方法调用</span><br><span class="line">- (void)beginRefreshing&#123;</span><br><span class="line">   // ...</span><br><span class="line">   self.state = MJRefreshStateRefreshing;</span><br><span class="line">   // ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">2.设置状态为正在刷新中</span><br><span class="line">- (void)setState:(MJRefreshState)state&#123;</span><br><span class="line">    MJRefreshCheckState</span><br><span class="line"></span><br><span class="line">    // 根据状态做事情</span><br><span class="line">    if (state == MJRefreshStateIdle) &#123;</span><br><span class="line">        //...        </span><br><span class="line">    &#125; else if (state == MJRefreshStateRefreshing) &#123;</span><br><span class="line">        [self headerRefreshingAction];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">3.执行刷新动作</span><br><span class="line">- (void)headerRefreshingAction &#123;</span><br><span class="line">    // 主要代码</span><br><span class="line">    [UIView animateWithDuration:MJRefreshFastAnimationDuration animations:^&#123;</span><br><span class="line">        if (self.scrollView.panGestureRecognizer.state != UIGestureRecognizerStateCancelled) &#123;</span><br><span class="line">            CGFloat top = self.scrollViewOriginalInset.top + self.mj_h;</span><br><span class="line">            // 增加滚动区域top</span><br><span class="line">            self.scrollView.mj_insetT = top;</span><br><span class="line">            // 设置滚动位置</span><br><span class="line">            CGPoint offset = self.scrollView.contentOffset;</span><br><span class="line">            offset.y = -top;</span><br><span class="line">            [self.scrollView setContentOffset:offset animated:NO];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; completion:^(BOOL finished) &#123;</span><br><span class="line">        [self executeRefreshingCallback];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>- headerRefreshingAction</code>方法为滚动视图设置了新的<code>inset</code>和<code>offset</code>，使得Header能在滚动视图的顶部停留，用于展示刷新文字动画之类的。</p>
+<h5 id="5-结束刷新"><a href="#5-结束刷新" class="headerlink" title="5.结束刷新"></a>5.结束刷新</h5><p>结束刷新需要使用者在耗时操作结束后，主动调用<code>- endRefreshing</code>方法。<br>方法调用流程如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">1.结束刷新方法调用</span><br><span class="line">- (void)endRefreshing&#123;</span><br><span class="line">    MJRefreshDispatchAsyncOnMainQueue(self.state = MJRefreshStateIdle;)</span><br><span class="line">&#125;</span><br><span class="line">2.设置状态为闲置</span><br><span class="line">- (void)setState:(MJRefreshState)state&#123;</span><br><span class="line">    MJRefreshCheckState</span><br><span class="line"></span><br><span class="line">    // 根据状态做事情</span><br><span class="line">    if (state == MJRefreshStateIdle) &#123;</span><br><span class="line">        if (oldState != MJRefreshStateRefreshing) return;</span><br><span class="line"></span><br><span class="line">        [self headerEndingAction];</span><br><span class="line">    &#125; else if (state == MJRefreshStateRefreshing) &#123;</span><br><span class="line">        // ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">3.执行结束动作</span><br><span class="line">- (void)headerEndingAction &#123;;&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>- headerEndingAction</code>方法将滚动视图的<code>inset</code>重置为刷新状态前的值，将header又隐藏了起来</p>
+<h2 id="上拉加载控件（Footer）"><a href="#上拉加载控件（Footer）" class="headerlink" title="上拉加载控件（Footer）"></a>上拉加载控件（Footer）</h2><p>下拉刷新控件包含七个类：</p>
+<ul>
+<li>MJRefreshFooter<ul>
+<li>MJRefreshBackFooter<ul>
+<li>MJRefreshBackNormalFooter</li>
+<li>MJRefreshBackGifFooter</li>
+</ul>
+</li>
+<li>MJRefreshAutoFooter<ul>
+<li>MJRefreshAutoNormalFooter</li>
+<li>MJRefreshAutoGifFooter</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="MJRefreshFooter"><a href="#MJRefreshFooter" class="headerlink" title="MJRefreshFooter"></a>MJRefreshFooter</h3><p><code>MJRefreshFooter</code>类不能直接被使用，它仅定义了少量的基础属性和方法，例如构造方法、初始化控件高度，以及无数据加载情况下的处理。</p>
+<p>能够直接使用的上拉加载控件是，由<code>MJRefreshFooter</code>衍生出的两个子类，<code>MJRefreshBackFooter</code>和<code>MJRefreshAutoFooter</code>，这两个控件的不同之处在于：</p>
+<ul>
+<li><code>MJRefreshBackFooter</code>：隐藏在滚动视图的底部边界之外，当拖动至Footer的刷新临界点并放开手，才会执行加载操作。</li>
+<li><code>MJRefreshAutoFooter</code>：会紧贴在滚动视图contentSize的边界，如果contentSize的尺寸小于滚动视图的尺寸，用户在不需要滚动的情况下也能看到Footer控件的。它的刷新时机是，用户在拖拽中且达到了Footer刷新临界点。</li>
+</ul>
+<h3 id="MJRefreshBackFooter"><a href="#MJRefreshBackFooter" class="headerlink" title="MJRefreshBackFooter"></a>MJRefreshBackFooter</h3><h4 id="实现过程-1"><a href="#实现过程-1" class="headerlink" title="实现过程"></a>实现过程</h4><h5 id="1-初始化-1"><a href="#1-初始化-1" class="headerlink" title="1.初始化"></a>1.初始化</h5><p>当MJRefreshBackFooter即将被加入父视图时，会走 <code>- willMoveToSuperview:</code> 方法，并在方法体内调用 <code>- scrollViewContentSizeDidChange:</code>  方法。该方法获取了父视图高度和父视图内容的高度，取二者中较大的数，作为Footer的纵坐标值，确保Footer的位置正好隐藏在视图或内容的最底部。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)scrollViewContentSizeDidChange:(NSDictionary *)change</span><br><span class="line">&#123;</span><br><span class="line">    [super scrollViewContentSizeDidChange:change];</span><br><span class="line"></span><br><span class="line">    // 内容的高度</span><br><span class="line">    CGFloat contentHeight = self.scrollView.mj_contentH + self.ignoredScrollViewContentInsetBottom;</span><br><span class="line">    // 表格的高度</span><br><span class="line">    CGFloat scrollHeight = self.scrollView.mj_h - self.scrollViewOriginalInset.top - self.scrollViewOriginalInset.bottom + self.ignoredScrollViewContentInsetBottom;</span><br><span class="line">    // 设置位置和尺寸</span><br><span class="line">    self.mj_y = MAX(contentHeight, scrollHeight);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="2-偏移变化：-scrollViewContentSizeDidChange-1"><a href="#2-偏移变化：-scrollViewContentSizeDidChange-1" class="headerlink" title="2.偏移变化：- scrollViewContentSizeDidChange"></a>2.偏移变化：<code>- scrollViewContentSizeDidChange</code></h5><p>当用户在滑动控件使offset发生变化时，会触发 <code>MJRefreshKeyPathContentOffset</code> 的监听事件 —— <code>- scrollViewContentOffsetDidChange</code>。<br><code>MJRefreshBackFooter</code>在<code>- scrollViewContentOffsetDidChange</code>方法里的代码逻辑与<code>MJRefreshHeader</code>是几乎相同的，这里不赘述。需要提一点的是，<code>MJRefreshBackFooter</code>视图的临界值计算需要考虑内容的高度与滚动视图之间的高度差问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#pragma mark 获得scrollView的内容 超出 view 的高度</span><br><span class="line">- (CGFloat)heightForContentBreakView</span><br><span class="line">&#123;</span><br><span class="line">    CGFloat h = self.scrollView.frame.size.height - self.scrollViewOriginalInset.bottom - self.scrollViewOriginalInset.top;</span><br><span class="line">    return self.scrollView.contentSize.height - h;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#pragma mark 刚好看到上拉刷新控件时的contentOffset.y</span><br><span class="line">- (CGFloat)happenOffsetY</span><br><span class="line">&#123;</span><br><span class="line">    CGFloat deltaH = [self heightForContentBreakView];</span><br><span class="line">    // 内容和视图的高度差</span><br><span class="line">    if (deltaH &gt; 0) &#123;</span><br><span class="line">        //  内容高度 &gt; 视图高度</span><br><span class="line">        return deltaH - self.scrollViewOriginalInset.top;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        // 内容高度 &lt; 视图高度</span><br><span class="line">        return - self.scrollViewOriginalInset.top;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="3-状态设置-1"><a href="#3-状态设置-1" class="headerlink" title="3.状态设置"></a>3.状态设置</h5><p><code>MJRefreshBackFooter</code>类的<code>- setState</code>方法的主要工作就是在开始刷新和结束刷新的时候，为滚动视图更新对应的<code>offset</code>和<code>inset</code>值。</p>
+<h3 id="MJRefreshAutoFooter"><a href="#MJRefreshAutoFooter" class="headerlink" title="MJRefreshAutoFooter"></a>MJRefreshAutoFooter</h3><h4 id="实现过程-2"><a href="#实现过程-2" class="headerlink" title="实现过程"></a>实现过程</h4><h5 id="1-初始化-2"><a href="#1-初始化-2" class="headerlink" title="1.初始化"></a>1.初始化</h5><p>当MJRefreshAutoFooter即将被加入父视图时，会调用<code>- willMoveToSuperview:</code> 方法，该方法获取了父视图的内容，作为Footer的纵坐标y的值，确保Footer的位置正好紧贴内容的底部。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (void)willMoveToSuperview:(UIView *)newSuperview</span><br><span class="line">&#123;</span><br><span class="line">    [super willMoveToSuperview:newSuperview];</span><br><span class="line"></span><br><span class="line">    if (newSuperview) &#123; // 新的父控件</span><br><span class="line">        if (self.hidden == NO) &#123;</span><br><span class="line">            self.scrollView.mj_insetB += self.mj_h;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 设置位置</span><br><span class="line">        self.mj_y = _scrollView.mj_contentH;</span><br><span class="line">    &#125; else &#123; // 被移除了</span><br><span class="line">        if (self.hidden == NO) &#123;</span><br><span class="line">            self.scrollView.mj_insetB -= self.mj_h;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="2-刷新逻辑"><a href="#2-刷新逻辑" class="headerlink" title="2.刷新逻辑"></a>2.刷新逻辑</h5><p><code>MJRefreshAutoFooter</code>控件的位置是紧贴内容的，所以会存在两种情况：<br>1.当<strong>内容高度 &lt; 控件高度</strong>，可以直接看到紧贴内容底部的Footer。这种情况下，加载的时机是在用户松手后调用的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">- (void)scrollViewPanStateDidChange:(NSDictionary *)change</span><br><span class="line">&#123;</span><br><span class="line">    [super scrollViewPanStateDidChange:change];</span><br><span class="line"></span><br><span class="line">    if (self.state != MJRefreshStateIdle) return;</span><br><span class="line"></span><br><span class="line">    UIGestureRecognizerState panState = _scrollView.panGestureRecognizer.state;</span><br><span class="line"></span><br><span class="line">    switch (panState) &#123;</span><br><span class="line">        // 手松开</span><br><span class="line">        case UIGestureRecognizerStateEnded: &#123;</span><br><span class="line">            if (_scrollView.mj_insetT + _scrollView.mj_contentH &lt;= _scrollView.mj_h) &#123;</span><br><span class="line">                // 内容 &lt; 控件高度</span><br><span class="line">                if (_scrollView.mj_offsetY &gt;= - _scrollView.mj_insetT) &#123; // 向上拽</span><br><span class="line">                    self.triggerByDrag = YES;</span><br><span class="line">                    [self beginRefreshing];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                // 内容 &gt; 控件高度</span><br><span class="line">                if (_scrollView.mj_offsetY &gt;= _scrollView.mj_contentH + _scrollView.mj_insetB - _scrollView.mj_h) &#123;</span><br><span class="line">                    self.triggerByDrag = YES;</span><br><span class="line">                    [self beginRefreshing];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">            break;</span><br><span class="line"></span><br><span class="line">        case UIGestureRecognizerStateBegan: &#123;</span><br><span class="line">            [self resetTriggerTimes];</span><br><span class="line">        &#125;</span><br><span class="line">            break;</span><br><span class="line"></span><br><span class="line">        default:</span><br><span class="line">            break;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.当<strong>内容高度 ≥ 控件高度</strong>，需要拖动视图到Footer的加载临界值，但此时不需要松开手，只要滚动视图的偏移量突破了临界值，就会触发加载方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">- (void)scrollViewContentOffsetDidChange:(NSDictionary *)change</span><br><span class="line">&#123;</span><br><span class="line">    [super scrollViewContentOffsetDidChange:change];</span><br><span class="line"></span><br><span class="line">    if (self.state != MJRefreshStateIdle || !self.automaticallyRefresh || self.mj_y == 0) return;</span><br><span class="line"></span><br><span class="line">    // 当autoTriggerTimes被设置成-1（滚动时无限加载）</span><br><span class="line">    // 该方法保证拖动放手后，视图还在滚动的情况下，一直保持加载状态</span><br><span class="line"></span><br><span class="line">    // 内容超出控件高度</span><br><span class="line">    if (_scrollView.mj_insetT + _scrollView.mj_contentH &gt; _scrollView.mj_h) &#123;</span><br><span class="line"></span><br><span class="line">        //  内容高度 - 控件高度 + 控件底部边距 + footer高度 * 百分比 - footer高度</span><br><span class="line">        //  内容高度 - 控件高度 + 控件底部边距</span><br><span class="line">        if (_scrollView.mj_offsetY &gt;= _scrollView.mj_contentH - _scrollView.mj_h + self.mj_h * self.triggerAutomaticallyRefreshPercent + _scrollView.mj_insetB - self.mj_h) &#123;</span><br><span class="line">            // 防止手松开时连续调用</span><br><span class="line">            CGPoint old = [change[@&quot;old&quot;] CGPointValue];</span><br><span class="line">            CGPoint new = [change[@&quot;new&quot;] CGPointValue];</span><br><span class="line">            if (new.y &lt;= old.y) return;</span><br><span class="line"></span><br><span class="line">            if (_scrollView.isDragging) &#123;</span><br><span class="line">                self.triggerByDrag = YES;</span><br><span class="line">            &#125;</span><br><span class="line">            // 当底部刷新控件完全出现时，才刷新</span><br><span class="line">            [self beginRefreshing];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从代码中可以看出，满足刷新的条件是：<br><code>拖动偏移量 ≥ 内容高度 - 控件高度 + 控件底部边距 + footer高度 * 刷新控件露出百分比 - footer高度</code><br>当刷新控件露出百分比为默认值1.时，不等式可以简化为：<br><code>拖动偏移量 ≥ 内容高度 - 控件高度 + 控件底部边距</code></p>
+<h5 id="3-无限触发"><a href="#3-无限触发" class="headerlink" title="3.无限触发"></a>3.无限触发</h5><p><code>MJRefreshAutoFooter</code>的另一特点就是无限触发，开发者可以设置属性自定义自动刷新的次数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/** 自动触发次数, 默认为 1, 仅在拖拽 ScrollView 时才生效,</span><br><span class="line"></span><br><span class="line"> 如果为 -1, 则为无限触发</span><br><span class="line"> */</span><br><span class="line">@property (nonatomic) NSInteger autoTriggerTimes;</span><br></pre></td></tr></table></figure></p>
+<p>当滚动视图在持续地滚动时（内容高度≥控件高度），会不停地调用<code>-scrollViewContentOffsetDidChange:</code>方法，满足加载条件时从而不停的调用<code>-beginRefreshing</code>方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (void)beginRefreshing&#123;</span><br><span class="line">    // 新的拖拽动作 &amp;&amp; 剩余触发次数 &amp;&amp; 是否无限触发</span><br><span class="line">    if (self.triggerByDrag &amp;&amp; self.leftTriggerTimes &lt;= 0 &amp;&amp; !self.unlimitedTrigger) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [super beginRefreshing];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当前如果支持无限触发<code>autoTriggerTimes == -1</code>，那么在滚动视图停止滚动前，视图到达加载临界点时都会触发加载任务。</p>
+<h5 id="4-状态设置"><a href="#4-状态设置" class="headerlink" title="4.状态设置"></a>4.状态设置</h5><p><code>-beginRefreshing</code>在触发的时候，会将<code>state</code>设置成<code>MJRefreshStateRefreshing</code>，并执行加载数据的回调。<br>通常我们会在加载数据结束的回调方法中去调用<code>-endRefreshing</code>或<code>-endRefreshingWithNoMoreData</code>方法，此时<code>state</code>会被设置成<code>MJRefreshStateIdle</code>或<code>MJRefreshStateNoMoreData</code>，对应<code>-setState:</code>方法中的代码，我们可以看到无限触发次数是在此处进行了控制。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">- (void)setState:(MJRefreshState)state&#123;</span><br><span class="line">    MJRefreshCheckState</span><br><span class="line"></span><br><span class="line">    if (state == MJRefreshStateRefreshing) &#123;</span><br><span class="line">        // 执行加载数据回调</span><br><span class="line">        [self executeRefreshingCallback];</span><br><span class="line">    &#125; else if (state == MJRefreshStateNoMoreData || state == MJRefreshStateIdle) &#123;</span><br><span class="line">        if (self.triggerByDrag) &#123;</span><br><span class="line">            if (!self.unlimitedTrigger) &#123;</span><br><span class="line">                self.leftTriggerTimes -= 1;</span><br><span class="line">            &#125;</span><br><span class="line">            self.triggerByDrag = NO;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        /** 结束刷新 */</span><br><span class="line">        if (MJRefreshStateRefreshing == oldState) &#123;</span><br><span class="line"></span><br><span class="line">            // 当视图开启了分页显示，设置动画和回调</span><br><span class="line">            if (self.scrollView.pagingEnabled) &#123;</span><br><span class="line">                CGPoint offset = self.scrollView.contentOffset;</span><br><span class="line">                offset.y -= self.scrollView.mj_insetB;</span><br><span class="line">                [UIView animateWithDuration:MJRefreshSlowAnimationDuration animations:^&#123;</span><br><span class="line">                    self.scrollView.contentOffset = offset;</span><br><span class="line"></span><br><span class="line">                    if (self.endRefreshingAnimationBeginAction) &#123;</span><br><span class="line">                        self.endRefreshingAnimationBeginAction();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; completion:^(BOOL finished) &#123;</span><br><span class="line">                    if (self.endRefreshingCompletionBlock) &#123;</span><br><span class="line">                        self.endRefreshingCompletionBlock();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;];</span><br><span class="line"></span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // 结束刷新回调</span><br><span class="line">            if (self.endRefreshingCompletionBlock) &#123;</span><br><span class="line">                self.endRefreshingCompletionBlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="左滑加载控件（Trailer）"><a href="#左滑加载控件（Trailer）" class="headerlink" title="左滑加载控件（Trailer）"></a>左滑加载控件（Trailer）</h2><p><code>MJRefreshTrailer</code> 在实现逻辑上与 <code>MJRefreshBackFooter</code> 是完全一样的，只不过是将部分参数从垂直方向换成了水平方向。</p>
+<h2 id="State、Normal-子类控件"><a href="#State、Normal-子类控件" class="headerlink" title="State、Normal 子类控件"></a>State、Normal 子类控件</h2><p>State类型的控件 的主要特点是添加了不同状态的提示文字和刷新时间的显示。<br>Normal类型的控件 在 State类型控件 的基础上，添加了箭头图标和刷新的动画。</p>
+<h2 id="Gif-子类控件"><a href="#Gif-子类控件" class="headerlink" title="Gif 子类控件"></a>Gif 子类控件</h2><p>Gif类型的控件可以在拖拽和刷新时展示精美的动画来提升用户体验。<br>主要的两个方法是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (void)setImages:(NSArray *)images duration:(NSTimeInterval)duration forState:(MJRefreshState)state</span><br><span class="line">&#123;</span><br><span class="line">    if (images == nil) return;</span><br><span class="line"></span><br><span class="line">    self.stateImages[@(state)] = images;</span><br><span class="line">    self.stateDurations[@(state)] = @(duration);</span><br><span class="line"></span><br><span class="line">    /* 根据图片设置控件的高度 */</span><br><span class="line">    UIImage *image = [images firstObject];</span><br><span class="line">    if (image.size.height &gt; self.mj_h) &#123;</span><br><span class="line">        self.mj_h = image.size.height;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)setImages:(NSArray *)images forState:(MJRefreshState)state &#123;</span><br><span class="line">    [self setImages:images duration:images.count * 0.1 forState:state];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>刷新控件会根据图片的高度调整自身高度，同时会在没有自定义动画时长的情况下，根据动画的帧数自动设置完整播放一遍动画的时间。</p>
+<h3 id="拖拽动画"><a href="#拖拽动画" class="headerlink" title="拖拽动画"></a>拖拽动画</h3><p>开发者可以通过拖拽百分比设置用户在拖拽时的动画，具体实现方式是通过计算当前拖拽的百分比在整体动画中对应的某个帧的图片来获取大致的下标。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// 通过拖拽百分比设置 Idle~Pulling状态之间的 对应的动画帧</span><br><span class="line">- (void)setPullingPercent:(CGFloat)pullingPercent</span><br><span class="line">&#123;</span><br><span class="line">    [super setPullingPercent:pullingPercent];</span><br><span class="line">    NSArray *images = self.stateImages[@(MJRefreshStateIdle)];</span><br><span class="line">    if (self.state != MJRefreshStateIdle || images.count == 0) return;</span><br><span class="line">    // 停止动画</span><br><span class="line">    [self.gifView stopAnimating];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    // 设置当前需要显示的图片</span><br><span class="line">    NSUInteger index =  images.count * pullingPercent;</span><br><span class="line">    if (index &gt;= images.count) index = images.count - 1;</span><br><span class="line">    self.gifView.image = images[index];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="刷新动画"><a href="#刷新动画" class="headerlink" title="刷新动画"></a>刷新动画</h3><p>刷新动画会在视图状态处于“即将开始刷新”和“刷新中”进行，使用UIImageView的<code>startAnimating</code>对提前设置好的图片组逐帧播放，默认情况下是无限循环播放的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">- (void)setState:(MJRefreshState)state</span><br><span class="line">&#123;</span><br><span class="line">    MJRefreshCheckState</span><br><span class="line"></span><br><span class="line">    // 根据状态做事情</span><br><span class="line">    if (state == MJRefreshStatePulling || state == MJRefreshStateRefreshing) &#123;</span><br><span class="line">        // 即将刷新 和 刷新中 状态的动画</span><br><span class="line">        NSArray *images = self.stateImages[@(state)];</span><br><span class="line">        if (images.count == 0) return;</span><br><span class="line"></span><br><span class="line">        [self.gifView stopAnimating];</span><br><span class="line">        if (images.count == 1) &#123; // 单张图片</span><br><span class="line">            self.gifView.image = [images lastObject];</span><br><span class="line">        &#125; else &#123; // 多张图片</span><br><span class="line">            self.gifView.animationImages = images;</span><br><span class="line">            self.gifView.animationDuration = [self.stateDurations[@(state)] doubleValue];</span><br><span class="line">            [self.gifView startAnimating];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else if (state == MJRefreshStateIdle) &#123;</span><br><span class="line">        // 限制状态停止动画</span><br><span class="line">        [self.gifView stopAnimating];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>MJRefresh清晰整齐的架构为开发者提供了及其丰富的扩展性，而在通常没有定制需求的情况下，默认的控件已经十分够用了。</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/11/18/iOS源码阅读——MJRefresh/" data-id="ckhnfj2xg001k5tbu8bglqafl"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MJExtension/">MJExtension</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-2020年10月读书心得" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -102,7 +267,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/10/17/2020年10月读书心得/" data-id="ckgx5nsf300060gbumugnhlxv"
+      <a data-url="http://yoursite.com/2020/10/17/2020年10月读书心得/" data-id="ckhnfj2ws00095tbuvi9rfoej"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -212,7 +377,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/09/26/2020年9月读书心得/" data-id="ckgx5nsfh000u0gbu3adx3vqe"
+      <a data-url="http://yoursite.com/2020/09/26/2020年9月读书心得/" data-id="ckhnfj2x800115tbuozd9umoq"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -521,7 +686,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/09/14/iOS源码阅读 —— YYModel  vs  MJExtension/" data-id="ckgx5nsfv001t0gbuk2h758aa"
+      <a data-url="http://yoursite.com/2020/09/14/iOS源码阅读 —— YYModel  vs  MJExtension/" data-id="ckhnfj2xf001j5tbubg8suddw"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MJExtension/">MJExtension</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYModel/">YYModel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
@@ -623,7 +788,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/09/09/iOS源码阅读 —— MJExtension/" data-id="ckgx5nsfo001c0gbum98fio6y"
+      <a data-url="http://yoursite.com/2020/09/09/iOS源码阅读 —— MJExtension/" data-id="ckhnfj2xa00175tbu7rxldgd0"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MJExtension/">MJExtension</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
@@ -726,7 +891,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/09/03/iOS源码阅读——YYModel/" data-id="ckgx5nsfw001w0gbun7498dgr"
+      <a data-url="http://yoursite.com/2020/09/03/iOS源码阅读——YYModel/" data-id="ckhnfj2xm00215tbug9zq46ny"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYModel/">YYModel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
@@ -854,7 +1019,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/31/2020年8月读书心得/" data-id="ckgx5nsf8000e0gbuzpwryxgf"
+      <a data-url="http://yoursite.com/2020/08/31/2020年8月读书心得/" data-id="ckhnfj2x2000m5tbuo4vkfe0k"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -1030,7 +1195,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/29/LPR浮动利率究竟是什么？/" data-id="ckgx5nsfj00110gbuu5ut0hoj"
+      <a data-url="http://yoursite.com/2020/08/29/LPR浮动利率究竟是什么？/" data-id="ckhnfj2xc001c5tbuuaupac6e"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LPR/">LPR</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/金融/">金融</a></li></ul>
@@ -1103,7 +1268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/28/LeetCode算法学习日记（2020年8月）/" data-id="ckgx5nsfi000w0gbucasacj34"
+      <a data-url="http://yoursite.com/2020/08/28/LeetCode算法学习日记（2020年8月）/" data-id="ckhnfj2x5000t5tbud7saol9k"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -1178,74 +1343,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckgx5nsg1002a0gbuqvwvnhpq"
+      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckhnfj2xq002c5tbubqvowelw"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
 
-    </footer>
-
-  </div>
-
-  
-
-  
-
-  
-
-</article>
-    
-    <article id="post-2020年5月读书心得" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/05/08/2020年5月读书心得/"
-    >2020年5月读书心得</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/05/08/2020年5月读书心得/" class="article-date">
-  <time datetime="2020-05-08T14:18:30.000Z" itemprop="datePublished">2020-05-08</time>
-</a>
-      
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <p><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1geleneei4bj30bw0h4dif.jpg" alt=""><br>《原则》是一本几乎真本书都是干货的书。作者在40年的工作和生活中，有“记录”的习惯，通过记录经历总结经验，将工作和生活良好地经营和管理起来。<br>作者在书中推荐阅读“生活原则”的全部内容，并将概要与列表放在章节的最后，而“工作原则”可根据需要进行选读，则把概要与列表放在了章节的开头，这一点十分贴心。<br>这本书更适合在实践中去借鉴书中的方法，并优化创造出属于自己的原则。</p>
-<p>本书的第一章主要讲述的是坐着的历程：作者白手起家创建桥水基金，并通过努力获取了不错的成绩。1982年8月，墨西哥对其债务违约（其他国家有可能也会步其后尘），而美国银行正在想墨西哥一样高风险的其他国家提供贷款。而作者认为自己是少数预见到这一情况的人，并自信地表示美国会走向一场大萧条。而事实是，美联储通过增加货币供给，以一种无通胀的方式复兴了。作者感觉像是不断地被球棒打自己的头，因为这是他在众目睽睽下的失败。这使他失去了8年的努力，回到的原点。</p>
-<p>不过逆境没有阻挡作者的脚步。他又逐渐培养了新的客户，逐渐新的团队。他开始容忍逆境，并吸取教训，走向更大的成果。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本书中给我做大的感悟就是，在人生的道路上一定要有所成长，而成长的过程一定是痛苦的，一定要清楚这一点。同时对于实现目标的方式方法，不能过于固执己见，需要通过自己的反复复盘和值得信赖的人的佐证，不断提高其实现的概率，直到目标实现。</p>
-
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckgx5nsf400070gbuk447ps2u"
-        class="article-share-link">分享</a>
-      
     </footer>
 
   </div>
