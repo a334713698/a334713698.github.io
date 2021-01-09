@@ -36,6 +36,81 @@
     
     
     
+    <article id="post-简单瀑布流布局实现（Swift）" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/08/27/简单瀑布流布局实现（Swift）/"
+    >简单瀑布流布局实现（Swift）</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/08/27/简单瀑布流布局实现（Swift）/" class="article-date">
+  <time datetime="2020-08-27T13:21:38.000Z" itemprop="datePublished">2020-08-27</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h3 id="写作目的"><a href="#写作目的" class="headerlink" title="写作目的"></a>写作目的</h3><p>前段时间面试，问了瀑布流布局，所以就想到写这篇文章分享一下相关的知识点。<br>瀑布流布局是一种常见的布局方式，它能够美观、灵活地展示不同高度的素材组合的视图控件。<br>瀑布流布局的特点就在于，item从上往下排列，每次item的放置位置，都是当前的最短列下方。</p>
+<h3 id="主要的类"><a href="#主要的类" class="headerlink" title="主要的类"></a>主要的类</h3><ul>
+<li>UICollectionView：视图</li>
+<li>UICollectionViewFlowLayout：布局</li>
+<li>UICollectionViewLayoutAttributes：item配置</li>
+</ul>
+<h3 id="需要重写的系统方法"><a href="#需要重写的系统方法" class="headerlink" title="需要重写的系统方法"></a>需要重写的系统方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1) 准备布局（第一次布局和刷新时调用）</span><br><span class="line">override func prepare</span><br><span class="line">2) 设置视图内容的尺寸</span><br><span class="line">override var collectionViewContentSize: CGSize</span><br><span class="line">3) 返回计算好的属性数组</span><br><span class="line">override func layoutAttributesForElements(in rect: CGRect) -&gt; [UICollectionViewLayoutAttributes]?</span><br></pre></td></tr></table></figure>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><h4 id="视图-amp-数据源"><a href="#视图-amp-数据源" class="headerlink" title="视图&amp;数据源"></a>视图&amp;数据源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line">import UIKit</span><br><span class="line"></span><br><span class="line">class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource &#123;</span><br><span class="line"></span><br><span class="line">    // 数据源</span><br><span class="line">    var dataArr = [Int]()</span><br><span class="line">    // 列数</span><br><span class="line">    let columnCount:Int = 3;</span><br><span class="line">    // 瀑布流布局</span><br><span class="line">    var flowLayout: WaterfallFlowLayout!</span><br><span class="line"></span><br><span class="line">    var collectionView: UICollectionView!</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //MARK: - --- 视图已经加载</span><br><span class="line">    override func viewDidLoad() &#123;</span><br><span class="line">        super.viewDidLoad()</span><br><span class="line">        // 数据源，同时也是高度值（实际项目中应根据内容计算高度）</span><br><span class="line">        self.dataArr = [300,200,300,400,100,200,300,400,100,200,300,400,100,200,300,400]</span><br><span class="line">        self.createUI()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //MARK: - --- 创建UI</span><br><span class="line">    func createUI()&#123;</span><br><span class="line">        // 创建collectionView视图 和 flowLayout布局</span><br><span class="line">        self.flowLayout = WaterfallFlowLayout()</span><br><span class="line">        self.flowLayout.dataArr = self.dataArr</span><br><span class="line">        let rect: CGRect = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: SCREEN_WIDTH, height: SCREEN_HEIGHT))</span><br><span class="line">        let collectionView = UICollectionView.init(frame: rect, collectionViewLayout:self.flowLayout)</span><br><span class="line">        collectionView.delegate = self</span><br><span class="line">        collectionView.dataSource = self</span><br><span class="line">        collectionView.backgroundColor = UIColor.white</span><br><span class="line">        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: &quot;HomeCell&quot;)</span><br><span class="line">        self.view.addSubview(collectionView)</span><br><span class="line">        self.collectionView = collectionView</span><br><span class="line"></span><br><span class="line">        // 设置布局属性</span><br><span class="line">        self.setWaterfallFlowLayouts()</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //MARK: - --- 设置item的布局</span><br><span class="line">    func setWaterfallFlowLayouts()&#123;</span><br><span class="line">        // 设置布局属性</span><br><span class="line">        self.flowLayout.columnCount = self.columnCount</span><br><span class="line">        // 边界</span><br><span class="line">        self.flowLayout.sectionInset = UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10)</span><br><span class="line">        // 设置间距</span><br><span class="line">        self.flowLayout.minimumLineSpacing = 10.0</span><br><span class="line">        self.flowLayout.minimumInteritemSpacing = 10.0</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //MARK: - --- delegate，dataSource</span><br><span class="line">    func numberOfSections(in collectionView: UICollectionView) -&gt; Int &#123;</span><br><span class="line">        return 1</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -&gt; Int &#123;</span><br><span class="line">        return self.dataArr.count</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -&gt; UICollectionViewCell &#123;</span><br><span class="line">        let cell:UICollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: &quot;HomeCell&quot;, for: indexPath)</span><br><span class="line">        cell.backgroundColor = .red</span><br><span class="line">        cell.layer.cornerRadius = 8</span><br><span class="line">        cell.layer.masksToBounds = true</span><br><span class="line"></span><br><span class="line">        var label: UILabel!</span><br><span class="line"></span><br><span class="line">        if let lab: UILabel = cell.contentView.subviews.last as? UILabel&#123;</span><br><span class="line">            label = lab</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            label = UILabel.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))</span><br><span class="line">            label.textAlignment = .center</span><br><span class="line">            cell.contentView.addSubview(label)</span><br><span class="line">            label.textColor = .white</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        label.text = &quot;\(indexPath.row)&quot;</span><br><span class="line">        return cell</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) &#123;</span><br><span class="line">        // 点击添加数据</span><br><span class="line">        self.dataArr += [300,200,300,400,100,200,300,400,100,200,300,400,100,200,300,400]</span><br><span class="line">        self.flowLayout.dataArr = self.dataArr</span><br><span class="line">        self.collectionView.reloadData()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="核心代码"><a href="#核心代码" class="headerlink" title="核心代码"></a>核心代码</h3><h4 id="计算布局"><a href="#计算布局" class="headerlink" title="计算布局"></a>计算布局</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line">let SCREEN_WIDTH = UIScreen.main.bounds.size.width</span><br><span class="line">let SCREEN_HEIGHT = UIScreen.main.bounds.size.height</span><br><span class="line"></span><br><span class="line">class WaterfallFlowLayout: UICollectionViewFlowLayout &#123;</span><br><span class="line">    // 总列数</span><br><span class="line">    var columnCount:Int = 0</span><br><span class="line">    // 数据数组</span><br><span class="line">    var dataArr = [Int]()</span><br><span class="line">    // 整个collectionView的高度</span><br><span class="line">    private var maxH:Int?</span><br><span class="line">    //所有item的属性</span><br><span class="line">    fileprivate var layoutAttributesArray = [UICollectionViewLayoutAttributes]()</span><br><span class="line"></span><br><span class="line">    // 准备布局时调用</span><br><span class="line">    override func prepare() &#123;</span><br><span class="line">        /**</span><br><span class="line">         *  计算每个item的宽度</span><br><span class="line">         *  即：(collectionView的宽度 - 左右边距和 - item的水平间距之和) / 每行的item数量</span><br><span class="line">         */</span><br><span class="line">        let itemWidth = ((self.collectionView?.bounds.size.width)! - self.sectionInset.left - self.sectionInset.right - self.minimumInteritemSpacing * CGFloat(self.columnCount - 1)) / CGFloat.init(self.columnCount)</span><br><span class="line"></span><br><span class="line">        // 通过item的宽度，计算并设置属性</span><br><span class="line">        self.computeAttributesWithItemWidth(CGFloat(itemWidth))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ///根据itemWidth计算布局属性</span><br><span class="line">    func computeAttributesWithItemWidth(_ itemWidth:CGFloat)&#123;</span><br><span class="line"></span><br><span class="line">        // 定义一个列高数组 记录每一列的总高度（初始值都为上边距）</span><br><span class="line">        var columnHeightArr = [Int](repeating: Int(self.sectionInset.top), count: self.columnCount)</span><br><span class="line">        // 定义一个 记录每一列的item个数的数组</span><br><span class="line">        var columnItemCountArr = [Int](repeating: 0, count: self.columnCount)</span><br><span class="line"></span><br><span class="line">        // 定义一个 存储属性的临时数组</span><br><span class="line">        var attributesArray = [UICollectionViewLayoutAttributes]()</span><br><span class="line"></span><br><span class="line">        // 遍历数据计算每个item的属性并布局</span><br><span class="line">        for (index, dj_height) in self.dataArr.enumerated() &#123;</span><br><span class="line"></span><br><span class="line">            // 根据IndexPath获取Cell元素的属性</span><br><span class="line">            let attributes = UICollectionViewLayoutAttributes.init(forCellWith: IndexPath.init(item: index, section: 0))</span><br><span class="line">            // 找出最短列的下标</span><br><span class="line">            let minHeight:Int = columnHeightArr.sorted().first!</span><br><span class="line">            let column = columnHeightArr.firstIndex(of: minHeight)</span><br><span class="line"></span><br><span class="line">            // 将数据追加在最短列</span><br><span class="line">            columnItemCountArr[column!] += 1</span><br><span class="line">            // 计算该项的坐标</span><br><span class="line">            let itemX = (itemWidth + self.minimumInteritemSpacing) * CGFloat(column!) + self.sectionInset.left</span><br><span class="line">            let itemY = minHeight</span><br><span class="line">            // 计算item的高度（机型适配，注意比例缩放）</span><br><span class="line">            let itemH = dj_height</span><br><span class="line">            // 设置frame</span><br><span class="line">            attributes.frame = CGRect(x: itemX, y: CGFloat(itemY), width: itemWidth, height: CGFloat(itemH))</span><br><span class="line"></span><br><span class="line">            attributesArray.append(attributes)</span><br><span class="line">            // 累加列高</span><br><span class="line">            columnHeightArr[column!] += itemH + Int(self.minimumLineSpacing)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 找出最高列的下标</span><br><span class="line">        let maxHeight:Int = columnHeightArr.sorted().last!</span><br><span class="line">        let maxHeightColumnIndex = columnHeightArr.firstIndex(of: maxHeight)</span><br><span class="line">        // 根据最高列设置itemSize的默认值 使用总高度的平均值</span><br><span class="line">        let itemH = (maxHeight - Int(self.minimumLineSpacing) * (columnItemCountArr[maxHeightColumnIndex!] + 1)) / columnItemCountArr[maxHeightColumnIndex!]</span><br><span class="line">        self.itemSize = CGSize(width: itemWidth, height: CGFloat(itemH))</span><br><span class="line">        // 给属性数组设置数值</span><br><span class="line">        self.layoutAttributesArray = attributesArray</span><br><span class="line">        // 将最高列的行高赋值给属性，作为contentSize.Height的值</span><br><span class="line">        self.maxH = maxHeight</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 返回计算好的layoutAttributesArray数组</span><br><span class="line">    override func layoutAttributesForElements(in rect: CGRect) -&gt; [UICollectionViewLayoutAttributes]? &#123;</span><br><span class="line"></span><br><span class="line">        return self.layoutAttributesArray</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 重写设置contentSize</span><br><span class="line">    override var collectionViewContentSize: CGSize &#123;</span><br><span class="line">        get &#123;</span><br><span class="line">            return CGSize(width: (collectionView?.bounds.width)!, height: CGFloat(self.maxH!))</span><br><span class="line">        &#125;</span><br><span class="line">        set &#123;</span><br><span class="line">            self.collectionViewContentSize = newValue</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本篇文章主要是对瀑布流的原理进行概述和提供思路，不涉及网络请求，动态内容计算等方面，应该还算是简单易懂的。感兴趣童鞋的可以<a href="https://github.com/a334713698/WaterfallFlow" target="_blank" rel="noopener">Github</a>上下载，欢迎交流学习。</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckjpktbek002jr9bul6ru3ld5"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-2020年5月读书心得" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -84,7 +159,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckhnfj2wq00075tbu5x4wuhhv"
+      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckjpktbdh0009r9bukx5z8swt"
         class="article-share-link">分享</a>
       
     </footer>
@@ -241,7 +316,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/10/2020年4月读书心得/" data-id="ckhnfj2wt000a5tbuuax232pe"
+      <a data-url="http://yoursite.com/2020/04/10/2020年4月读书心得/" data-id="ckjpktbdn000fr9butngqminh"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -327,7 +402,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/03/2020年3月读书心得/" data-id="ckhnfj2ww000e5tbu31zvoe7f"
+      <a data-url="http://yoursite.com/2020/04/03/2020年3月读书心得/" data-id="ckjpktbdl000er9builzqkkhe"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -401,7 +476,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/24/LeetCode算法学习日记（2020年3月）/" data-id="ckhnfj2x4000q5tbu55s2su4t"
+      <a data-url="http://yoursite.com/2020/03/24/LeetCode算法学习日记（2020年3月）/" data-id="ckjpktbdz0017r9buyrzdmd1m"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -479,7 +554,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ckhnfj2wi00015tbulp3moze1"
+      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ckjpktbdb0003r9buw8a5klt5"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随记/">随记</a></li></ul>
@@ -566,7 +641,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/01/17/Github项目迁移/" data-id="ckhnfj2wy000f5tbu9tbj28lr"
+      <a data-url="http://yoursite.com/2020/01/17/Github项目迁移/" data-id="ckjpktbdv000ur9buyy5q2lix"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
@@ -642,7 +717,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/08/26/2019年8月读书心得/" data-id="ckhnfj2wm00035tbuuwy1myhn"
+      <a data-url="http://yoursite.com/2019/08/26/2019年8月读书心得/" data-id="ckjpktbd70001r9bu3j6xqorf"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -795,7 +870,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/25/iOS源码阅读——YYWebImage/" data-id="ckhnfj2xp00295tbug02evtpm"
+      <a data-url="http://yoursite.com/2018/12/25/iOS源码阅读——YYWebImage/" data-id="ckjpktbea001yr9bu1dt88621"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYWebImage/">YYWebImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
@@ -875,83 +950,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/30/iOS-UITableView-长按移动Cell的位置/" data-id="ckhnfj2xe001g5tbueamk26xf"
-        class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UITableView/">UITableView</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-  
-
-</article>
-    
-    <article id="post-自定义UITableView左滑删除样式" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2018/09/07/自定义UITableView左滑删除样式/"
-    >自定义UITableView左滑删除样式</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2018/09/07/自定义UITableView左滑删除样式/" class="article-date">
-  <time datetime="2018-09-07T08:57:59.000Z" itemprop="datePublished">2018-09-07</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <p>最近在做番茄钟的项目，其中涉及到任务列表的界面，希望实现左滑删除的功能。UITableViewDelegate自带简单的左滑删除的接口，通过实现<code>canEditRowAtIndexPath方法</code>打开tableView可编辑的开关，再实现<code>editActionsForRowAtIndexPath方法</code>处理事件，<code>UITableViewRowAction</code>的实例允许修改文字和背景色。<br><img src="https://ws1.sinaimg.cn/large/0069RVTdgy1fv11c5vl0gj30lu05cdj5.jpg" alt=""></p>
-<p>而我的需求是想把删除键做成一个垃圾桶图标。而系统没有直接可用的API，那就只能曲线救国了。</p>
-<p>首先，这个删除按钮在 iOS11 和 iOS11以下的系统中，所处的父级是不一样的。</p>
-<h2 id="在iOS11以前"><a href="#在iOS11以前" class="headerlink" title="在iOS11以前"></a>在iOS11以前</h2><p>删除按钮的父级是cell图。<br><img src="https://ws2.sinaimg.cn/large/0069RVTdgy1fv11nwlk64j319g0lc7fn.jpg" alt=""></p>
-<h2 id="iOS11"><a href="#iOS11" class="headerlink" title="iOS11+"></a>iOS11+</h2><p>删除按钮的父级类名为<code>UISwipeActionPullView</code>，<code>UISwipeActionPullView</code>的父级为<code>UITableViewRowAction</code>，也就是说<code>UISwipeActionPullView</code>和cell是同级的。<br><img src="https://ws3.sinaimg.cn/large/0069RVTdgy1fv11nwb7dpj31ae0jkds6.jpg" alt=""></p>
-<p>所以，两者需要以不同的方式实现。</p>
-<p>在两种系统中，当还未左滑调出删除按钮时，输出cell或tableView的所有子视图，发现并没有删除按钮的存在。也就是说，他们是在需要的时候，被创建出来的。所以，我们需要重写某个方法去截获这个删除按钮。</p>
-<h2 id="在iOS11以前-1"><a href="#在iOS11以前-1" class="headerlink" title="在iOS11以前"></a>在iOS11以前</h2><p>重写<code>insertSubview:atIndex</code>方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">- (void)insertSubview:(UIView *)view atIndex:(NSInteger)index &#123;</span><br><span class="line">    [super insertSubview:view atIndex:index];</span><br><span class="line">    DLog(@&quot;insertSubview&quot;);</span><br><span class="line">    if ([view isKindOfClass:NSClassFromString(@&quot;UITableViewCellDeleteConfirmationView&quot;)]) &#123;</span><br><span class="line">        for (UIButton *btn in view.subviews) &#123;</span><br><span class="line"></span><br><span class="line">            if ([btn isKindOfClass:[UIButton class]]) &#123;</span><br><span class="line">                [btn setBackgroundColor:[UIColor clearColor]];</span><br><span class="line">                [btn mas_updateConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">                    make.width.mas_equalTo(adaptWidth(35));</span><br><span class="line">                    make.height.mas_equalTo(adaptWidth(35));</span><br><span class="line">                    make.centerX.mas_equalTo(0);</span><br><span class="line">                    make.centerY.mas_equalTo(0);</span><br><span class="line">                &#125;];</span><br><span class="line"></span><br><span class="line">                [btn setTitle:nil forState:UIControlStateNormal];</span><br><span class="line">                UIImage *img = [IMAGE(@&quot;list_deleting&quot;) imageForThemeColor:[UIColor redColor]];</span><br><span class="line">                [btn setImage:img forState:UIControlStateNormal];</span><br><span class="line">                [btn setImage:img forState:UIControlStateHighlighted];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="iOS11-1"><a href="#iOS11-1" class="headerlink" title="iOS11+"></a>iOS11+</h2><p>新建并使用一个继承于UITableView的控件，重写<code>layoutSubviews</code>方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">- (void)layoutSubviews&#123;</span><br><span class="line">    [super layoutSubviews];</span><br><span class="line"></span><br><span class="line">    //iOS11版本以上,自定义删除按钮:</span><br><span class="line">    if ([[[UIDevice currentDevice] systemVersion] doubleValue] &gt;= 11.0) &#123;</span><br><span class="line">        for (UIView *subview in self.subviews)</span><br><span class="line">        &#123;</span><br><span class="line">            if([subview isKindOfClass:NSClassFromString(@&quot;UISwipeActionPullView&quot;)])</span><br><span class="line">            &#123;</span><br><span class="line">                UIView *swipeActionPullView = subview;</span><br><span class="line">                swipeActionPullView.backgroundColor =  [UIColor clearColor];</span><br><span class="line"></span><br><span class="line">                UIButton *swipeActionStandardBtn = subview.subviews[0];</span><br><span class="line">                if ([swipeActionStandardBtn isKindOfClass:NSClassFromString(@&quot;UISwipeActionStandardButton&quot;)]) &#123;</span><br><span class="line"></span><br><span class="line">                    [swipeActionStandardBtn mas_updateConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">                        make.width.mas_equalTo(adaptWidth(35));</span><br><span class="line">                        make.height.mas_equalTo(adaptWidth(35));</span><br><span class="line">                        make.left.mas_equalTo(0);</span><br><span class="line">                        make.centerY.mas_equalTo(0);</span><br><span class="line">                    &#125;];</span><br><span class="line">                    [swipeActionStandardBtn setTitle:nil forState:UIControlStateNormal];</span><br><span class="line">                    [swipeActionStandardBtn setImage:[IMAGE(@&quot;list_deleting&quot;) imageForThemeColor:[UIColor redColor]] forState:UIControlStateNormal];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>*在iOS11以前，左滑cell不会走<code>layoutSubviews</code>的方法。在iOS11上，左滑时tableView不会走<code>insertSubview:atIndex</code>方法。</p>
-<p><img src="https://ws2.sinaimg.cn/large/0069RVTdgy1fv12w0xbwqj30lm05gade.jpg" alt=""></p>
-
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/09/07/自定义UITableView左滑删除样式/" data-id="ckhnfj2xr002g5tbulqpq2wy2"
+      <a data-url="http://yoursite.com/2018/11/30/iOS-UITableView-长按移动Cell的位置/" data-id="ckjpktbe3001fr9bukyfdfpe7"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UITableView/">UITableView</a></li></ul>
@@ -985,7 +984,7 @@
     <ul class="list-inline">
       <li>
         &copy;
-        2018-2020
+        2018-2021
         GG266
       </li>
       <li>
