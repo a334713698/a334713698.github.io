@@ -36,6 +36,79 @@
     
     
     
+    <article id="post-LeetCode算法学习日记（2020年8月）" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/08/28/LeetCode算法学习日记（2020年8月）/"
+    >LeetCode算法学习日记（2020年8月）</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/08/28/LeetCode算法学习日记（2020年8月）/" class="article-date">
+  <time datetime="2020-08-28T12:04:05.000Z" itemprop="datePublished">2020-08-28</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/算法/">算法</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h3 id="2020-8-14"><a href="#2020-8-14" class="headerlink" title="2020.8.14"></a>2020.8.14</h3><hr>
+<p><b>题目：</b>有效的括号<br><b>解题思路：</b>栈<br><b>示例：</b></p>
+<blockquote>
+<p>输入： “( ) [ ] { }”<br>输出： true</p>
+<p>输入： “( [ ) ]”<br>输出： false</p>
+</blockquote>
+<p><b>代码：</b><br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">isValid</span><span class="params">(<span class="number">_</span> s: String)</span></span> -&gt; <span class="type">Bool</span> &#123;       </span><br><span class="line">    <span class="keyword">if</span> s.isEmpty &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> dic:[<span class="type">Character</span>:<span class="type">Int</span>] = [<span class="string">"("</span>:<span class="number">1</span>,<span class="string">")"</span>:<span class="number">2</span>,<span class="string">"["</span>:<span class="number">3</span>,<span class="string">"]"</span>:<span class="number">4</span>,<span class="string">"&#123;"</span>:<span class="number">5</span>,<span class="string">"&#125;"</span>:<span class="number">6</span>]</span><br><span class="line">    <span class="keyword">var</span> arr = [s[s.startIndex]]</span><br><span class="line">    <span class="keyword">var</span> isSkip = <span class="literal">false</span> <span class="comment">//是否清空</span></span><br><span class="line">    <span class="keyword">for</span> index <span class="keyword">in</span> <span class="number">1</span>..&lt;s.<span class="built_in">count</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">let</span> currentS : <span class="type">Character</span> = s[s.index(s.startIndex, offsetBy: index)]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> isSkip &#123;</span><br><span class="line">            isSkip = <span class="literal">false</span></span><br><span class="line">            arr = [currentS]</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">let</span> lastS : <span class="type">Character</span>? = arr.last</span><br><span class="line">        <span class="keyword">let</span> currentNum = dic[currentS] <span class="comment">// 当前符号代表的数</span></span><br><span class="line">        <span class="keyword">let</span> lastNum = dic[lastS!] <span class="comment">// 栈顶符号代表的数</span></span><br><span class="line">        <span class="keyword">if</span> (lastNum! == <span class="number">1</span> &amp;&amp; currentNum! == <span class="number">2</span>) || (lastNum! == <span class="number">3</span> &amp;&amp; currentNum! == <span class="number">4</span>) || (lastNum! == <span class="number">5</span> &amp;&amp; currentNum! == <span class="number">6</span>)&#123;</span><br><span class="line">            arr.removeLast()</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            arr.append(currentS)</span><br><span class="line">        &#125;</span><br><span class="line">        isSkip = (arr.<span class="built_in">count</span> == <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> arr.<span class="built_in">count</span> &gt; <span class="number">0</span> ? <span class="literal">false</span> : <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><b>算法理解：</b><br>当我们在遍历的时候，遇到左括号，就希望在后续中有右括号与之对应。根据先出现的左括号，延后对应，后出现的左括号，遇到右括号先对应的特点，栈的特点非常适合这道题的解题思路（先进后出）。<br>我们可以依次将一个符号压入栈顶，当有左括号遇到右括号时，两两相消，一直到最后如果栈内符号全部消除，则说明这组符号是有效的。</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/08/28/LeetCode算法学习日记（2020年8月）/" data-id="ckknwx3b70010lrbuz3b0l0rt"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-简单瀑布流布局实现（Swift）" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -94,7 +167,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckjpktbek002jr9bul6ru3ld5"
+      <a data-url="http://yoursite.com/2020/08/27/简单瀑布流布局实现（Swift）/" data-id="ckknwx3bt002flrbupdymc0sn"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -159,7 +232,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckjpktbdh0009r9bukx5z8swt"
+      <a data-url="http://yoursite.com/2020/05/08/2020年5月读书心得/" data-id="ckknwx3aq0007lrbuy3e0wr34"
         class="article-share-link">分享</a>
       
     </footer>
@@ -316,7 +389,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/10/2020年4月读书心得/" data-id="ckjpktbdn000fr9butngqminh"
+      <a data-url="http://yoursite.com/2020/04/10/2020年4月读书心得/" data-id="ckknwx3aw000elrbuisfavkg3"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -402,7 +475,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/03/2020年3月读书心得/" data-id="ckjpktbdl000er9builzqkkhe"
+      <a data-url="http://yoursite.com/2020/04/03/2020年3月读书心得/" data-id="ckknwx3at000alrbugu7gzejr"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -476,7 +549,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/03/24/LeetCode算法学习日记（2020年3月）/" data-id="ckjpktbdz0017r9buyrzdmd1m"
+      <a data-url="http://yoursite.com/2020/03/24/LeetCode算法学习日记（2020年3月）/" data-id="ckknwx3b5000xlrbuwkqkxvzj"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -554,7 +627,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ckjpktbdb0003r9buw8a5klt5"
+      <a data-url="http://yoursite.com/2020/02/04/2019年总结/" data-id="ckknwx3am0003lrbu5xkdf9ea"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随记/">随记</a></li></ul>
@@ -641,7 +714,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/01/17/Github项目迁移/" data-id="ckjpktbdv000ur9buyy5q2lix"
+      <a data-url="http://yoursite.com/2020/01/17/Github项目迁移/" data-id="ckknwx3b4000slrbucxnboth1"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
@@ -717,7 +790,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/08/26/2019年8月读书心得/" data-id="ckjpktbd70001r9bu3j6xqorf"
+      <a data-url="http://yoursite.com/2019/08/26/2019年8月读书心得/" data-id="ckknwx3ai0001lrbu19wk1tgn"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/读书心得/">读书心得</a></li></ul>
@@ -870,90 +943,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/25/iOS源码阅读——YYWebImage/" data-id="ckjpktbea001yr9bu1dt88621"
+      <a data-url="http://yoursite.com/2018/12/25/iOS源码阅读——YYWebImage/" data-id="ckknwx3bf001ilrbue8nwj0wl"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYWebImage/">YYWebImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-  
-
-</article>
-    
-    <article id="post-iOS-UITableView-长按移动Cell的位置" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2018/11/30/iOS-UITableView-长按移动Cell的位置/"
-    >iOS UITableView 长按移动Cell的位置</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2018/11/30/iOS-UITableView-长按移动Cell的位置/" class="article-date">
-  <time datetime="2018-11-30T11:49:23.000Z" itemprop="datePublished">2018-11-30</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/iOS/">iOS</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <h3 id="实现思路："><a href="#实现思路：" class="headerlink" title="实现思路："></a>实现思路：</h3><ol>
-<li>长按获取当前手指所在位置的indexPath</li>
-<li>通过indexPath获取对应cell，并生成快照</li>
-<li>移动。<br>3.1. 快照跟随手指移动<br>3.2. 当手指移动到其他cell的位置时，执行位置互换，和数据互换</li>
-<li>放开手指，移除快照</li>
-</ol>
-<p><br></p>
-<h3 id="实现步骤："><a href="#实现步骤：" class="headerlink" title="实现步骤："></a>实现步骤：</h3><p>准备：(UITableView<em>)tableView，数据源(NSMutableArray</em>)lists</p>
-<h5 id="第一步：为tableView添加长按手势"><a href="#第一步：为tableView添加长按手势" class="headerlink" title="第一步：为tableView添加长按手势"></a>第一步：为tableView添加长按手势</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UILongPressGestureRecognizer* longRec = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];</span><br><span class="line">[_tableView addGestureRecognizer:longRec];</span><br></pre></td></tr></table></figure>
-<h5 id="第二步：实现手势对应的操作。"><a href="#第二步：实现手势对应的操作。" class="headerlink" title="第二步：实现手势对应的操作。"></a>第二步：实现手势对应的操作。</h5><p>① <code>UIGestureRecognizerStateBegan</code> 时，选中cell。<br>通过手势在tableView的location，可以获取到tableView上对应的IndexPath，从而也能获取到对应的cell。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//UIGestureRecognizer 的实例方法，可获取手势在载体上的点坐标</span><br><span class="line">- (CGPoint)locationInView:(nullable UIView*)view;</span><br><span class="line"></span><br><span class="line">//UITableView 的实例方法，可获取屏幕上某个点下存在的indexPath</span><br><span class="line">- (nullable NSIndexPath *)indexPathForRowAtPoint:(CGPoint)point;</span><br><span class="line"></span><br><span class="line">//UIView 的实例方法，可生成屏幕快照，要求iOS 7.0+</span><br><span class="line">- (nullable UIView *)snapshotViewAfterScreenUpdates:(BOOL)afterUpdates;</span><br></pre></td></tr></table></figure></p>
-<p>② <code>UIGestureRecognizerStateChanged</code> 时，移动cell。<br>通过手势在移动中，不断的回调，获取相应的位置，当手势移动到其他cell的位置时，就可以进行数据和视图的对调。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//NSMutableArray 的实例方法，可快速交换数组中两个对象的位置</span><br><span class="line">- (void)exchangeObjectAtIndex:(NSUInteger)idx1 withObjectAtIndex:(NSUInteger)idx2;</span><br><span class="line"></span><br><span class="line">//UITableView 的实例方法，可快速交换两个cell的位置，带动画</span><br><span class="line">- (void)moveRowAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath;</span><br><span class="line"></span><br><span class="line">//UITableView 的实例方法，可快速交换两个section的位置，带动画</span><br><span class="line">- (void)moveSection:(NSInteger)section toSection:(NSInteger)newSection;</span><br></pre></td></tr></table></figure></p>
-<p>③ <code>UIGestureRecognizerStateEnded</code> 时：放下cell，移除快照</p>
-<p><br></p>
-<p>完整的<code>longPress:</code>方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">- (void)longPress:(UILongPressGestureRecognizer*)sender&#123;</span><br><span class="line">    UIGestureRecognizerState state = sender.state;</span><br><span class="line">    CGPoint location = [sender locationInView:_tableView];</span><br><span class="line">    switch (state) &#123;</span><br><span class="line">        case UIGestureRecognizerStateBegan:&#123;</span><br><span class="line">            NSLog(@&quot;选中cell&quot;);</span><br><span class="line">            _selectIndexPath = [_tableView indexPathForRowAtPoint:location];</span><br><span class="line">            if (!_selectIndexPath) return;</span><br><span class="line">            UITableViewCell* cell = [_tableView cellForRowAtIndexPath:_selectIndexPath];</span><br><span class="line">            _snapShot = [self snapshotViewAfterScreenUpdates:cell];</span><br><span class="line">            _snapShot.frame = CGRectMake(0, location.y, _snapShot.bounds.size.width, _snapShot.bounds.size.height);</span><br><span class="line">            [self.view addSubview:_snapShot];</span><br><span class="line">            cell.contentView.hidden = YES;</span><br><span class="line">        &#125;</span><br><span class="line">            break;</span><br><span class="line">        case UIGestureRecognizerStateChanged:&#123;</span><br><span class="line">            NSLog(@&quot;移动cell&quot;);</span><br><span class="line">            _snapShot.frame = CGRectMake(0, location.y, _snapShot.bounds.size.width, _snapShot.bounds.size.height);</span><br><span class="line">            NSIndexPath* changeIndexPath = [_tableView indexPathForRowAtPoint:location];</span><br><span class="line">            if (!_selectIndexPath || !changeIndexPath) return;</span><br><span class="line">            if (_selectIndexPath != changeIndexPath) &#123;</span><br><span class="line">                NSLog(@&quot;交换&quot;);</span><br><span class="line">                [self.lists exchangeObjectAtIndex:_selectIndexPath.row withObjectAtIndex:changeIndexPath.row];</span><br><span class="line">                //移动Section —— [self.tableView moveSection:0 toSection:0];</span><br><span class="line">                //移动row</span><br><span class="line">                [self.tableView moveRowAtIndexPath:_selectIndexPath toIndexPath:changeIndexPath];</span><br><span class="line">                UITableViewCell* selectCell = [_tableView cellForRowAtIndexPath:_selectIndexPath];</span><br><span class="line">                UITableViewCell* changeCell = [_tableView cellForRowAtIndexPath:changeIndexPath];</span><br><span class="line">                selectCell.contentView.hidden = NO;</span><br><span class="line">                changeCell.contentView.hidden = YES;</span><br><span class="line">                _selectIndexPath = changeIndexPath;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">            break;</span><br><span class="line">        case UIGestureRecognizerStateEnded:&#123;</span><br><span class="line">            NSLog(@&quot;放下cell&quot;);</span><br><span class="line">            [_snapShot removeFromSuperview];</span><br><span class="line">            _snapShot = nil;</span><br><span class="line">            if (!_selectIndexPath) return;</span><br><span class="line">            UITableViewCell* cell = [_tableView cellForRowAtIndexPath:_selectIndexPath];</span><br><span class="line">            cell.contentView.hidden = NO;</span><br><span class="line">            _selectIndexPath = nil;</span><br><span class="line">        &#125;</span><br><span class="line">            break;</span><br><span class="line">        default:</span><br><span class="line">            break;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://github.com/a334713698/DragSort" target="_blank" rel="noopener">Demo</a></p>
-
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/30/iOS-UITableView-长按移动Cell的位置/" data-id="ckjpktbe3001fr9bukyfdfpe7"
-        class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UITableView/">UITableView</a></li></ul>
 
     </footer>
 
@@ -973,7 +966,7 @@
   
   <nav class="page-nav">
     
-    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">下一页</a>
+    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">下一页</a>
   </nav>
   
 </section>
@@ -1101,7 +1094,7 @@
 
 <script>
   var ayerConfig = {
-    mathjax: false
+    mathjax: true
   }
 </script>
 
@@ -1110,6 +1103,25 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
 
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 
 <script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>

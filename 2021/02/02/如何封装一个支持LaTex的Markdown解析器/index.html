@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="iOS coder,Machine-learning,DJ Hong的个人博客" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    如何封装一个支持LaTex的Markdown解析器 |  GG266的个人博客
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.jpg" />
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/pace.min.js"></script>
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-如何封装一个支持LaTex的Markdown解析器" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  如何封装一个支持LaTex的Markdown解析器
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/02/02/如何封装一个支持LaTex的Markdown解析器/" class="article-date">
+  <time datetime="2021-02-02T11:19:37.000Z" itemprop="datePublished">2021-02-02</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">4分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最近在仿写一款优秀的写作软件，优秀的写作软件支持markdown的解析自然是一个必不可少的功能，在思考如何实现解析器的同时，恰好阅读了钟颖大佬出品的关于<a href="https://dev.taio.app/#/cn/editor/code-editor" target="_blank" rel="noopener">“代码编辑器”</a>的技术文章，发现可以使用 <code>WebView</code>封装 <a href="https://github.com/markdown-it/markdown-it" target="_blank" rel="noopener">markdown-it</a> 和 <a href="https://highlightjs.org/" target="_blank" rel="noopener">highlightjs.org</a>  一类的web项目，低成本地实现一个有着不错效果的CommonMark解析器。</p>
+<h2 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h2><h3 id="1-HTML文件创建"><a href="#1-HTML文件创建" class="headerlink" title="1. HTML文件创建"></a>1. HTML文件创建</h3><p>创建本地文件 <code>index.html</code>，并输入代码。页面中用到的js文件和资源需要后续创建和生成。<code>&lt;body&gt;</code>标签中唯一的<code>&lt;div&gt;</code>将用于后续插入通过 <code>markdown-it</code>渲染的代码，页面的样式布局通过css文件实现和优化。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"./main.css"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./main.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"container"</span> <span class="attr">id</span>=<span class="string">"contents"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-JS文件创建"><a href="#2-JS文件创建" class="headerlink" title="2. JS文件创建"></a>2. JS文件创建</h4><p>创建本地文件 <code>index.js</code>，在文件中编写需要注入网页的js代码。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hljs <span class="keyword">from</span> <span class="string">'highlight.js'</span></span><br><span class="line"><span class="keyword">import</span> MarkdownIt <span class="keyword">from</span> <span class="string">'markdown-it'</span></span><br><span class="line"><span class="keyword">import</span> emoji <span class="keyword">from</span> <span class="string">'markdown-it-emoji'</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./../css/bootstrap.css'</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./../css/gist.css'</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./../css/github.css'</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./../css/index.css'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.showMarkdown = <span class="function">(<span class="params">percentEncodedMarkdown, enableImage = <span class="literal">true</span></span>) =&gt;</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!percentEncodedMarkdown) &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> markdownText = <span class="built_in">decodeURIComponent</span>(percentEncodedMarkdown)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> markdown = <span class="keyword">new</span> MarkdownIt(&#123;</span><br><span class="line">    html: <span class="literal">true</span>,</span><br><span class="line">    breaks: <span class="literal">true</span>,</span><br><span class="line">    linkify: <span class="literal">true</span>,</span><br><span class="line">    highlight: <span class="function"><span class="keyword">function</span>(<span class="params">code</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> hljs.highlightAuto(code).value;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">if</span> (!enableImage) &#123;</span><br><span class="line">    markdown = markdown.disable(<span class="string">'image'</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  markdown.use(emoji)</span><br><span class="line">  markdown.use(<span class="built_in">require</span>(<span class="string">'markdown-it-latex2img'</span>))</span><br><span class="line">  <span class="keyword">let</span> html = markdown.render(markdownText)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">'contents'</span>).innerHTML = html</span><br><span class="line">  <span class="keyword">let</span> tables = <span class="built_in">document</span>.querySelectorAll(<span class="string">'table'</span>)</span><br><span class="line">  tables.forEach(<span class="function">(<span class="params">table</span>) =&gt;</span> &#123;</span><br><span class="line">    table.classList.add(<span class="string">'table'</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">let</span> codes = <span class="built_in">document</span>.querySelectorAll(<span class="string">'pre code'</span>)</span><br><span class="line">  codes.forEach(<span class="function">(<span class="params">code</span>) =&gt;</span> &#123;</span><br><span class="line">    hljs.highlightBlock(code)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>主要用到的js库有：</p>
+<blockquote>
+<p><code>markdown-it</code>：100％ CommonMark 语法解析<br><code>highlight.js</code>：代码高亮<br><code>markdown-it-emoji</code>：emoji语法支持<br><code>markdown-it-latex2img</code>：基于服务器端的MathJax解析器</p>
+</blockquote>
+<p>代码的基本逻辑主要是：<br>1.由于markdown格式的内容被传入时事先进行了编码操作，所以这里需要调用decodeURIComponent()函数对内容先进行解码。<br>2.使用 <code>markdown-it</code>别结合所需插件对内容进行渲染，更多关于 <code>markdown-it</code>的使用和插件支持，可以参考官方的API文档：<a href="http://markdownit.docschina.org/" target="_blank" rel="noopener">《markdown-it 中文文档》</a>。<br>3.将渲染后的代码插入 <code>index.html</code>页面的对应位置，并支持表格（内嵌功能）和代码高亮的显示。</p>
+<h3 id="3-控件封装"><a href="#3-控件封装" class="headerlink" title="3. 控件封装"></a>3. 控件封装</h3><p>业务逻辑：创建 <code>WKWebView</code>，并注入js代码（showMarkdown()函数调用）<br>关键<a href="https://github.com/keitaoouchi/MarkdownView/blob/master/Sources/MarkdownView/MarkdownView.swift" target="_blank" rel="noopener">代码</a>：<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@objc</span> <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">load</span><span class="params">(markdown: String?, enableImage: Bool = <span class="literal">true</span>)</span></span> &#123;</span><br><span class="line">  <span class="keyword">guard</span> <span class="keyword">let</span> markdown = markdown <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> <span class="keyword">let</span> url = htmlURL &#123;</span><br><span class="line">    <span class="keyword">let</span> templateRequest = <span class="type">URLRequest</span>(url: url)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> escapedMarkdown = <span class="keyword">self</span>.escape(markdown: markdown) ?? <span class="string">""</span></span><br><span class="line">    <span class="keyword">let</span> imageOption = enableImage ? <span class="string">"true"</span> : <span class="string">"false"</span></span><br><span class="line">    <span class="keyword">let</span> script = <span class="string">"window.showMarkdown('<span class="subst">\(escapedMarkdown)</span>', <span class="subst">\(imageOption)</span>);"</span></span><br><span class="line">    <span class="keyword">let</span> userScript = <span class="type">WKUserScript</span>(source: script, injectionTime: .atDocumentEnd, forMainFrameOnly: <span class="literal">true</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> controller = <span class="type">WKUserContentController</span>()</span><br><span class="line">    controller.addUserScript(userScript)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> configuration = <span class="type">WKWebViewConfiguration</span>()</span><br><span class="line">    configuration.userContentController = controller</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> wv = <span class="type">WKWebView</span>(frame: <span class="keyword">self</span>.bounds, configuration: configuration)</span><br><span class="line">    wv.scrollView.isScrollEnabled = <span class="keyword">self</span>.isScrollEnabled</span><br><span class="line">    wv.translatesAutoresizingMaskIntoConstraints = <span class="literal">false</span></span><br><span class="line">    wv.navigationDelegate = <span class="keyword">self</span></span><br><span class="line">    addSubview(wv)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 代码省略：布局约束、空间样式</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    wv.load(templateRequest)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> raise error</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">func</span> <span class="title">escape</span><span class="params">(markdown: String)</span></span> -&gt; <span class="type">String</span>? &#123;</span><br><span class="line">  <span class="keyword">return</span> markdown.addingPercentEncoding(withAllowedCharacters: <span class="type">CharacterSet</span>.alphanumerics)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="4-资源文件打包"><a href="#4-资源文件打包" class="headerlink" title="4. 资源文件打包"></a>4. 资源文件打包</h3><p>到此，代码层面的工作就可以结束了。<br>最后我们需要使用 <code>Webpack</code>工具将js应用程序打包成方便使用的静态资源，输出名为 <code>main.js</code>的文件，将其放置在 <code>index.html</code>文件相同的目录下。这里提供一个可供参考的配置文件：<a href="https://github.com/keitaoouchi/MarkdownView/blob/master/webassets/webpack.config.js" target="_blank" rel="noopener">webpack.config.js</a>。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>本文所描述的实现过程，主要参考了三方库 <a href="https://github.com/keitaoouchi/MarkdownView" target="_blank" rel="noopener">MarkdownView</a>，因为需要支持LaTeX的解析，我稍微重写了showMarkdown函数，加入了 <code>markdown-it-latex2img</code>库的使用，能够将数学公式以图片的形式进行展示。过程中，还学习了 <code>Webpack</code>工具的使用和js静态资源的打包。<code>Webview</code>项目的封装能够为原生提供更丰富的功能，能够为复杂的业务实现提供更多的思路和扩展，希望本文能够对需要的人有所帮助。</p>
+<h3 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h3><p><a href="https://dev.taio.app/#/cn/" target="_blank" rel="noopener">Taio开发笔记</a><br><a href="https://www.runoob.com/w3cnote/webpack-tutorial.html" target="_blank" rel="noopener">Webpack教程</a><br><a href="http://markdown-it.docschina.org/" target="_blank" rel="noopener">markdown-it API文档</a><br><a href="https://github.com/keitaoouchi/MarkdownView" target="_blank" rel="noopener">keitaoouchi/MarkdownView</a></p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2021/02/02/如何封装一个支持LaTex的Markdown解析器/" data-id="ckknwx3bq0029lrbub5jypfge"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LaTex/">LaTex</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Markdown/">Markdown</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/2021/01/09/2020年度总结/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">2020年度总结</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2018-2021
+        GG266
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <ul class="list-inline">
+  <li>PV:<span id="busuanzi_value_page_pv"></span></li>
+  <li>UV:<span id="busuanzi_value_site_uv"></span></li>
+</ul>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s4.cnzz.com/z_stat.php?id=1278583018&amp;web_id=1278583018'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+    
+    <aside class="sidebar">
+      
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/avatar.svg" alt="GG266的个人博客"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+  <script src="/js/tocbot.min.js"></script>
+  <script>
+    // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+    tocbot.init({
+      tocSelector: '.tocbot',
+      contentSelector: '.article-entry',
+      headingSelector: 'h1, h2, h3, h4, h5, h6',
+      hasInnerContainers: true,
+      scrollSmooth: true,
+      positionFixedSelector: '.tocbot',
+      positionFixedClass: 'is-position-fixed',
+      fixedSidebarOffset: 'auto',
+			onClick: (e) => {
+      	document.getElementById(e.target.innerText).scrollIntoView()
+      	return false;
+    	}
+    });
+  </script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+<script src="/js/ayer.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  
+  
+
+  </div>
+</body>
+
+</html>
