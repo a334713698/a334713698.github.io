@@ -36,6 +36,159 @@
     
     
     
+    <article id="post-iOS源码阅读——YYWebImage" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2018/12/25/iOS源码阅读——YYWebImage/"
+    >iOS源码阅读——YYWebImage</a
+  >
+</h2>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2018/12/25/iOS源码阅读——YYWebImage/" class="article-date">
+  <time datetime="2018-12-25T12:07:29.000Z" itemprop="datePublished">2018-12-25</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>加载网络图片是项目中比较常见的需求，<code>YYWebImage</code>是Github中比较好用的图片加载开源框架之一。<code>YYWebImage</code>是作者为UIImageView创建的Category，使得UIImageView的实例能够直接调用一个实例方法，就能获取网络图片的功能。</p>
+<h2 id="UIImageView-YYWebImage的实例方法"><a href="#UIImageView-YYWebImage的实例方法" class="headerlink" title="UIImageView+YYWebImage的实例方法"></a>UIImageView+YYWebImage的实例方法</h2><p>在<code>UIImageView+YYWebImage</code>列举了5中方法供开发者使用，分别是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">①- (void)yy_setImageWithURL:(nullable NSURL *)imageURL placeholder:(nullable UIImage *)placeholder;</span><br><span class="line">②- (void)yy_setImageWithURL:(nullable NSURL *)imageURL options:(YYWebImageOptions)options;</span><br><span class="line">③- (void)yy_setImageWithURL:(nullable NSURL *)imageURL</span><br><span class="line">               placeholder:(nullable UIImage *)placeholder</span><br><span class="line">                   options:(YYWebImageOptions)options</span><br><span class="line">                completion:(nullable YYWebImageCompletionBlock)completion;</span><br><span class="line">④- (void)yy_setImageWithURL:(nullable NSURL *)imageURL</span><br><span class="line">               placeholder:(nullable UIImage *)placeholder</span><br><span class="line">                   options:(YYWebImageOptions)options</span><br><span class="line">                  progress:(nullable YYWebImageProgressBlock)progress</span><br><span class="line">                 transform:(nullable YYWebImageTransformBlock)transform</span><br><span class="line">                completion:(nullable YYWebImageCompletionBlock)completion;</span><br><span class="line"></span><br><span class="line">⑤- (void)yy_setHighlightedImageWithURL:(NSURL *)imageURL</span><br><span class="line">                          placeholder:(UIImage *)placeholder</span><br><span class="line">                              options:(YYWebImageOptions)options</span><br><span class="line">                              manager:(YYWebImageManager *)manager</span><br><span class="line">                             progress:(YYWebImageProgressBlock)progress</span><br><span class="line">                            transform:(YYWebImageTransformBlock)transform</span><br><span class="line">                           completion:(YYWebImageCompletionBlock)completion;</span><br></pre></td></tr></table></figure></p>
+<p>从方法的具体实现中可以看到，①~④的方法实现，都是调用了方法⑤，只是参数传递有所不同。所以我们只需要着重阅读方法⑤的代码实现</p>
+<h2 id="具体实现——UIImageView-YYWebImage-m"><a href="#具体实现——UIImageView-YYWebImage-m" class="headerlink" title="具体实现——UIImageView+YYWebImage.m"></a>具体实现——<a href="https://github.com/ibireme/YYWebImage/blob/master/YYWebImage/Categories/UIImageView%2BYYWebImage.m" target="_blank" rel="noopener">UIImageView+YYWebImage.m</a></h2><ol>
+<li>判断传入的图片链接如果是NSString类型的实例，要先转换为NSURL类型的实例</li>
+<li>三目运算，判断<code>YYWebImageManager</code>实例初始化与否，确保初始化完成</li>
+<li><p>_YYWebImageSetter</p>
+<ol>
+<li>关于<code>_YYWebImageSetter</code>，作者的注解是：Private class used by web image categories.Typically, you should not use this class directly.它是Web图像类别使用的私有类。通常，您不应直接使用此类。</li>
+<li>包含2个只读属性、和4个方法<ol>
+<li>属性：（NSURL*）imageURL、(int32_t) sentinel</li>
+<li>方法：<ol>
+<li>-(int32_t)setOperationWithSentinel: url: options: manager: progress: transform: completion:</li>
+<li>-(int32_t)cancel</li>
+<li>-(int32_t)cancelWithNewURL:</li>
+<li>+(dispatch_queue_t)setterQueue</li>
+</ol>
+</li>
+<li><code>objc_getAssociatedObject</code>：通过runtime获取UIImageView的动态属性setter，类型为<code>_YYWebImageSetter</code>。</li>
+<li>如果获取到的setter为空，则需要新建一个_YYWebImageSetter实例，并动态关联这个属性。</li>
+<li>[setter cancelWithNewURL:imageURL]通过新的图片链接，取消原来的线程操作。实现步骤：<ol>
+<li>dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER)如果_lock的信号量值为0，则线程阻塞，不往下执行。否则，信号量-1（初始信号量为1），继续往下执行。</li>
+<li>判断 _operation线程是否存在，如果存在，取消这个线程，并置空。</li>
+<li>为 _imageURL变量赋值——新的图片连接</li>
+<li>sentinel = OSAtomicIncrement32(&amp;_sentinel);值自增</li>
+<li>dispatch_semaphore_signal(_lock) 信号量+1</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>_yy_dispatch_sync_on_main_queue确保在主线程执行后面的代码。</p>
+<ol>
+<li>从内存缓存<code>YYImageCacheTypeMemory</code>中获取图片，如果获取成功，则执行complete()，结束操作。</li>
+<li>未在内存缓存中获取到图片，继续执行。<ol>
+<li>通过 [_YYWebImageSetter setterQueue]，获取到一个与全局队列优先级相同的队列，并异步执行后面的代码</li>
+<li>预先创建和实现的  YYWebImageCompletionBlock _completion block。</li>
+<li>实现 _YYWebImageSetter *setter的实例方法—— [setter setOperationWithSentinel:sentinel url:imageURL options:options manager:manager progress:_progress transform:transform completion:_completion]。</li>
+<li>通过一路追随 _completion block的传递，发现进入了  YYWebImageOperation  类。</li>
+<li>YYWebImageOperation继承于 NSOperation。作者重写了NSOpration类的start，方法。并在恰当时机调用了自定义方法 _startOperation。</li>
+<li>_startOperation方法的实现<ol>
+<li>当_cache存在且用户没有设置  YYWebImageOptionUseNSURLCache 和  YYWebImageOptionRefreshImageCache 选项。会先去取图片缓存。</li>
+<li>获取内存图片缓存，调用方法 [_cache getImageForKey:_cacheKey withType:YYImageCacheTypeMemory];。通过_cacheKey获取内存缓存。如果获取成功，结束后台线程；获取失败，则向下执行</li>
+<li>当用户没有设置忽略磁盘缓存 YYWebImageOptionIgnoreDiskCache，则接下去，从磁盘获取图片缓存。</li>
+<li>获取磁盘图片缓存，调用方法 [self.cache getImageForKey:self.cacheKey withType:YYImageCacheTypeDisk]。<ol>
+<li>如果从磁盘获取图片缓存成功，先将图片缓存到内存，并调用 _didReceiveImageFromDiskCache方法。</li>
+<li>如果同磁盘获取图片缓存失败，则需要从网络请求图片数据。</li>
+</ol>
+</li>
+<li>通过网络请求获取图片。<ol>
+<li>通过 incrementNetworkActivityCount为请求数量+1</li>
+<li>通过 connection: didReceiveData: 方法的回调，不断地获取数据。</li>
+<li>在 connectionDidFinishLoading 的方法回调中，调用 _didReceiveImageFromWeb 方法。</li>
+<li>通过 decrementNetworkActivityCount 为请求数量-1</li>
+</ol>
+</li>
+<li><ol>
+<li>_didReceiveImageFromWeb成功从网络获取图片。将图片分别存入内存和磁盘缓存中。</li>
+</ol>
+</li>
+<li>回到之前实现的 _completion代码块。主要是一些动画特效。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>通过<code>completion:(nullable YYWebImageCompletionBlock)completion</code>，将结果返回给开发者</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>YYWebImage</code>的实现合乎我们的直觉：</p>
+<ul>
+<li>查看缓存（1.内存；2.磁盘）<ul>
+<li>缓存命中<ul>
+<li>返回图片</li>
+<li>更新视图</li>
+</ul>
+</li>
+<li>缓存未命中<ul>
+<li>异步下载图片</li>
+<li>加入缓存</li>
+<li>更新视图</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h3><p>之前尝试阅读过<code>YYWebImage</code>框架，当时的方法是一个类一个类看，从.h的属性、方法，到.m的具体实现。说实话，看起来着实有点烧脑和低效。读了<a href="https://github.com/draveness/analyze" target="_blank" rel="noopener">Draven</a>的《<a href="https://github.com/draveness/analyze/blob/master/contents/SDWebImage/iOS%20%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%20---%20SDWebImage.md" target="_blank" rel="noopener">iOS 源代码分析 — SDWebImage</a>》，有所启发，直接以API作为入口阅读源码，更具方向性，才会更有收获。<br>文章中涉及到了<a href="https://www.cnblogs.com/snailHL/p/3906112.html" target="_blank" rel="noopener">dispatch_semaphore</a>、<a href="https://www.jianshu.com/p/8f07a9bdd1cd" target="_blank" rel="noopener">队列优先级</a>的知识。</p>
+
+      
+      <!-- 打赏 -->
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/25/iOS源码阅读——YYWebImage/" data-id="ckrwvunnc001tn7bup6csqhhl"
+        class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYWebImage/">YYWebImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码阅读/">源码阅读</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+  
+
+</article>
+    
     <article id="post-iOS-UITableView-长按移动Cell的位置" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -99,7 +252,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/11/30/iOS-UITableView-长按移动Cell的位置/" data-id="ckknwx3be001glrbu4e9rpy69"
+      <a data-url="http://yoursite.com/2018/11/30/iOS-UITableView-长按移动Cell的位置/" data-id="ckrwvunn6001dn7bulzokrgne"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UITableView/">UITableView</a></li></ul>
@@ -175,7 +328,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/09/07/自定义UITableView左滑删除样式/" data-id="ckknwx3bu002ilrbupf9prtxv"
+      <a data-url="http://yoursite.com/2018/09/07/自定义UITableView左滑删除样式/" data-id="ckrwvunok004qn7bu6fneqzxr"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UITableView/">UITableView</a></li></ul>
@@ -255,7 +408,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/09/05/Diary/" data-id="ckknwx3b3000plrbuirkk80l7"
+      <a data-url="http://yoursite.com/2018/09/05/Diary/" data-id="ckrwvunmu000on7bul6t00ymn"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Diary/">Diary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Life/">Life</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/成长/">成长</a></li></ul>
@@ -337,7 +490,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ckknwx3bh001nlrbuzs455tay"
+      <a data-url="http://yoursite.com/2018/06/20/使用Xcode的Instruments-Leaks-监测App的内存泄漏问题/" data-id="ckrwvunne001wn7buo1b4m44f"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Instruments/">Instruments</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leaks/">Leaks</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Xcode/">Xcode</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存泄漏/">内存泄漏</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/调试优化/">调试优化</a></li></ul>
@@ -431,7 +584,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckknwx3b80012lrbutrlrglio"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop实践/" data-id="ckrwvunn30018n7bui6ohhhst"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -556,7 +709,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckknwx3ba0017lrbu6iuvieie"
+      <a data-url="http://yoursite.com/2018/03/04/RunLoop理论/" data-id="ckrwvunn5001cn7buu7pfmuhy"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RunLoop/">RunLoop</a></li></ul>
@@ -639,7 +792,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckknwx3bj001tlrbufi342guf"
+      <a data-url="http://yoursite.com/2018/03/03/多线程的理解——队列与执行方式/" data-id="ckrwvunnf001xn7bujus0xwnx"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
@@ -710,7 +863,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckknwx3bm001xlrbuuka69fz2"
+      <a data-url="http://yoursite.com/2018/02/12/智能家居场景设想/" data-id="ckrwvunnk0028n7buyjgyr2jw"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
@@ -789,102 +942,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckknwx3bp0024lrbuoyz8bsxb"
+      <a data-url="http://yoursite.com/2018/02/09/小米智能家居设备清单（自用版）/" data-id="ckrwvunni0023n7bu8fve1u1w"
         class="article-share-link">分享</a>
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/智能家居/">智能家居</a></li></ul>
-
-    </footer>
-
-  </div>
-
-  
-
-  
-
-  
-
-</article>
-    
-    <article id="post-Mac上搭建基于GitHub的Hexo博客" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2018/02/08/Mac上搭建基于GitHub的Hexo博客/"
-    >Mac上搭建基于GitHub的Hexo博客</a
-  >
-</h2>
-  
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" class="article-date">
-  <time datetime="2018-02-08T06:32:18.000Z" itemprop="datePublished">2018-02-08</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-
-      
-
-      
-      <p>2017农历的最后几天，项目都完成得差不多了。想着建立一个自己的博客，花了两天时间，在网上搜索各种资料，总算是把个人博客建起来了。过程就是不断试错，是在进行不下去了，就推翻重来。本人是一枚iOS coder，工作机是一台Mac，所以就讲讲在macOS系统上如何基于<a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo</a>+<a href="https://github.com/" target="_blank" rel="noopener">Github</a>创建个人博客。文章开始前，需要提醒一下，文中出现的<code>$</code>符号，在终端中都是不需要输入或粘贴的。</p>
-<h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><h3 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h3><p>用来生成静态页面。可直接在<a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js官网</a>，下载镜像安装。</p>
-<h3 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h3><p>用来提交本地的Hexo内容到Github上。<br>电脑上如果已经装了Xcode，可不比进行本步骤，因为Xcode自带git。<br>如果没有Xcode，可以使用 <a href="https://brew.sh/" target="_blank" rel="noopener">Homebrew</a>, <a href="https://www.macports.org/" target="_blank" rel="noopener">MacPorts</a> ：brew install git;或下载 <a href="https://sourceforge.net/projects/git-osx-installer/" target="_blank" rel="noopener">安装程序</a> 安装<br>如果不是iOS开发者，其实真的没必要为了建站下一个好几G的Xcode</p>
-<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>所有必备的应用程序安装完成后，即可使用 npm 安装 Hexo。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install -g hexo-cli</span><br></pre></td></tr></table></figure></p>
-<p>这里如果报错，可以尝试sudo命令。输入管理员密码（Mac登录密码）即开始安装。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> sudo npm install -g hexo-cli</span><br></pre></td></tr></table></figure></p>
-<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>终端cd到一个你选定的目录（Mac支持直接将文件或文件夹拖入终端，直接显示路径），然后执行<code>hexo init</code>命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo init blogName</span><br></pre></td></tr></table></figure></p>
-<p>这里需要提一下，如果需要把博客的根目录文件夹建在桌面上：cd到桌面，然后执行<code>hexo init blogName</code>命令即可。系统会创建blogName这个目录在桌面上。<br>下一步，cd到<code>blogName</code>，执行安装命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install</span><br></pre></td></tr></table></figure></p>
-<p>安装完毕后，指定文件夹的目录如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── _config.yml</span><br><span class="line">├── package.json</span><br><span class="line">├── scaffolds</span><br><span class="line">├── source</span><br><span class="line">|   ├── _drafts</span><br><span class="line">|   └── _posts</span><br><span class="line">└── themes</span><br></pre></td></tr></table></figure></p>
-<p>此时，可开启hexo服务器<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo server</span><br><span class="line">简写：</span><br><span class="line"><span class="meta">$</span> hexo s</span><br></pre></td></tr></table></figure></p>
-<p>服务器成功开启。系统会提示<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INFO  Start processing</span><br><span class="line">INFO  Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
-<p>此时，在可以在浏览器中输入<code>http://localhost:4000/</code> 或 <code>127.0.0.1:4000</code> ，如果出现了下图页面，就说明已获得“阶段性”的成功。<br><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gaypwewni6j31dq0u0b29.jpg" alt="hexo_default_page"></p>
-<h2 id="关联Github"><a href="#关联Github" class="headerlink" title="关联Github"></a>关联Github</h2><h3 id="新建仓库"><a href="#新建仓库" class="headerlink" title="新建仓库"></a>新建仓库</h3><p>在自己的GitHub账户上创建一个新的仓库（repository）<br>命名规则为：<code>你的用户名.github.io</code>，如<code>a334713698.github.io</code></p>
-<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>在blogName文件中，找到名为<code>_config.yml</code>的文件，使用任意文本编辑器打开此文件。<br>找到如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https://hexo.io/docs/deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type:</span><br></pre></td></tr></table></figure></p>
-<p>可通过键盘<code>command+F</code>，调起编辑器的搜索功能，查找“deploy”字段<br>并将内容填充为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: https://github.com/a334713698/a334713698.github.io.git</span><br></pre></td></tr></table></figure></p>
-<p>注意：<code>repository:</code>后填写的应该是自己的创建的仓库地址。</p>
-<h3 id="生成静态页面"><a href="#生成静态页面" class="headerlink" title="生成静态页面"></a>生成静态页面</h3><p>此时应保证自己在blogName根目录下。如果不在指定目录，在终端上输入cd ，再直接将指定文件夹拖进终端，即可获取文件夹路径，按下回车，进入指定目录下。<br>接着执行<code>generate</code>命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo generate</span><br><span class="line">简写：</span><br><span class="line"><span class="meta">$</span> hexo g</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">若出现如下报错：</span><br><span class="line">ERROR Local hexo not found in ~/blog</span><br><span class="line">ERROR Try runing: &apos;npm install hexo --save&apos;</span><br><span class="line"></span><br><span class="line">则执行命令：</span><br><span class="line">$ npm install hexo --save</span><br><span class="line"></span><br><span class="line">若无报错，自行忽略此步骤。</span><br></pre></td></tr></table></figure>
-<h3 id="部署网页到git上"><a href="#部署网页到git上" class="headerlink" title="部署网页到git上"></a>部署网页到git上</h3><p>执行部署的命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo deploy</span><br><span class="line">简写：</span><br><span class="line"><span class="meta">$</span> hexo d</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">若执行命令hexo deploy仍然报错：</span><br><span class="line">无法连接git或找不到git</span><br><span class="line"></span><br><span class="line">则执行命令：</span><br><span class="line">$ npm install hexo-deployer-git --save  </span><br><span class="line"></span><br><span class="line">然后再次执行</span><br><span class="line">$ hexo generate //生成静态页面</span><br><span class="line">$ hexo deploy   //部署到git</span><br><span class="line"></span><br><span class="line">tip：静态页面生成和部署两个步骤可以合并写成：</span><br><span class="line">$ hexo g -d</span><br></pre></td></tr></table></figure>
-<p>若未关联过Github，则执行hexo deploy命令时终端会提示你输入Github的用户名和密码，正确填写GitHub的账号密码即可。<br><code>hexo deploy</code>部署成功后，浏览器中打开网址 <a href="http://a334713698.github.io" target="_blank" rel="noopener">http://a334713698.github.io</a> （将a334713698换成自己的用户名）也能看到博客的主页。</p>
-<h3 id="添加ssh-key到Github"><a href="#添加ssh-key到Github" class="headerlink" title="添加ssh key到Github"></a>添加ssh key到Github</h3><h4 id="检查SSH-keys是否存在Github"><a href="#检查SSH-keys是否存在Github" class="headerlink" title="检查SSH keys是否存在Github"></a>检查SSH keys是否存在Github</h4><p>执行如下命令，检查SSH keys是否存在。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> ls -al ~/.ssh</span><br></pre></td></tr></table></figure></p>
-<p>如果有文件<code>id_rsa.pub</code> 或 <code>id_dsa.pub</code>，则直接进入<code>将SSH key添加到Github中</code>的步骤，否则进入下一步生成SSH key。</p>
-<h4 id="生成新的ssh-key"><a href="#生成新的ssh-key" class="headerlink" title="生成新的ssh key"></a>生成新的ssh key</h4><p>执行如下命令生成public/private rsa key pair，注意将your_email@example.com换成你自己注册Github的邮箱地址。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> ssh-keygen -t rsa -C "your_email@example.com"</span><br></pre></td></tr></table></figure></p>
-<p>默认会在相应路径下（~/.ssh/id_rsa.pub）生成id_rsa和id_rsa.pub两个文件。</p>
-<h4 id="将ssh-key添加到Github中"><a href="#将ssh-key添加到Github中" class="headerlink" title="将ssh key添加到Github中"></a>将ssh key添加到Github中</h4><p>Finder（访达）前往<code>~/.ssh/id_rsa.pub</code>打开id_rsa.pub文件，里面的信息即为SSH key，将这些信息复制到Github的Add SSH key页面即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">进入Github –&gt; Settings –&gt; SSH and GPG keys –&gt; add SSH key</span><br></pre></td></tr></table></figure></p>
-<p>Title任意填（也可不填，我就没填），粘贴内容要从头部的<code>ssh-rsa</code>开始粘，将复制的内容粘贴到Key里，点击下方<code>Add key</code>完成设置。</p>
-<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>到这里，建站工作基本搞定。接下去，就可以发布文章，更换主题了。<br>本文大部分内容都参考于<a href="http://gonghonglou.com/" target="_blank" rel="noopener">与佳期的个人博客</a> 的 <a href="http://gonghonglou.com/2016/02/03/firstblog/" target="_blank" rel="noopener">《Mac上搭建基于GitHub的Hexo博客<br>述》</a>一文。文中还涉及文章发布，域名绑定，主题更换等内容，都非常有帮助。</p>
-
-      
-      <!-- 打赏 -->
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/02/08/Mac上搭建基于GitHub的Hexo博客/" data-id="ckknwx3bb001blrbu5let4ri8"
-        class="article-share-link">分享</a>
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Tech/">Tech</a></li></ul>
 
     </footer>
 
