@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="这个人很懒，什么都没留下" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>iOS源码阅读 —— YYModel  vs  MJExtension |  DJ Hong&#39;s BLOG</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.jpg" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css"
+      />
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    <link rel="alternate" href="/atom.xml" title="DJ Hong's BLOG" type="application/atom+xml">
+</head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-iOS源码阅读 —— YYModel  vs  MJExtension"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  iOS源码阅读 —— YYModel  vs  MJExtension
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/09/14/iOS%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%20%E2%80%94%E2%80%94%20YYModel%20%20vs%20%20MJExtension/" class="article-date">
+  <time datetime="2020-09-14T12:13:12.000Z" itemprop="datePublished">2020-09-14</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.3k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">4 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p><code>YYModel</code>和<code>MJExtension</code>作为JSON模型转换工具，应该算是国内使用者比较多的第三方框架。相信两款都用过的开发者大有人在，我也是其中之一。既然如此，笔者便相继阅读了这两个库的主要源码，并参考<code>YYModel</code>作者<a target="_blank" rel="noopener" href="https://blog.ibireme.com/">ibireme</a>的<a target="_blank" rel="noopener" href="https://blog.ibireme.com/2015/10/23/ios_model_framework_benchmark/">《iOS JSON 模型转换库评测》</a>一文进行了的评测和展开。本文仅代表个人观点，如有异议，欢迎交流指导。</p>
+<h3 id="评测对象"><a href="#评测对象" class="headerlink" title="评测对象"></a>评测对象</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pod &#x27;YYModel&#x27;, &#x27;~&gt; 1.0.4&#x27;</span><br><span class="line"></span><br><span class="line">pod &#x27;MJExtension&#x27;, &#x27;~&gt; 3.2.2&#x27;</span><br></pre></td></tr></table></figure>
+<p>评测用例：<a target="_blank" rel="noopener" href="https://github.com/a334713698/JSONModelTransformReview/tree/master/JSONModelTransformReview/GithubUserModel/user.json">GithubUser</a>、<a target="_blank" rel="noopener" href="https://github.com/a334713698/JSONModelTransformReview/tree/master/JSONModelTransformReview/WeiboModel/weibo.json">WeiboStatus</a><br>评测代码：<a target="_blank" rel="noopener" href="https://github.com/a334713698/JSONModelTransformReview">https://github.com/a334713698/JSONModelTransformReview</a><br>运行环境：iOS 13.5 | iPhone XS Max</p>
+<h3 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h3><p>性能评测的方法是两个库执行相同次数的JSON模型转换，对比二者的耗时情况。</p>
+<h4 id="用例1：GithubUser"><a href="#用例1：GithubUser" class="headerlink" title="用例1：GithubUser"></a>用例1：GithubUser</h4><p><code>GithubUser</code>的数据主要类型是string，和少量的number，主要测试转换库的基本功能。<br>我们分三遍执行两个转换库的相关方法，每遍执行<u><strong>50000</strong></u>次，统计耗时毫秒数。<br>结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>Json 2 Model</th>
+<th>第一次</th>
+<th>第二次</th>
+<th>第三次</th>
+<th>遍历次数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MJExtension</td>
+<td>1481.25 ms</td>
+<td>1468.86 ms</td>
+<td>1452.77 ms</td>
+<td>1,550,000</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>257.29 ms</td>
+<td>250.48 ms</td>
+<td>250.39 ms</td>
+<td>1,400,000</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>Model 2 Json</th>
+<th>第一次</th>
+<th>第二次</th>
+<th>第三次</th>
+<th>遍历次数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MJExtension</td>
+<td>1182.23 ms</td>
+<td>1162.47 ms</td>
+<td>1173.69 ms</td>
+<td>1,550,000</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>382.40 ms</td>
+<td>373.91 ms</td>
+<td>379.84 ms</td>
+<td>1,300,000</td>
+</tr>
+</tbody></table>
+<h4 id="用例2：WeiboStatus"><a href="#用例2：WeiboStatus" class="headerlink" title="用例2：WeiboStatus"></a>用例2：WeiboStatus</h4><p>微博数据<code>WeiboStatus</code>包含大量的复杂类型，主要测试转换库在复杂数据类型情况下的性能。<br>我们分三遍执行这个方法，每遍执行<u><strong>5000</strong></u>次，统计耗时毫秒数。<br>结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>Json 2 Model</th>
+<th>第一遍</th>
+<th>第二遍</th>
+<th>第三遍</th>
+<th>遍历次数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MJExtension</td>
+<td>4061.77 ms</td>
+<td>4054.89 ms</td>
+<td>4057.63 ms</td>
+<td>2,290,000</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>813.44 ms</td>
+<td>803.64 ms</td>
+<td>806.97 ms</td>
+<td>2,285,000</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>Model 2 Json</th>
+<th>第一遍</th>
+<th>第二遍</th>
+<th>第三遍</th>
+<th>遍历次数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MJExtension</td>
+<td>596.46 ms</td>
+<td>592.42 ms</td>
+<td>589.69 ms</td>
+<td>475,000</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>660.04 ms</td>
+<td>626.69 ms</td>
+<td>615.30 ms</td>
+<td>1,215,000</td>
+</tr>
+</tbody></table>
+<h4 id="性能评测结果"><a href="#性能评测结果" class="headerlink" title="性能评测结果"></a>性能评测结果</h4><ul>
+<li>每个用例的第一遍评测，都会比后两遍有稍多的用时，是因为第一遍运行，会首次创建和缓存类的类元信息和属性元信息，后两遍再运行的时候，可以直接使用缓存，减少重复生成类元和属性元造成的开销。</li>
+<li>系统方法和容器使用方面：<code>MJExtension</code>主要使用的是Foundation框架的NSArray、NSDictionary，以及KVC的方法进行取值和赋值。<code>YYModel</code>主要使用了CoreFoundation框架的容器和遍历方法，通过<code>objc_msgSend</code>消息发送的方式，调用属性的<code>_setter</code>和<code>_getter</code>进行取值和赋值，部分地方还使用inline和纯C函数。</li>
+</ul>
+<h3 id="容错"><a href="#容错" class="headerlink" title="容错"></a>容错</h3><p>容错性主要是测试，当JSON和Model之间的数据格式不完全相同时，转换库是如何处理的，是否会产生错误或造成Crash。</p>
+<table>
+<thead>
+<tr>
+<th>用例 1</th>
+<th>JSON属性是：数值，Model属性是：NSString</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MJExtension</td>
+<td>100 -&gt; @”100”</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>100 -&gt; @”100”</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>用例 2</th>
+<th>JSON属性是：数值字符串，Model属性是数值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MJExtension</td>
+<td>@”100” -&gt; 100</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>@”100” -&gt; 100</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>用例 3</th>
+<th>JSON属性是时间字符串，Model属性是NSDate</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MJExtension</td>
+<td>nil，属性类型与值类型不匹配</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>支持<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/ISO%208601/3910715">ISO标准时间格式</a>的时间字符串自动转成NSDate</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>用例 4</th>
+<th>JSON属性是字符串，Model属性是NSValue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MJExtension</td>
+<td>nil，属性类型与值类型不匹配</td>
+</tr>
+<tr>
+<td>YYModel</td>
+<td>nil，属性类型与值类型不匹配</td>
+</tr>
+</tbody></table>
+<p><code>YYModel</code> 和 <code>MJExtension</code> 都会都属性类型与值类型进行类型检测，避免属性被赋予了错误的类型值，以避免潜在的风险。</p>
+<blockquote>
+<p>这里需要提一下，ibireme发布的<a target="_blank" rel="noopener" href="https://github.com/ibireme/YYModel/tree/master/Benchmark">转换库评测代码</a>发布于2015-09-18。当时<code>MJExtension</code>的最高版本应该是<a target="_blank" rel="noopener" href="https://github.com/CoderMJLee/MJExtension/releases/tag/2.5.7"><code>2.5.7版本</code></a>，此时的代码中还未添加类型检测的代码。</p>
+</blockquote>
+<p>对于NSDate类型的JSON数据，如果时间格式满足ISO标准，<code>YYModel</code>支持将ISO标准时间格式的字符串，转换成NSDate类型的值；而<code>MJExtension</code>会因为类型检测不匹配，为模型赋空值（nil）。</p>
+<h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><table>
+<thead>
+<tr>
+<th>功能</th>
+<th align="center">MJExtension</th>
+<th align="center">YYModel</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>属性名转换</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>自定义属性值转换</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>黑白名单</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>Coding</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>Copying</td>
+<td align="center">-</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>hash/equal</td>
+<td align="center">-</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td>CoreData</td>
+<td align="center">✅</td>
+<td align="center">-</td>
+</tr>
+</tbody></table>
+<h3 id="侵入性"><a href="#侵入性" class="headerlink" title="侵入性"></a>侵入性</h3><p><code>YYModel</code>、<code>MJExtension</code>都采用Category来实现，无侵入，并在方法名之前添加了前缀，与原生方法进行区分。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p><code>YYModel</code>、<code>MJExtension</code>从逻辑上来说是相似的，都通过Category无侵入性地实现功能，且都是使用runtime动态地获取、创建和缓存类元、属性元信息，再通过对数据的遍历进行转换。具体功能上都支持自定义属性名映射和自定义属性值转换，以及方便的归档接档的方法。少部分功能，略有差异，可根据需求选取。<br>从方法/函数使用上来说，<code>MJExtension</code>使用的是Foundation框架的方法，而<code>YYModel</code>使用的是相比之下更底层的CoreFoundation框架的函数，再配合使用内联和纯C函数，能够做到比<code>MJExtension</code>更少的资源开销，从而在性能上有显著的优势。</p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          打赏
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hongdongjie.gitee.io/2020/09/14/iOS%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%20%E2%80%94%E2%80%94%20YYModel%20%20vs%20%20MJExtension/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MJExtension/" rel="tag">MJExtension</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YYModel/" rel="tag">YYModel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="tag">源码阅读</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2020/09/26/2020%E5%B9%B49%E6%9C%88%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            2020年9月读书心得
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/09/09/iOS%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%20%E2%80%94%E2%80%94%20MJExtension/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">iOS源码阅读 —— MJExtension</div>
+      </a>
+    
+  </nav>
+
+  
+   
+<div class="gitalk" id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+
+<script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: 'b1f848be2adc29d64677',
+    clientSecret: '689466667372353fe30c57d09bbba7354f94c650',
+    repo: 'https://github.com/a334713698/blogcomment',
+    owner: 'a334713698',
+    admin: ['a334713698'],
+    // id: location.pathname,      // Ensure uniqueness and length less than 50
+    id: md5(location.pathname),
+    distractionFreeMode: false,  // Facebook-like distraction free mode
+    pagerDirection: 'last'
+  })
+
+  gitalk.render('gitalk-container')
+</script>
+
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2018-2022
+        <i class="ri-heart-fill heart_icon"></i> GG266
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+      <li>
+          <img src="/images/beian.png"></img>
+          <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010902002204" target="_black" rel="nofollow">浙公网安备 33010902002204号</a>
+      </li>
+        
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s4.cnzz.com/z_stat.php?id=1280804963&amp;web_id=1280804963'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="DJ Hong&#39;s BLOG"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://gitee.com/hongdongjie/gg266picgo/raw/master/pic4blog/alipay.JPG">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://gitee.com/hongdongjie/gg266picgo/raw/master/pic4blog/wechat.JPG">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=1908797593&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
